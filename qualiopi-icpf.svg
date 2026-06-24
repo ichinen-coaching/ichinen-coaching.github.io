@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 320" role="img" aria-label="Organisme de formation certifié Qualiopi - Délivrée par ICPF Certification Qualité">
+  <!-- LEFT BLOCK : white -->
+  <rect x="0" y="0" width="540" height="320" fill="#FFFFFF"/>
+
+  <!-- Qualiopi wordmark -->
+  <text x="40" y="80" font-family="Arial, Helvetica, sans-serif" font-size="64" font-weight="800" fill="#1B2559" letter-spacing="-1">Qualiopi</text>
+  <text x="44" y="120" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="400" fill="#1B2559">processus certifié</text>
+
+  <!-- Qualiopi triangle marque (4 triangles forming a square turned 45°) -->
+  <g transform="translate(310,40)">
+    <!-- top-left blue -->
+    <polygon points="0,0 60,0 0,60" fill="#1B2559"/>
+    <!-- top-right red -->
+    <polygon points="60,0 120,0 60,60" fill="#D7141A"/>
+    <!-- bottom-left red -->
+    <polygon points="0,60 60,60 60,120" fill="#D7141A"/>
+    <!-- bottom-right blue -->
+    <polygon points="60,60 120,60 120,120" fill="#1B2559"/>
+  </g>
+
+  <!-- République Française block : flag + text -->
+  <g transform="translate(40,170)">
+    <!-- French flag stylized (3 vertical bars) -->
+    <rect x="0" y="0" width="14" height="34" fill="#1B2559"/>
+    <rect x="14" y="0" width="14" height="34" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="0.5"/>
+    <rect x="28" y="0" width="14" height="34" fill="#D7141A"/>
+    <text x="56" y="24" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="800" fill="#1B2559" letter-spacing="0.5">RÉPUBLIQUE FRANÇAISE</text>
+  </g>
+
+  <!-- Caption -->
+  <text x="40" y="240" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1B2559">La certification qualité a été délivrée au titre</text>
+  <text x="40" y="262" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1B2559">des catégories d'action suivantes :</text>
+  <!-- Bullets -->
+  <circle cx="58" cy="284" r="2" fill="#1B2559"/>
+  <text x="74" y="289" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#1B2559" letter-spacing="0.4">ACTIONS DE FORMATION</text>
+  <circle cx="58" cy="304" r="2" fill="#1B2559"/>
+  <text x="74" y="309" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="700" fill="#1B2559" letter-spacing="0.4">BILANS DE COMPÉTENCES</text>
+
+  <!-- RIGHT BLOCK : pale teal -->
+  <rect x="540" y="0" width="340" height="320" fill="#E2F0EE"/>
+
+  <!-- "Délivrée par" -->
+  <text x="710" y="110" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#1B4D52">Délivrée par</text>
+
+  <!-- ICPF logo : checkmark V + text ICPF -->
+  <g transform="translate(580,180)">
+    <!-- V checkmark in teal -->
+    <path d="M0,18 L24,46 L60,0" fill="none" stroke="#2A8E91" stroke-width="14" stroke-linecap="square" stroke-linejoin="miter"/>
+    <!-- ICPF text -->
+    <text x="74" y="38" font-family="Arial, Helvetica, sans-serif" font-size="56" font-weight="800" fill="#111111" letter-spacing="2">ICPF</text>
+    <!-- Caption under -->
+    <text x="74" y="62" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#111111" letter-spacing="1">CERTIFICATION</text>
+    <text x="74" y="80" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#111111" letter-spacing="1">QUALITÉ</text>
+  </g>
+</svg>
