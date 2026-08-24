@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Console — Ichinen Coaching</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ca:#C8865A;--te:#B5521E;--ol:#4A5240;--cr:#F0EAD2;--cd:#E4D9BC;--sa:#D4C49A;--td:#2C2A24;--tm:#5C5448;--wh:#FDFAF4;--ok:#4A5240;--warn:#B5521E;}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Jost',sans-serif;background:var(--wh);color:var(--td);font-size:14px;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+h1,h2,h3,.serif{font-family:'Cormorant Garamond',serif;font-weight:400}
+em{font-style:italic;color:var(--te)}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;font-size:14px;color:var(--td);background:var(--wh);border:1px solid var(--cd);border-radius:3px;padding:10px 12px;width:100%;outline:none;transition:border-color .2s}
+input:focus,textarea:focus,select:focus{border-color:var(--ca)}
+textarea{resize:vertical;line-height:1.65}
+label{display:block;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--tm);margin-bottom:7px}
+.hint{font-size:12px;color:var(--tm);margin-top:6px;line-height:1.5}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:10px 18px;border-radius:3px;font-size:13px;font-weight:500;letter-spacing:.03em;background:var(--te);color:#fff;transition:opacity .2s}
+.btn:hover{opacity:.88}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--tm);border:1px solid var(--cd)}
+.btn.ghost:hover{border-color:var(--ca);color:var(--te)}
+.btn.sm{padding:7px 13px;font-size:12px}
+.btn.danger{background:transparent;color:var(--te);border:1px solid var(--cd)}
+
+/* ---------- LOGIN ---------- */
+#login{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--cr);padding:24px;z-index:100}
+.login-card{background:var(--wh);border:1px solid var(--cd);border-radius:5px;padding:44px 40px;max-width:470px;width:100%}
+.login-kanji{font-family:'Cormorant Garamond',serif;font-size:44px;color:var(--ca);opacity:.4;line-height:1;margin-bottom:18px}
+.login-card h1{font-size:30px;line-height:1.15;margin-bottom:10px}
+.login-card>p{font-size:13px;color:var(--tm);line-height:1.65;margin-bottom:26px}
+.login-card label{margin-top:18px}
+#login-err{display:none;background:#FBEEE6;border:1px solid #E8C4AC;color:var(--te);font-size:12.5px;line-height:1.55;padding:11px 13px;border-radius:3px;margin-top:16px}
+.login-help{margin-top:22px;padding-top:20px;border-top:1px solid var(--cd);font-size:12px;color:var(--tm);line-height:1.7}
+.login-help b{color:var(--td);font-weight:600}
+.login-help ol{margin:8px 0 0 16px}
+.login-help li{margin-bottom:5px}
+.login-help code{background:var(--cr);padding:1px 5px;border-radius:2px;font-size:11.5px}
+
+/* ---------- SHELL ---------- */
+#app{display:none;min-height:100vh}
+.layout{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+aside{background:var(--cr);border-right:1px solid var(--cd);padding:26px 0;display:flex;flex-direction:column}
+.brand{padding:0 24px 26px;border-bottom:1px solid var(--cd);margin-bottom:20px}
+.brand .n{font-family:'Cormorant Garamond',serif;font-size:21px}
+.brand .s{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--tm);margin-top:4px}
+.menu{flex:1;padding:0 12px}
+.menu button{display:flex;align-items:center;gap:11px;width:100%;text-align:left;padding:10px 13px;border-radius:3px;font-size:13.5px;color:var(--tm);margin-bottom:2px;transition:.15s}
+.menu button:hover{background:rgba(200,134,90,.1);color:var(--td)}
+.menu button.on{background:var(--wh);color:var(--td);font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.menu .ico{width:16px;text-align:center;opacity:.75}
+.side-foot{padding:18px 24px 0;border-top:1px solid var(--cd);font-size:11.5px;color:var(--tm);line-height:1.6}
+.side-foot button{color:var(--te);font-size:12px;margin-top:8px}
+main{display:flex;flex-direction:column;min-width:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:20px 34px;border-bottom:1px solid var(--cd);background:var(--wh);position:sticky;top:0;z-index:20;flex-wrap:wrap}
+.topbar h2{font-size:25px}
+.topbar .acts{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.view{padding:30px 34px 60px;display:none}
+.view.on{display:block}
+
+/* ---------- WIDGETS ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:26px}
+.stat{background:var(--cr);border:1px solid var(--cd);border-radius:4px;padding:20px 22px}
+.stat .n{font-family:'Cormorant Garamond',serif;font-size:36px;line-height:1;color:var(--td)}
+.stat .l{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--tm);margin-top:9px}
+.panel{background:var(--wh);border:1px solid var(--cd);border-radius:4px;margin-bottom:22px}
+.panel-h{padding:16px 22px;border-bottom:1px solid var(--cd);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.panel-h h3{font-size:19px}
+.panel-b{padding:20px 22px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:10.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--tm);font-weight:600;padding:11px 22px;border-bottom:1px solid var(--cd);background:var(--cr)}
+td{padding:13px 22px;border-bottom:1px solid var(--cd);vertical-align:middle;font-size:13.5px}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:rgba(240,234,210,.4)}
+.thumb{width:52px;height:38px;border-radius:3px;object-fit:cover;background:var(--ol);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;color:rgba(200,134,90,.6);font-size:17px;flex:none}
+.t-title{font-weight:500;color:var(--td);line-height:1.35}
+.t-sub{font-size:11.5px;color:var(--tm);margin-top:3px;display:flex;gap:9px;flex-wrap:wrap}
+.pill{display:inline-block;font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;padding:3px 9px;border-radius:20px;border:1px solid var(--cd);color:var(--tm);white-space:nowrap}
+.pill.pub{background:rgba(74,82,64,.11);border-color:transparent;color:var(--ol)}
+.pill.draft{background:rgba(181,82,30,.1);border-color:transparent;color:var(--te)}
+.pill.ok{background:rgba(74,82,64,.11);border-color:transparent;color:var(--ol)}
+.pill.no{background:rgba(181,82,30,.1);border-color:transparent;color:var(--te)}
+.rowacts{display:flex;gap:6px;justify-content:flex-end}
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px}
+.chip{padding:6px 14px;border:1px solid var(--cd);border-radius:20px;font-size:12px;color:var(--tm)}
+.chip.on{background:var(--td);border-color:var(--td);color:var(--wh)}
+.empty{padding:44px 22px;text-align:center;color:var(--tm);font-size:13.5px;line-height:1.7}
+.empty .k{font-family:'Cormorant Garamond',serif;font-size:34px;color:var(--ca);opacity:.35;display:block;margin-bottom:10px}
+
+/* ---------- EDITOR ---------- */
+#editor{position:fixed;top:0;right:0;bottom:0;width:min(760px,100%);background:var(--wh);border-left:1px solid var(--cd);box-shadow:-14px 0 44px rgba(44,42,36,.1);transform:translateX(102%);transition:transform .5s cubic-bezier(.23,1,.32,1);z-index:60;display:flex;flex-direction:column}
+#editor.on{transform:none}
+#scrim{position:fixed;inset:0;background:rgba(44,42,36,.32);opacity:0;pointer-events:none;transition:opacity .35s;z-index:55}
+#scrim.on{opacity:1;pointer-events:auto}
+.ed-h{padding:20px 30px;border-bottom:1px solid var(--cd);display:flex;justify-content:space-between;align-items:center;gap:12px}
+.ed-h h3{font-size:22px}
+.ed-b{flex:1;overflow-y:auto;padding:26px 30px 40px}
+.ed-f{padding:16px 30px;border-top:1px solid var(--cd);display:flex;justify-content:space-between;gap:10px;align-items:center;background:var(--cr);flex-wrap:wrap}
+.ed-sec{margin-bottom:32px}
+.ed-sec>h4{font-size:12px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--te);margin-bottom:16px;padding-bottom:9px;border-bottom:1px solid var(--cd);display:flex;align-items:center;gap:9px}
+.ed-sec>h4 .num{width:19px;height:19px;border-radius:50%;background:var(--te);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;flex:none}
+.f{margin-bottom:16px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.counter{font-size:11px;color:var(--tm);margin-top:5px;text-align:right}
+.counter.over{color:var(--te);font-weight:600}
+.drop{border:1.5px dashed var(--cd);border-radius:4px;padding:26px;text-align:center;color:var(--tm);font-size:13px;cursor:pointer;transition:.2s;line-height:1.6}
+.drop:hover{border-color:var(--ca);background:rgba(240,234,210,.35)}
+.cover-prev{position:relative;border-radius:4px;overflow:hidden;border:1px solid var(--cd)}
+.cover-prev img{width:100%;height:190px;object-fit:cover;display:block}
+.cover-acts{position:absolute;top:10px;right:10px;display:flex;gap:6px}
+.cover-acts button{background:rgba(253,250,244,.94);padding:6px 11px;border-radius:3px;font-size:11.5px;font-weight:500}
+.filechip{display:flex;align-items:center;gap:10px;padding:11px 13px;border:1px solid var(--cd);border-radius:3px;font-size:13px}
+.filechip .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.snippet{border:1px solid var(--cd);border-radius:4px;padding:15px 17px;background:var(--cr)}
+.snippet .u{font-size:12px;color:var(--ol);margin-bottom:3px;word-break:break-all}
+.snippet .t{color:#1a0dab;font-size:17px;line-height:1.3;margin-bottom:4px;font-family:arial,sans-serif}
+.snippet .d{font-size:12.5px;color:#4d5156;line-height:1.55;font-family:arial,sans-serif}
+.seolist{list-style:none;font-size:12.5px;line-height:1.9}
+.seolist li{display:flex;gap:9px;align-items:flex-start}
+.seolist .m{flex:none;width:15px;font-weight:600}
+.seolist .m.y{color:var(--ol)}.seolist .m.n{color:var(--te)}
+
+/* ---------- DIALOGS / TOAST ---------- */
+#dlg{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(44,42,36,.42);z-index:120;padding:24px}
+#dlg.on{display:flex}
+.dlg-card{background:var(--wh);border-radius:5px;padding:30px 32px;max-width:440px;width:100%;border:1px solid var(--cd)}
+.dlg-card h3{font-size:22px;margin-bottom:11px}
+.dlg-card p{font-size:13.5px;color:var(--tm);line-height:1.7;margin-bottom:22px}
+.dlg-acts{display:flex;gap:10px;justify-content:flex-end}
+#toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,150%);background:var(--td);color:var(--wh);padding:13px 24px;border-radius:3px;font-size:13px;z-index:200;transition:transform .4s cubic-bezier(.23,1,.32,1);max-width:min(560px,92vw);line-height:1.5}
+#toast.on{transform:translate(-50%,0)}
+#toast.err{background:var(--te)}
+#busy{position:fixed;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;background:rgba(253,250,244,.9);z-index:150}
+#busy.on{display:flex}
+.spin{width:34px;height:34px;border:2px solid var(--cd);border-top-color:var(--te);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#busy .msg{font-size:13px;color:var(--tm)}
+.log{font-size:12px;color:var(--tm);line-height:1.8;max-height:190px;overflow-y:auto;font-family:ui-monospace,Menlo,monospace}
+@media(max-width:900px){.layout{grid-template-columns:1fr}aside{display:none}.view,.topbar{padding-left:20px;padding-right:20px}.grid2,.grid3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- =============== CONNEXION =============== -->
+<div id="login">
+  <form class="login-card" onsubmit="return doLogin(event)">
+    <div class="login-kanji">一念</div>
+    <h1>Console <em>Ichinen</em></h1>
+    <p>Gérez les articles de votre blog. Les modifications sont publiées directement sur ichinencoaching.com.</p>
+
+    <label for="tok">Jeton d'accès GitHub</label>
+    <input id="tok" type="password" placeholder="github_pat_…" autocomplete="current-password" spellcheck="false">
+    <div class="hint">Ce jeton reste sur cet appareil, dans ce navigateur. Il n'est jamais envoyé ailleurs qu'à GitHub.</div>
+
+    <div id="login-err"></div>
+
+    <div style="margin-top:22px"><button class="btn" type="submit" id="login-btn" style="width:100%;justify-content:center">Se connecter</button></div>
+
+    <div class="login-help">
+      <b>Première connexion ?</b> Créez votre jeton en 5 étapes :
+      <ol>
+        <li>Ouvrez <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:var(--te)">github.com → jetons d'accès</a></li>
+        <li>Nom : <code>Console Ichinen</code> · Expiration : <code>1 an</code></li>
+        <li>Repository access : <b>Only select repositories</b> → <code>ichinen-coaching.github.io</code></li>
+        <li>Permissions → Repository → <b>Contents</b> : <code>Read and write</code></li>
+        <li>Cliquez « Generate token », copiez-le et collez-le ci-dessus</li>
+      </ol>
+    </div>
+  </form>
+</div>
+
+<!-- =============== APPLICATION =============== -->
+<div id="app">
+<div class="layout">
+  <aside>
+    <div class="brand"><div class="n"><em>Ichinen</em> Coaching</div><div class="s">Console</div></div>
+    <nav class="menu">
+      <button class="on" data-v="dash" onclick="go('dash')"><span class="ico">◈</span> Tableau de bord</button>
+      <button data-v="posts" onclick="go('posts')"><span class="ico">✎</span> Articles</button>
+      <button data-v="cats" onclick="go('cats')"><span class="ico">◆</span> Catégories</button>
+      <button data-v="seo" onclick="go('seo')"><span class="ico">◎</span> Référencement</button>
+      <button data-v="leads" onclick="go('leads')"><span class="ico">✉</span> Inscrits</button>
+      <button data-v="set" onclick="go('set')"><span class="ico">⚙</span> Réglages</button>
+    </nav>
+    <div class="side-foot">
+      <div id="repo-label">—</div>
+      <button onclick="logout()">Se déconnecter</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <h2 id="vtitle">Tableau de bord</h2>
+      <div class="acts">
+        <span id="dirty-flag" class="pill draft" style="display:none">Modifications non publiées</span>
+        <a class="btn ghost sm" href="https://ichinencoaching.com/blog/" target="_blank" rel="noopener">Voir le blog</a>
+        <button class="btn ghost sm" onclick="reload()">Recharger</button>
+        <button class="btn sm" onclick="openEditor()">Nouvel article</button>
+        <button class="btn sm" id="pub-btn" onclick="askPublish()" style="background:var(--ol)">Publier en ligne</button>
+      </div>
+    </div>
+
+    <!-- TABLEAU DE BORD -->
+    <section class="view on" id="v-dash">
+      <div class="stats" id="dash-stats"></div>
+      <div class="panel">
+        <div class="panel-h"><h3>Derniers articles</h3><button class="btn ghost sm" onclick="go('posts')">Tout voir</button></div>
+        <div id="dash-posts"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>État de la publication</h3></div>
+        <div class="panel-b"><div class="log" id="dash-log">Chargement…</div></div>
+      </div>
+    </section>
+
+    <!-- ARTICLES -->
+    <section class="view" id="v-posts">
+      <div class="f"><input id="q" type="search" placeholder="Rechercher un article…" oninput="renderPosts()"></div>
+      <div class="chips" id="post-chips"></div>
+      <div class="panel"><div id="posts-table"></div></div>
+    </section>
+
+    <!-- CATEGORIES -->
+    <section class="view" id="v-cats">
+      <div class="panel">
+        <div class="panel-h"><h3>Catégories</h3></div>
+        <div class="panel-b">
+          <div class="grid2" style="align-items:end">
+            <div class="f" style="margin:0"><label for="newcat">Nouvelle catégorie</label><input id="newcat" placeholder="ex. Confiance en soi" onkeydown="if(event.key==='Enter')addCat()"></div>
+            <div class="f" style="margin:0"><button class="btn" onclick="addCat()">Ajouter</button></div>
+          </div>
+          <div class="hint">Une catégorie utilisée par au moins un article ne peut pas être supprimée.</div>
+        </div>
+      </div>
+      <div class="panel"><div id="cats-table"></div></div>
+    </section>
+
+    <!-- SEO -->
+    <section class="view" id="v-seo">
+      <div class="stats" id="seo-stats"></div>
+      <div class="panel">
+        <div class="panel-h"><h3>Contrôle article par article</h3></div>
+        <div id="seo-table"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Fichiers pour les moteurs et les IA</h3></div>
+        <div class="panel-b" id="seo-files"></div>
+      </div>
+    </section>
+
+    <!-- LEADS -->
+    <section class="view" id="v-leads">
+      <div class="panel">
+        <div class="panel-h"><h3>Formulaire d'inscription</h3></div>
+        <div class="panel-b" id="leads-cfg"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Inscrits</h3>
+          <div style="display:flex;gap:8px">
+            <button class="btn ghost sm" onclick="document.getElementById('lead-import').click()">Importer un CSV</button>
+            <button class="btn ghost sm" onclick="exportLeads()">Exporter</button>
+            <button class="btn sm" onclick="addLead()">Ajouter</button>
+          </div>
+        </div>
+        <input type="file" id="lead-import" accept=".csv,text/csv" style="display:none" onchange="importLeads(this)">
+        <div id="leads-table"></div>
+      </div>
+    </section>
+
+    <!-- REGLAGES -->
+    <section class="view" id="v-set">
+      <div class="panel">
+        <div class="panel-h"><h3>Identité du blog</h3></div>
+        <div class="panel-b">
+          <div class="f"><label for="s-title">Titre de la page blog (balise title)</label><input id="s-title"><div class="counter" id="c-stitle"></div></div>
+          <div class="f"><label for="s-desc">Description du blog (meta description)</label><textarea id="s-desc" rows="3"></textarea><div class="counter" id="c-sdesc"></div></div>
+          <div class="f"><label for="s-cal">Lien Calendly</label><input id="s-cal"></div>
+          <div class="f"><label for="s-mail">Email de contact</label><input id="s-mail" type="email"></div>
+          <button class="btn" onclick="saveSettings()">Enregistrer</button>
+          <div class="hint">Ces réglages prennent effet sur le site à la prochaine publication.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Connexion</h3></div>
+        <div class="panel-b" id="set-conn"></div>
+      </div>
+    </section>
+  </main>
+</div>
+</div>
+
+<!-- =============== EDITEUR =============== -->
+<div id="scrim" onclick="closeEditor()"></div>
+<div id="editor">
+  <div class="ed-h">
+    <h3 id="ed-title">Nouvel article</h3>
+    <button class="btn ghost sm" onclick="closeEditor()">Fermer</button>
+  </div>
+  <div class="ed-b">
+
+    <div class="ed-sec">
+      <h4><span class="num">1</span> Informations</h4>
+      <div class="f"><label for="f-title">Titre de l'article</label><input id="f-title" oninput="onTitle()" placeholder="ex. Retrouver du sens après 40 ans"></div>
+      <div class="f"><label for="f-slug">Adresse de la page</label><input id="f-slug" oninput="markDirty()"><div class="hint" id="slug-preview">ichinencoaching.com/blog/…</div></div>
+      <div class="grid3">
+        <div class="f"><label for="f-cat">Catégorie</label><select id="f-cat" onchange="onCatChange()"></select></div>
+        <div class="f"><label for="f-date">Date affichée</label><input id="f-date" placeholder="ex. Mars 2026" oninput="markDirty()"></div>
+        <div class="f"><label for="f-read">Temps de lecture</label><input id="f-read" placeholder="ex. 7 min" oninput="markDirty()"></div>
+      </div>
+      <div class="f"><label for="f-tags">Mots-clés (séparés par des virgules)</label><input id="f-tags" placeholder="ex. Reconversion, Sens, Carrière" oninput="markDirty()"></div>
+      <div class="f"><label><input type="checkbox" id="f-feat" style="width:auto;margin-right:8px" onchange="markDirty()"> Mettre en avant en haut du blog</label></div>
+    </div>
+
+    <div class="ed-sec">
+      <h4><span class="num">2</span> Média &amp; pièces jointes</h4>
+      <div class="f">
+        <label>Photo de couverture</label>
+        <div id="cover-zone"></div>
+        <input type="file" id="f-cover" accept="image/*" style="display:none" onchange="handleCover(this)">
+        <div class="hint">Sans photo, le motif 一念 de la charte est utilisé. L'image est redimensionnée et compressée automatiquement.</div>
+      </div>
+      <div class="f">
+        <label>Document à télécharger</label>
+        <div id="doc-zone"></div>
+        <input type="file" id="f-doc" accept=".pdf,.doc,.docx,.odt" style="display:none" onchange="handleDoc(this)">
+      </div>
+      <div class="f"><label for="f-link">Lien externe (optionnel)</label><input id="f-link" type="url" placeholder="https://…" oninput="markDirty()"></div>
+    </div>
+
+    <div class="ed-sec">
+      <h4><span class="num">3</span> Contenu</h4>
+      <div class="f"><label for="f-excerpt">Accroche (affichée sur la vignette)</label><textarea id="f-excerpt" rows="3" oninput="markDirty()"></textarea></div>
+      <div class="f">
+        <label for="f-content">Corps de l'article</label>
+        <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+          <button class="btn ghost sm" type="button" onclick="wrap('<h3>','</h3>')">Titre</button>
+          <button class="btn ghost sm" type="button" onclick="wrap('<p>','</p>')">Paragraphe</button>
+          <button class="btn ghost sm" type="button" onclick="wrap('<strong>','</strong>')">Gras</button>
+          <button class="btn ghost sm" type="button" onclick="wrap('<em>','</em>')">Italique</button>
+          <button class="btn ghost sm" type="button" onclick="wrap('<blockquote>','</blockquote>')">Citation</button>
+          <button class="btn ghost sm" type="button" onclick="wrap('<ul>\n  <li>','</li>\n</ul>')">Liste</button>
+        </div>
+        <textarea id="f-content" rows="16" oninput="markDirty()" spellcheck="true"></textarea>
+        <div class="hint" id="wordcount"></div>
+      </div>
+    </div>
+
+    <div class="ed-sec">
+      <h4><span class="num">4</span> Référencement</h4>
+      <div class="f"><label for="f-seotitle">Titre pour Google (optionnel)</label><input id="f-seotitle" oninput="onSeo()" placeholder="Reprend le titre de l'article si vide"><div class="counter" id="c-seotitle"></div></div>
+      <div class="f"><label for="f-meta">Meta description</label><textarea id="f-meta" rows="3" oninput="onSeo()"></textarea><div class="counter" id="c-meta"></div></div>
+      <div class="f"><label>Aperçu dans les résultats Google</label><div class="snippet"><div class="u" id="sn-u"></div><div class="t" id="sn-t"></div><div class="d" id="sn-d"></div></div></div>
+      <div class="f"><label>Contrôles</label><ul class="seolist" id="seo-checks"></ul></div>
+    </div>
+
+  </div>
+  <div class="ed-f">
+    <button class="btn danger sm" id="ed-del" onclick="askDeletePost()">Supprimer</button>
+    <div style="display:flex;gap:9px">
+      <button class="btn ghost sm" onclick="savePost('draft')">Garder en brouillon</button>
+      <button class="btn sm" onclick="savePost('published')">Valider l'article</button>
+    </div>
+  </div>
+</div>
+
+<!-- =============== DIALOGUE / TOAST / OCCUPE =============== -->
+<div id="dlg"><div class="dlg-card">
+  <h3 id="dlg-t"></h3><p id="dlg-p"></p>
+  <div class="dlg-acts"><button class="btn ghost sm" onclick="closeDlg()">Annuler</button><button class="btn sm" id="dlg-ok"></button></div>
+</div></div>
+<div id="toast"></div>
+<div id="busy"><div class="spin"></div><div class="msg" id="busy-msg">Publication…</div></div>
+
+<script>
+/* Ichinen Coaching — moteur de rendu du blog
+   Utilisé par Node (build initial) et par la console admin (republication).
+   Une seule source de vérité : posts.json + config.json -> HTML statique. */
+(function(root,factory){
+  if(typeof module==='object'&&module.exports) module.exports=factory();
+  else root.IchinenRender=factory();
+}(typeof self!=='undefined'?self:this,function(){
+'use strict';
+
+var SITE='https://ichinencoaching.com';
+
+var MONTHS={'jan':'01','fév':'02','fev':'02','mar':'03','avr':'04','mai':'05','juin':'06',
+            'juil':'07','août':'08','aout':'08','sep':'09','oct':'10','nov':'11','déc':'12','dec':'12'};
+
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function txt(h){return String(h==null?'':h).replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim();}
+function jsonld(o){return JSON.stringify(o).replace(/</g,'\\u003c');}
+
+function slugify(s){
+  s=String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+  return s.replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').replace(/-+/g,'-').slice(0,70);
+}
+
+/* "Mars 2025" -> "2025-03-01" ; accepte déjà l'ISO */
+function isoDate(d){
+  if(!d) return '';
+  var s=String(d).trim();
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  var m=s.toLowerCase().replace(/\./g,'').match(/^([a-zà-ÿ]+)\s+(\d{4})$/);
+  if(m){
+    var key=Object.keys(MONTHS).filter(function(k){return m[1].indexOf(k)===0;})[0];
+    if(key) return m[2]+'-'+MONTHS[key]+'-01';
+  }
+  return '';
+}
+
+function readMinutes(p){
+  var m=String(p.read||'').match(/(\d+)/);
+  return m?parseInt(m[1],10):Math.max(2,Math.round(txt(p.content).split(/\s+/).length/200));
+}
+
+function postUrl(p){return SITE+'/blog/'+p.slug+'/';}
+
+function published(posts){
+  return (posts||[]).filter(function(p){return p.status!=='draft';});
+}
+
+/* ---------- fragments partagés ---------- */
+
+function head(o){
+  var img=o.image||(SITE+'/apple-touch-icon.png');
+  return '<meta charset="UTF-8">\n'
+    +'<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+    +'<title>'+esc(o.title)+'</title>\n'
+    +'<meta name="description" content="'+esc(o.desc)+'">\n'
+    +(o.keywords?'<meta name="keywords" content="'+esc(o.keywords)+'">\n':'')
+    +'<meta name="author" content="Christèle Fibleuil — Ichinen Coaching">\n'
+    +'<meta name="robots" content="'+(o.noindex?'noindex, nofollow':'index, follow, max-image-preview:large, max-snippet:-1')+'">\n'
+    +'<meta name="language" content="fr">\n'
+    +'<link rel="canonical" href="'+esc(o.url)+'">\n'
+    +'<meta name="geo.region" content="MQ">\n'
+    +'<meta name="geo.placename" content="Martinique">\n'
+    +'<meta name="geo.position" content="14.6415;-61.0242">\n'
+    +'<meta name="ICBM" content="14.6415, -61.0242">\n'
+    +'<meta property="og:type" content="'+(o.ogType||'website')+'">\n'
+    +'<meta property="og:locale" content="fr_FR">\n'
+    +'<meta property="og:url" content="'+esc(o.url)+'">\n'
+    +'<meta property="og:site_name" content="Ichinen Coaching">\n'
+    +'<meta property="og:title" content="'+esc(o.title)+'">\n'
+    +'<meta property="og:description" content="'+esc(o.desc)+'">\n'
+    +'<meta property="og:image" content="'+esc(img)+'">\n'
+    +'<meta name="twitter:card" content="summary_large_image">\n'
+    +'<meta name="twitter:title" content="'+esc(o.title)+'">\n'
+    +'<meta name="twitter:description" content="'+esc(o.desc)+'">\n'
+    +'<meta name="twitter:image" content="'+esc(img)+'">\n'
+    +'<link rel="preconnect" href="https://fonts.googleapis.com">\n'
+    +'<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
+    +'<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">\n'
+    +'<link rel="icon" type="image/svg+xml" href="/favicon.svg">\n'
+    +'<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">\n'
+    +'<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">\n'
+    +'<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">\n'
+    +'<meta name="theme-color" content="#B5662B">\n';
+}
+
+function nav(active){
+  return '<nav>\n'
+    +'  <a href="/" class="logo"><em>Ichinen</em> Coaching</a>\n'
+    +'  <div class="nav-links">\n'
+    +'    <a href="/">Accueil</a>\n'
+    +'    <a href="/#offres">Offres</a>\n'
+    +'    <a href="/blog/"'+(active==='blog'?' class="active"':'')+'>Articles</a>\n'
+    +'    <a href="'+CTA+'" target="_blank" rel="noopener" class="nav-cta">Session Gratuite</a>\n'
+    +'  </div>\n'
+    +'</nav>\n';
+}
+
+var CTA='https://calendly.com/christele_ichinencoaching/premierrdv';
+
+function footer(){
+  return '<div class="blog-footer">\n'
+    +'  <span>© '+(new Date().getFullYear())+' Ichinen Coaching · Christèle Fibleuil · Martinique</span>\n'
+    +'  <a href="/" class="back-funnel">'
+    +'<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>'
+    +' Retour au site</a>\n'
+    +'</div>\n';
+}
+
+function personLd(){
+  return {'@type':'Person','@id':SITE+'/#christele','name':'Christèle Fibleuil',
+    'jobTitle':'Coach professionnelle certifiée RNCP niveau 7',
+    'url':SITE+'/','worksFor':{'@id':SITE+'/#org'},
+    'knowsAbout':['coaching de vie','leadership','transition professionnelle','reconversion','burn-out','équilibre de vie','développement personnel'],
+    'address':{'@type':'PostalAddress','addressRegion':'Martinique','addressCountry':'MQ'}};
+}
+
+function orgLd(){
+  return {'@type':['ProfessionalService','Organization'],'@id':SITE+'/#org','name':'Ichinen Coaching',
+    'url':SITE+'/','image':SITE+'/apple-touch-icon.png','logo':SITE+'/apple-touch-icon.png',
+    'description':'Cabinet de coaching professionnel en Martinique : leadership, transitions de vie et professionnelles, équilibre de vie.',
+    'areaServed':[{'@type':'Place','name':'Martinique'},{'@type':'Place','name':'Antilles françaises'},{'@type':'Place','name':'France'}],
+    'address':{'@type':'PostalAddress','addressLocality':'Fort-de-France','addressRegion':'Martinique','addressCountry':'MQ'},
+    'geo':{'@type':'GeoCoordinates','latitude':14.6415,'longitude':-61.0242},
+    'founder':{'@id':SITE+'/#christele'},'knowsLanguage':['fr'],
+    'availableChannel':{'@type':'ServiceChannel','serviceUrl':CTA,'name':'Session découverte gratuite (30 min)'}};
+}
+
+/* ---------- page liste /blog/ ---------- */
+
+function renderIndex(posts,cfg,assets){
+  cfg=cfg||{};assets=assets||{};
+  var list=published(posts).slice();
+  var cats=[];
+  list.forEach(function(p){ if(!cats.some(function(c){return c.id===p.cat;})) cats.push({id:p.cat,name:p.catLabel||p.cat}); });
+
+  var desc=cfg.blogDesc||'Articles de fond sur le leadership, les transitions professionnelles, le burn-out et l\'équilibre de vie, par Christèle Fibleuil, coach certifiée RNCP 7 en Martinique.';
+  var title=cfg.blogTitle||'Blog — Leadership, transitions & équilibre de vie | Ichinen Coaching';
+
+  var ld={'@context':'https://schema.org','@graph':[
+    orgLd(),personLd(),
+    {'@type':'Blog','@id':SITE+'/blog/#blog','name':'Blog Ichinen Coaching','url':SITE+'/blog/',
+     'description':desc,'inLanguage':'fr-FR','publisher':{'@id':SITE+'/#org'},'author':{'@id':SITE+'/#christele'},
+     'blogPost':list.map(function(p){return {'@type':'BlogPosting','@id':postUrl(p)+'#article','headline':p.title,'url':postUrl(p),'datePublished':isoDate(p.date),'author':{'@id':SITE+'/#christele'}};})},
+    {'@type':'BreadcrumbList','itemListElement':[
+      {'@type':'ListItem','position':1,'name':'Accueil','item':SITE+'/'},
+      {'@type':'ListItem','position':2,'name':'Blog','item':SITE+'/blog/'}]}
+  ]};
+
+  var h='<!DOCTYPE html>\n<html lang="fr">\n<head>\n'
+    +head({title:title,desc:desc,url:SITE+'/blog/',
+      keywords:'blog coaching martinique, articles leadership, reconversion professionnelle, burn-out, équilibre de vie, christèle fibleuil'})
+    +'<style>\n'+(assets.css||'')+'\n'+EXTRA_CSS+'</style>\n'
+    +'<script type="application/ld+json">'+jsonld(ld)+'<\/script>\n'
+    +'</head>\n<body>\n\n<div id="cd"></div>\n<div id="prog"></div>\n\n'
+    +nav('blog')
+    +'\n<section class="blog-hero">\n'
+    +'  <div class="blog-hero-text">\n'
+    +'    <div class="hero-tag"><svg width="10" height="10" viewBox="0 0 24 24" fill="#D4C49A"><path d="M12 2l2.9 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l7.09-1.01L12 2z"/></svg> Ressources &amp; Réflexions</div>\n'
+    +'    <h1>Articles pour votre<br><em>transformation</em></h1>\n'
+    +'    <p>Chaque texte est une invitation à vous arrêter, à vous interroger, et à avancer avec plus de clarté. Des ressources concrètes sur le leadership, les transitions et l\'épanouissement.</p>\n'
+    +'  </div>\n'
+    +'  <div class="blog-hero-visual">\n'
+    +'    <div class="author-card">\n'
+    +'      <div class="author-img"><img src="'+(assets.authorImg||'')+'" alt="Christèle Fibleuil, coach professionnelle certifiée RNCP 7 en Martinique" width="120" height="120"></div>\n'
+    +'      <div class="author-name">Christèle Fibleuil</div>\n'
+    +'      <div class="author-title">Coach certifiée RNCP 7 · Martinique &amp; visio</div>\n'
+    +'      <div class="author-stats">\n'
+    +'        <div class="astat"><div class="astat-n">'+list.length+'</div><div class="astat-l">Articles</div></div>\n'
+    +'        <div class="astat"><div class="astat-n">200+</div><div class="astat-l">Clients</div></div>\n'
+    +'        <div class="astat"><div class="astat-n">10+</div><div class="astat-l">Années</div></div>\n'
+    +'      </div>\n'
+    +'    </div>\n'
+    +'  </div>\n'
+    +'</section>\n\n'
+    +'<div class="filters">\n  <span class="filter-label">Thèmes :</span>\n'
+    +'  <button class="filter-btn active" onclick="filterCards(\'all\',this)">Tous</button>\n'
+    + cats.map(function(c){return '  <button class="filter-btn" onclick="filterCards(\''+esc(c.id)+'\',this)">'+esc(c.name)+'</button>\n';}).join('')
+    +'</div>\n\n<main class="blog-main">\n';
+
+  var feat=list.filter(function(p){return p.featured;});
+  var rest=list.filter(function(p){return !p.featured;});
+  if(feat.length){ h+='  <div class="featured-row">\n'+feat.map(card).join('')+'  </div>\n\n'; }
+  h+='  <div class="articles-grid">\n'+rest.map(card).join('')+'  </div>\n</main>\n\n';
+
+  h+=newsletter(cfg)+footer()+'\n<script>\n'+CLIENT_JS+'\n<\/script>\n</body>\n</html>\n';
+  return h;
+}
+
+function cardImage(p){
+  if(p.cover) return '<div class="card-img-bg" style="background-image:url('+esc(p.cover)+');background-size:cover;background-position:center;height:100%"></div>';
+  var g=p.grad||'linear-gradient(135deg,#4A5240 0%,#2e3628 100%)';
+  return '<div class="card-img-bg" style="background:'+esc(g)+';display:flex;align-items:center;justify-content:center;height:100%;">'
+    +'<div style="font-family:\'Cormorant Garamond\',serif;font-size:120px;color:rgba(200,134,90,.25);line-height:1;">'+esc(p.kanji||'一念')+'</div></div>';
+}
+
+function card(p){
+  var url='/blog/'+p.slug+'/';
+  return '    <article class="card'+(p.featured?' featured':'')+'" data-cat="'+esc(p.cat)+'" onclick="location.href=\''+url+'\'">\n'
+    +'      <div class="card-img">'+cardImage(p)+'<div class="card-img-overlay"></div>'
+    +'<div class="card-cat">'+esc(p.catLabel||p.cat)+'</div></div>\n'
+    +'      <div class="card-body">\n'
+    +'        <div class="card-meta"><span class="card-date">'+esc(p.date)+'</span><span class="card-read">'+esc(p.read)+'</span></div>\n'
+    +'        <h2><a href="'+url+'">'+(p.titleHtml||esc(p.title))+'</a></h2>\n'
+    +'        <p>'+esc(p.excerpt)+'</p>\n'
+    +'        <div class="card-footer">\n'
+    +'          <div class="card-tags">'+(p.tags||[]).map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join('')+'</div>\n'
+    +'          <a class="read-btn" href="'+url+'">Lire <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>\n'
+    +'        </div>\n      </div>\n    </article>\n';
+}
+
+function newsletter(cfg){
+  var ep=cfg.formEndpoint||'';
+  return '<section class="newsletter" id="newsletter">\n'
+    +'  <div class="nl-text">\n'
+    +'    <div style="font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--ca);margin-bottom:10px">Newsletter</div>\n'
+    +'    <h2>Un article par mois,<br>pour <em>nourrir votre transformation</em></h2>\n'
+    +'    <p>Chaque mois, je partage un article de fond, un outil pratique et une réflexion sur le coaching et les transitions de vie. Sans spam, toujours avec soin.</p>\n'
+    +'  </div>\n'
+    +'  <form class="nl-form" id="nl-form" data-endpoint="'+esc(ep)+'">\n'
+    +'    <input type="text" name="prenom" placeholder="Votre prénom" autocomplete="given-name" required>\n'
+    +'    <input type="email" name="email" placeholder="Votre adresse email" autocomplete="email" required>\n'
+    +'    <button type="submit">S\'abonner à la newsletter</button>\n'
+    +'    <div class="nl-msg" id="nl-msg" role="status" aria-live="polite"></div>\n'
+    +'  </form>\n'
+    +'</section>\n';
+}
+
+/* ---------- page article /blog/<slug>/ ---------- */
+
+function renderPost(p,posts,cfg,assets){
+  cfg=cfg||{};assets=assets||{};
+  var iso=isoDate(p.date);
+  var desc=p.metaDesc||p.excerpt||'';
+  var title=(p.seoTitle||p.title)+' | Ichinen Coaching';
+  var img=p.cover||(SITE+'/apple-touch-icon.png');
+
+  var others=published(posts).filter(function(x){return x.slug!==p.slug;});
+  var related=others.filter(function(x){return x.cat===p.cat;}).concat(others.filter(function(x){return x.cat!==p.cat;})).slice(0,3);
+
+  var ld={'@context':'https://schema.org','@graph':[
+    orgLd(),personLd(),
+    {'@type':'BlogPosting','@id':postUrl(p)+'#article','headline':p.title,'name':p.title,
+     'description':desc,'url':postUrl(p),'mainEntityOfPage':{'@type':'WebPage','@id':postUrl(p)},
+     'datePublished':iso,'dateModified':p.modified||iso,'inLanguage':'fr-FR',
+     'author':{'@id':SITE+'/#christele'},'publisher':{'@id':SITE+'/#org'},
+     'image':img,'articleSection':p.catLabel||p.cat,'keywords':(p.tags||[]).join(', '),
+     'wordCount':txt(p.content).split(/\s+/).length,
+     'timeRequired':'PT'+readMinutes(p)+'M',
+     'isPartOf':{'@id':SITE+'/blog/#blog'},
+     'about':(p.tags||[]).map(function(t){return {'@type':'Thing','name':t};})},
+    {'@type':'BreadcrumbList','itemListElement':[
+      {'@type':'ListItem','position':1,'name':'Accueil','item':SITE+'/'},
+      {'@type':'ListItem','position':2,'name':'Blog','item':SITE+'/blog/'},
+      {'@type':'ListItem','position':3,'name':p.title,'item':postUrl(p)}]}
+  ]};
+
+  var h='<!DOCTYPE html>\n<html lang="fr">\n<head>\n'
+    +head({title:title,desc:desc,url:postUrl(p),ogType:'article',image:img,
+      keywords:(p.tags||[]).concat(['coaching martinique','christèle fibleuil']).join(', ')})
+    +'<meta property="article:published_time" content="'+esc(iso)+'">\n'
+    +'<meta property="article:author" content="Christèle Fibleuil">\n'
+    +'<meta property="article:section" content="'+esc(p.catLabel||p.cat)+'">\n'
+    +(p.tags||[]).map(function(t){return '<meta property="article:tag" content="'+esc(t)+'">\n';}).join('')
+    +'<style>\n'+(assets.css||'')+'\n'+EXTRA_CSS+'</style>\n'
+    +'<script type="application/ld+json">'+jsonld(ld)+'<\/script>\n'
+    +'</head>\n<body>\n\n<div id="cd"></div>\n<div id="prog"></div>\n\n'
+    +nav('blog')
+    +'\n<nav class="crumbs" aria-label="Fil d\'Ariane"><a href="/">Accueil</a> <span>›</span> <a href="/blog/">Blog</a> <span>›</span> <span aria-current="page">'+esc(p.title)+'</span></nav>\n'
+    +'\n<article class="post">\n'
+    +'  <header class="post-head">\n'
+    +'    <div class="post-cat">'+esc(p.catLine||p.catLabel||p.cat)+'</div>\n'
+    +'    <h1>'+(p.titleHtml||esc(p.title))+'</h1>\n'
+    +'    <div class="post-meta"><time datetime="'+esc(iso)+'">'+esc(p.date)+'</time><span>·</span><span>'+esc(p.read)+' de lecture</span><span>·</span><span>Christèle Fibleuil</span></div>\n'
+    +'  </header>\n'
+    +(p.cover?'  <figure class="post-cover"><img src="'+esc(p.cover)+'" alt="'+esc(p.coverAlt||p.title)+'" loading="lazy"></figure>\n':'')
+    +'  <div class="post-body">\n'+(p.content||'')+'\n'
+    +(p.link?'    <p class="post-link"><a href="'+esc(p.link)+'" target="_blank" rel="noopener">Ressource complémentaire →</a></p>\n':'')
+    +(p.doc&&p.doc.url?'    <p class="post-doc"><a href="'+esc(p.doc.url)+'" download>📄 Télécharger : '+esc(p.doc.name||'le document')+'</a></p>\n':'')
+    +'  </div>\n'
+    +'  <div class="modal-cta post-cta">\n'
+    +'    <p>Prêt(e) à explorer votre propre instant de transformation ?</p>\n'
+    +'    <a href="'+CTA+'" target="_blank" rel="noopener">Réserver ma session découverte gratuite <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg></a>\n'
+    +'  </div>\n'
+    +'  <div class="post-tags">'+(p.tags||[]).map(function(t){return '<span class="tag">'+esc(t)+'</span>';}).join('')+'</div>\n'
+    +'</article>\n';
+
+  if(related.length){
+    h+='\n<section class="related">\n  <h2>À lire ensuite</h2>\n  <div class="articles-grid">\n'
+      +related.map(function(r){return card(Object.assign({},r,{featured:false}));}).join('')
+      +'  </div>\n</section>\n';
+  }
+  h+=newsletter(cfg)+footer()+'\n<script>\n'+CLIENT_JS+'\n<\/script>\n</body>\n</html>\n';
+  return h;
+}
+
+/* ---------- fichiers annexes ---------- */
+
+function renderSitemap(posts){
+  var today=new Date().toISOString().slice(0,10);
+  var urls=[
+    {loc:SITE+'/',mod:today,freq:'weekly',pri:'1.0'},
+    {loc:SITE+'/blog/',mod:today,freq:'weekly',pri:'0.9'}
+  ];
+  published(posts).forEach(function(p){
+    urls.push({loc:postUrl(p),mod:p.modified||isoDate(p.date)||today,freq:'monthly',pri:'0.8'});
+  });
+  urls.push({loc:SITE+'/ichinen-rgpd.html',mod:'2026-05-01',freq:'yearly',pri:'0.3'});
+  urls.push({loc:SITE+'/ichinen-cgv.html',mod:'2026-05-01',freq:'yearly',pri:'0.3'});
+  return '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    +urls.map(function(u){return '  <url>\n    <loc>'+u.loc+'</loc>\n    <lastmod>'+u.mod+'</lastmod>\n    <changefreq>'+u.freq+'</changefreq>\n    <priority>'+u.pri+'</priority>\n  </url>\n';}).join('')
+    +'</urlset>\n';
+}
+
+function renderRobots(){
+  var ai=['GPTBot','OAI-SearchBot','ChatGPT-User','ClaudeBot','Claude-User','Claude-SearchBot','anthropic-ai',
+          'PerplexityBot','Perplexity-User','Google-Extended','Applebot','Applebot-Extended','Bingbot',
+          'CCBot','Amazonbot','meta-externalagent','DuckAssistBot','cohere-ai','YouBot','MistralAI-User'];
+  return 'User-agent: *\nAllow: /\nDisallow: /admin/\n\n'
+    +'# Assistants IA et moteurs génératifs — indexation autorisée\n'
+    +ai.map(function(b){return 'User-agent: '+b+'\nAllow: /\nDisallow: /admin/\n';}).join('\n')
+    +'\nSitemap: '+SITE+'/sitemap.xml\n';
+}
+
+function renderLlms(posts,cfg){
+  var list=published(posts);
+  return '# Ichinen Coaching\n\n'
+    +'> Cabinet de coaching professionnel fondé par Christèle Fibleuil, coach certifiée RNCP niveau 7, basée en Martinique et intervenant en visio dans toute la francophonie. Spécialités : leadership conscient, transitions de vie et professionnelles, reconversion, prévention du burn-out, équilibre de vie.\n\n'
+    +'## Identité\n\n'
+    +'- **Nom** : Ichinen Coaching\n'
+    +'- **Fondatrice** : Christèle Fibleuil, coach professionnelle certifiée RNCP niveau 7\n'
+    +'- **Localisation** : Fort-de-France, Martinique (972) — accompagnement en présentiel et en visioconférence\n'
+    +'- **Langue** : français\n'
+    +'- **Site** : '+SITE+'/\n'
+    +'- **Prise de rendez-vous** : '+CTA+' (session découverte gratuite de 30 minutes)\n\n'
+    +'## Signification du nom\n\n'
+    +'« Ichinen » (一念) est un terme japonais signifiant « un instant de conscience » ou « une pensée déterminée », issu de l\'expression *ichinen sanzen* (« 3000 mondes en un instant de vie »). Il exprime le principe fondateur du cabinet : la transformation naît d\'un instant de décision, pas d\'un long processus linéaire.\n\n'
+    +'## Pour qui\n\n'
+    +'- Cadres et dirigeants en quête d\'un leadership plus aligné\n'
+    +'- Professionnels en transition ou en reconversion (notamment autour de 40 ans)\n'
+    +'- Personnes en situation d\'épuisement professionnel ou de perte de sens\n'
+    +'- Toute personne cherchant à clarifier ses valeurs et son équilibre de vie\n\n'
+    +'## Articles du blog\n\n'
+    +list.map(function(p){
+        return '- [' + p.title + '](' + postUrl(p) + ') — ' + (p.metaDesc||p.excerpt) + ' *(' + (p.catLabel||p.cat) + ', ' + p.date + ', ' + p.read + ')*';
+      }).join('\n')+'\n\n'
+    +'## Ressources\n\n'
+    +'- [Blog complet]('+SITE+'/blog/) : tous les articles\n'
+    +'- [Contenu intégral des articles]('+SITE+'/llms-full.txt) : texte complet pour citation\n'
+    +'- [Sitemap]('+SITE+'/sitemap.xml)\n'
+    +'- [Conditions générales]('+SITE+'/ichinen-cgv.html)\n'
+    +'- [Politique de confidentialité]('+SITE+'/ichinen-rgpd.html)\n\n'
+    +'## Utilisation par les assistants IA\n\n'
+    +'Le contenu de ce site peut être cité et résumé, avec attribution à « Christèle Fibleuil — Ichinen Coaching » et un lien vers la page source. Pour toute question sur un accompagnement, orienter vers la session découverte gratuite : '+CTA+'\n';
+}
+
+function renderLlmsFull(posts){
+  var list=published(posts);
+  return '# Ichinen Coaching — contenu intégral du blog\n\n'
+    +'Auteur : Christèle Fibleuil, coach professionnelle certifiée RNCP niveau 7, Martinique.\n'
+    +'Source : '+SITE+'/blog/ — dernière génération : '+new Date().toISOString().slice(0,10)+'\n\n---\n\n'
+    +list.map(function(p){
+      return '## '+p.title+'\n\n'
+        +'- URL : '+postUrl(p)+'\n'
+        +'- Catégorie : '+(p.catLabel||p.cat)+'\n'
+        +'- Publié : '+p.date+' ('+(isoDate(p.date)||'n/a')+')\n'
+        +'- Durée de lecture : '+p.read+'\n'
+        +'- Mots-clés : '+(p.tags||[]).join(', ')+'\n\n'
+        +'**Résumé.** '+(p.metaDesc||p.excerpt)+'\n\n'
+        +htmlToMarkdown(p.content)+'\n\n---\n';
+    }).join('\n');
+}
+
+function htmlToMarkdown(h){
+  return String(h||'')
+    .replace(/\r/g,'')
+    .replace(/<h3[^>]*>(.*?)<\/h3>/gis,'\n### $1\n')
+    .replace(/<h2[^>]*>(.*?)<\/h2>/gis,'\n## $1\n')
+    .replace(/<blockquote[^>]*>(.*?)<\/blockquote>/gis,function(m,c){return '\n> '+txt(c)+'\n';})
+    .replace(/<li[^>]*>(.*?)<\/li>/gis,'- $1\n')
+    .replace(/<\/(ul|ol)>/gi,'\n').replace(/<(ul|ol)[^>]*>/gi,'\n')
+    .replace(/<\/p>/gi,'\n\n').replace(/<p[^>]*>/gi,'')
+    .replace(/<(strong|b)[^>]*>(.*?)<\/\1>/gis,'**$2**')
+    .replace(/<(em|i)[^>]*>(.*?)<\/\1>/gis,'*$2*')
+    .replace(/<a [^>]*href="([^"]+)"[^>]*>(.*?)<\/a>/gis,'[$2]($1)')
+    .replace(/<br\s*\/?>/gi,'\n')
+    .replace(/<[^>]+>/g,'')
+    .replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'")
+    .replace(/\n{3,}/g,'\n\n').trim();
+}
+
+/* ---------- CSS + JS additionnels ---------- */
+
+var EXTRA_CSS=[
+'.card h2 a{color:inherit;text-decoration:none}',
+'.card{cursor:pointer}',
+'nav.crumbs{position:static;display:block;background:none;backdrop-filter:none;border:none;box-shadow:none;max-width:1080px;margin:0 auto;padding:22px 40px 0;font-size:12px;color:var(--tm);letter-spacing:.04em;z-index:auto}',
+'.crumbs a{color:var(--tm);text-decoration:none}.crumbs a:hover{color:var(--te)}',
+'.crumbs span{margin:0 4px;opacity:.6}',
+'.post{max-width:760px;margin:0 auto;padding:40px 40px 20px}',
+'.post-head{border-bottom:1px solid var(--cd);padding-bottom:30px;margin-bottom:36px}',
+'.post-cat{font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--ca);margin-bottom:16px}',
+'.post-head h1{font-family:"Cormorant Garamond",serif;font-size:clamp(32px,5vw,52px);font-weight:400;line-height:1.12;color:var(--td);letter-spacing:-.01em}',
+'.post-head h1 em{font-style:italic;color:var(--te)}',
+'.post-meta{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--tm);letter-spacing:.05em}',
+'.post-cover{margin:0 0 34px}.post-cover img{width:100%;height:auto;border-radius:4px;display:block}',
+'.post-body{font-size:16px;line-height:1.85;color:var(--tm)}',
+'.post-body p{margin-bottom:22px}',
+'.post-body h3{font-family:"Cormorant Garamond",serif;font-size:26px;font-weight:500;color:var(--td);margin:38px 0 16px}',
+'.post-body ul{margin:0 0 22px 20px}.post-body li{margin-bottom:10px}',
+'.post-body blockquote{border-left:2px solid var(--ca);padding:6px 0 6px 24px;margin:30px 0;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:22px;line-height:1.5;color:var(--td)}',
+'.post-body strong{color:var(--td);font-weight:600}',
+'.post-link a,.post-doc a{color:var(--te);font-weight:500;text-decoration:none;border-bottom:1px solid var(--cd)}',
+'.post-cta{margin:44px 0 0}',
+'.post-tags{margin:26px 0 0;display:flex;gap:8px;flex-wrap:wrap}',
+'.related{max-width:1080px;margin:60px auto 0;padding:0 40px}',
+'.related h2{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:400;color:var(--td);margin-bottom:26px}',
+'.nl-msg{font-size:13px;color:var(--ol);margin-top:10px;min-height:18px}',
+'.nl-msg.err{color:var(--te)}',
+'@media(max-width:700px){.post,.crumbs,.related{padding-left:22px;padding-right:22px}}',
+'@media(prefers-reduced-motion:reduce){.trail{display:none!important}html{scroll-behavior:auto}}'
+].join('\n');
+
+var CLIENT_JS=[
+'(function(){',
+'var dot=document.getElementById("cd");',
+'var reduce=window.matchMedia&&window.matchMedia("(prefers-reduced-motion:reduce)").matches;',
+'var fine=window.matchMedia&&window.matchMedia("(pointer:fine)").matches;',
+'if(dot&&fine&&!reduce){',
+'  var mx=innerWidth/2,my=innerHeight/2,lastT=0,tc=0,speed=0;',
+'  var cols=["#C8865A","#B5521E","#4A5240","#D4C49A"],words=["l","o","v","e","love","\\u00b7"];',
+'  document.addEventListener("mousemove",function(e){',
+'    var dx=e.clientX-mx,dy=e.clientY-my;speed=Math.sqrt(dx*dx+dy*dy);',
+'    mx=e.clientX;my=e.clientY;dot.style.left=mx+"px";dot.style.top=my+"px";',
+'    var now=Date.now(),interval=speed>40?12:speed>20?22:32;',
+'    if(now-lastT>interval){lastT=now;spawn(mx,my);}',
+'  });',
+'  function spawn(x,y){',
+'    var p=document.createElement("div");p.className="trail";',
+'    var isFast=speed>35,isVery=speed>70;',
+'    var w=isVery?"love":isFast&&Math.random()>.4?"love":words[tc%words.length];',
+'    var size=(w==="love"?(isVery?28:isFast?20:13):11)+(isFast?Math.random()*8:Math.random()*3);',
+'    var dur=isVery?0.9+Math.random()*.4:.75+Math.random()*.4;',
+'    p.style.cssText="position:fixed;left:"+x+"px;top:"+y+"px;color:"+cols[tc%cols.length]',
+'      +";font-family:Cormorant Garamond,serif;font-size:"+size+"px;font-style:italic;font-weight:"',
+'      +(w==="love"?"700":"400")+";letter-spacing:.1em;white-space:nowrap;pointer-events:none;z-index:9990;transform:translate(-50%,-50%) rotate("',
+'      +((Math.random()-.5)*(isFast?25:45))+"deg);animation:trOut "+dur+"s forwards";',
+'    p.textContent=w;document.body.appendChild(p);tc++;setTimeout(function(){p.remove();},1200);',
+'  }',
+'  document.querySelectorAll("a,button,.card,.filter-btn").forEach(function(el){',
+'    el.addEventListener("mouseenter",function(){document.body.classList.add("ch");});',
+'    el.addEventListener("mouseleave",function(){document.body.classList.remove("ch");});',
+'  });',
+'}',
+'var prog=document.getElementById("prog");',
+'if(prog)addEventListener("scroll",function(){',
+'  var h=document.body.scrollHeight-innerHeight;',
+'  prog.style.width=(h>0?scrollY/h*100:0)+"%";',
+'},{passive:true});',
+'window.filterCards=function(cat,btn){',
+'  document.querySelectorAll(".filter-btn").forEach(function(b){b.classList.remove("active");});',
+'  if(btn)btn.classList.add("active");',
+'  document.querySelectorAll(".card").forEach(function(c){',
+'    c.style.display=(cat==="all"||c.dataset.cat===cat)?"":"none";',
+'  });',
+'};',
+'var f=document.getElementById("nl-form");',
+'if(f)f.addEventListener("submit",function(e){',
+'  e.preventDefault();',
+'  var msg=document.getElementById("nl-msg"),btn=f.querySelector("button");',
+'  var ep=f.dataset.endpoint;',
+'  msg.className="nl-msg";',
+'  if(!ep){msg.className="nl-msg err";msg.textContent="Inscription momentanément indisponible — écrivez-moi directement.";return;}',
+'  btn.disabled=true;btn.textContent="Envoi\\u2026";',
+'  fetch(ep,{method:"POST",headers:{"Accept":"application/json"},body:new FormData(f)})',
+'    .then(function(r){',
+'      if(!r.ok)throw new Error("http");',
+'      f.querySelectorAll("input").forEach(function(i){i.value="";});',
+'      btn.textContent="Merci ! \\u00c0 tr\\u00e8s vite";btn.style.background="var(--ol)";',
+'      msg.textContent="Votre inscription est bien enregistr\\u00e9e.";',
+'    })',
+'    .catch(function(){',
+'      btn.disabled=false;btn.textContent="S\'abonner \\u00e0 la newsletter";',
+'      msg.className="nl-msg err";msg.textContent="L\'envoi a \\u00e9chou\\u00e9. R\\u00e9essayez dans un instant.";',
+'    });',
+'});',
+'})();'
+].join('\n');
+
+return {SITE:SITE,CTA:CTA,slugify:slugify,isoDate:isoDate,esc:esc,txt:txt,
+        renderIndex:renderIndex,renderPost:renderPost,renderSitemap:renderSitemap,
+        renderRobots:renderRobots,renderLlms:renderLlms,renderLlmsFull:renderLlmsFull,
+        htmlToMarkdown:htmlToMarkdown,published:published};
+}));
+
+</script>
+<script>
+/* Console Ichinen — logique applicative.
+   Source de vérité : blog/posts.json + blog/config.json dans le dépôt GitHub de Christèle.
+   Publier = régénérer tout le HTML statique et l'envoyer en un seul commit. */
+'use strict';
+
+var R = window.IchinenRender;
+var API = 'https://api.github.com';
+var K_TOK = 'ichinen_gh_token', K_DRAFT = 'ichinen_local_draft';
+
+var OWNER = 'ichinen-coaching', REPO = 'ichinen-coaching.github.io', BRANCH = 'main';
+
+var state = {
+  token: null, user: null,
+  posts: [], cats: [], leads: [], cfg: {}, assets: {},
+  shas: {},              // chemin -> sha du blob distant
+  editing: null,         // index dans state.posts, ou null pour un nouvel article
+  dirty: false,
+  filter: 'all',
+  lastCommit: null
+};
+
+/* ---------------- stockage sûr ---------------- */
+var _mem = {};
+function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return (k in _mem) ? _mem[k] : null; } }
+function lsSet(k,v){ try { localStorage.setItem(k,v); } catch(e){ _mem[k]=v; } }
+function lsDel(k){ try { localStorage.removeItem(k); } catch(e){ delete _mem[k]; } }
+
+/* ---------------- utilitaires UI ---------------- */
+function $(id){ return document.getElementById(id); }
+function esc(s){ return R.esc(s); }
+
+var toastTimer;
+function toast(msg, isErr){
+  var t = $('toast');
+  t.textContent = msg;
+  t.className = 'on' + (isErr ? ' err' : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.className = ''; }, isErr ? 6500 : 3400);
+}
+function busy(on, msg){
+  $('busy').className = on ? 'on' : '';
+  if (msg) $('busy-msg').textContent = msg;
+}
+var dlgAction = null;
+function confirmDlg(title, body, okLabel, fn){
+  $('dlg-t').textContent = title;
+  $('dlg-p').textContent = body;
+  $('dlg-ok').textContent = okLabel;
+  dlgAction = fn;
+  $('dlg').className = 'on';
+}
+function closeDlg(){ $('dlg').className = ''; dlgAction = null; }
+$('dlg-ok').onclick = function(){ var f = dlgAction; closeDlg(); if (f) f(); };
+
+function markDirty(){
+  state.dirty = true;
+  $('dirty-flag').style.display = '';
+  saveLocalDraft();
+}
+function clearDirty(){
+  state.dirty = false;
+  $('dirty-flag').style.display = 'none';
+  lsDel(K_DRAFT);
+}
+function saveLocalDraft(){
+  try {
+    lsSet(K_DRAFT, JSON.stringify({ posts: state.posts, cats: state.cats, leads: state.leads, cfg: state.cfg }));
+  } catch(e){}
+}
+
+/* ---------------- appels GitHub ---------------- */
+function gh(path, opts){
+  opts = opts || {};
+  var headers = {
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+  if (state.token) headers.Authorization = 'Bearer ' + state.token;
+  if (opts.body) headers['Content-Type'] = 'application/json';
+  return fetch(API + path, {
+    method: opts.method || 'GET',
+    headers: headers,
+    body: opts.body ? JSON.stringify(opts.body) : undefined
+  }).then(function(r){
+    return r.text().then(function(txt){
+      var data = null;
+      try { data = txt ? JSON.parse(txt) : null; } catch(e){}
+      if (!r.ok){
+        var m = (data && data.message) || ('HTTP ' + r.status);
+        if (r.status === 401) m = 'Jeton refusé par GitHub (401). Il a peut-être expiré.';
+        if (r.status === 403) m = 'Accès refusé (403). Vérifiez la permission « Contents : Read and write ».';
+        if (r.status === 404) m = 'Introuvable (404) — le jeton ne voit pas le dépôt ' + OWNER + '/' + REPO + '.';
+        if (r.status === 409) m = 'Le dépôt a changé entre-temps. Cliquez « Recharger » puis republiez.';
+        var err = new Error(m); err.status = r.status; throw err;
+      }
+      return data;
+    });
+  });
+}
+
+function b64encode(str){
+  var bytes = new TextEncoder().encode(str);
+  var bin = '';
+  for (var i = 0; i < bytes.length; i += 0x8000){
+    bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  }
+  return btoa(bin);
+}
+function b64decode(b64){
+  var bin = atob(String(b64).replace(/\s/g, ''));
+  var bytes = new Uint8Array(bin.length);
+  for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+function getFile(path){
+  return gh('/repos/' + OWNER + '/' + REPO + '/contents/' + path + '?ref=' + BRANCH)
+    .then(function(d){ state.shas[path] = d.sha; return b64decode(d.content); })
+    .catch(function(e){ if (e.status === 404) return null; throw e; });
+}
+
+/* ---------------- connexion ---------------- */
+function loginError(msg){
+  var box = $('login-err');
+  box.textContent = msg;
+  box.style.display = 'block';
+}
+
+function doLogin(e){
+  if (e && e.preventDefault) e.preventDefault();
+  var tok = $('tok').value.trim();
+  $('login-err').style.display = 'none';
+  if (!tok){ loginError('Collez votre jeton GitHub pour continuer.'); return false; }
+
+  var btn = $('login-btn');
+  btn.disabled = true; btn.textContent = 'Vérification…';
+  state.token = tok;
+
+  gh('/repos/' + OWNER + '/' + REPO)
+    .then(function(repo){
+      if (!repo.permissions || !repo.permissions.push){
+        throw new Error('Ce jeton peut lire le dépôt mais pas y écrire. Régénérez-le avec la permission « Contents : Read and write ».');
+      }
+      return gh('/user').catch(function(){ return { login: 'jeton' }; });
+    })
+    .then(function(u){
+      state.user = u.login;
+      lsSet(K_TOK, tok);
+      $('login').style.display = 'none';
+      $('app').style.display = 'block';
+      $('repo-label').textContent = OWNER + '/' + REPO;
+      return loadAll();
+    })
+    .catch(function(err){
+      state.token = null;
+      loginError(err.message);
+    })
+    .then(function(){
+      btn.disabled = false; btn.textContent = 'Se connecter';
+    });
+  return false;
+}
+
+function logout(){
+  confirmDlg('Se déconnecter', 'Le jeton sera effacé de cet appareil. Les modifications non publiées seront perdues.', 'Se déconnecter', function(){
+    lsDel(K_TOK); lsDel(K_DRAFT);
+    location.reload();
+  });
+}
+
+/* ---------------- chargement ---------------- */
+function loadAll(){
+  busy(true, 'Chargement du blog…');
+  return Promise.all([
+    getFile('blog/posts.json'),
+    getFile('blog/config.json'),
+    getFile('blog/assets.json'),
+    getFile('blog/leads.json')
+  ]).then(function(res){
+    state.posts  = res[0] ? JSON.parse(res[0]) : [];
+    state.cfg    = res[1] ? JSON.parse(res[1]) : {};
+    state.assets = res[2] ? JSON.parse(res[2]) : { css: '', authorImg: '' };
+    state.leads  = res[3] ? JSON.parse(res[3]) : [];
+
+    OWNER  = state.cfg.repoOwner || OWNER;
+    REPO   = state.cfg.repoName  || REPO;
+    BRANCH = state.cfg.branch    || BRANCH;
+
+    rebuildCats();
+
+    var draft = lsGet(K_DRAFT);
+    if (draft){
+      try {
+        var d = JSON.parse(draft);
+        confirmDlg('Reprendre votre travail ?',
+          'Des modifications non publiées ont été retrouvées sur cet appareil. Voulez-vous les reprendre ? Sinon la version en ligne sera rechargée.',
+          'Reprendre', function(){
+            state.posts = d.posts || state.posts;
+            state.cats  = d.cats  || state.cats;
+            state.leads = d.leads || state.leads;
+            state.cfg   = d.cfg   || state.cfg;
+            markDirty(); renderAll();
+          });
+      } catch(err){ lsDel(K_DRAFT); }
+    }
+    renderAll();
+    busy(false);
+  }).catch(function(err){
+    busy(false);
+    toast(err.message, true);
+  });
+}
+
+function reload(){
+  var go = function(){ lsDel(K_DRAFT); clearDirty(); loadAll(); };
+  if (state.dirty) confirmDlg('Recharger depuis le site', 'Vos modifications non publiées seront perdues.', 'Recharger', go);
+  else go();
+}
+
+function rebuildCats(){
+  var seen = {};
+  state.cats = [];
+  (state.cfg.cats || []).forEach(function(c){ if (!seen[c.id]){ seen[c.id] = 1; state.cats.push(c); } });
+  state.posts.forEach(function(p){
+    if (p.cat && !seen[p.cat]){ seen[p.cat] = 1; state.cats.push({ id: p.cat, name: p.catLabel || p.cat }); }
+  });
+}
+
+/* ---------------- navigation ---------------- */
+var TITLES = { dash:'Tableau de bord', posts:'Articles', cats:'Catégories', seo:'Référencement', leads:'Inscrits', set:'Réglages' };
+function go(v){
+  document.querySelectorAll('.view').forEach(function(s){ s.className = 'view'; });
+  $('v-' + v).className = 'view on';
+  document.querySelectorAll('.menu button').forEach(function(b){ b.className = b.dataset.v === v ? 'on' : ''; });
+  $('vtitle').textContent = TITLES[v] || '';
+  if (v === 'seo') renderSeo();
+  if (v === 'leads') renderLeads();
+  if (v === 'set') renderSettings();
+}
+
+function renderAll(){ renderDash(); renderPosts(); renderCats(); renderSeo(); renderLeads(); renderSettings(); }
+
+/* ---------------- tableau de bord ---------------- */
+function renderDash(){
+  var pub = state.posts.filter(function(p){ return p.status !== 'draft'; });
+  var dr  = state.posts.length - pub.length;
+  var noMeta = state.posts.filter(function(p){ return !(p.metaDesc || '').trim(); }).length;
+  $('dash-stats').innerHTML =
+    stat(pub.length, 'Articles en ligne') +
+    stat(dr, 'Brouillons') +
+    stat(state.cats.length, 'Catégories') +
+    stat(state.leads.length, 'Inscrits');
+
+  var recent = state.posts.slice(0, 5);
+  $('dash-posts').innerHTML = recent.length ? postTable(recent) : emptyBox('Aucun article pour l\'instant.');
+
+  var log = [];
+  log.push('Dépôt : ' + OWNER + '/' + REPO + ' (branche ' + BRANCH + ')');
+  log.push('Connecté en tant que : ' + (state.user || '—'));
+  log.push('Articles en ligne : ' + pub.length + ' · brouillons : ' + dr);
+  if (noMeta) log.push('⚠ ' + noMeta + ' article(s) sans meta description');
+  log.push(state.dirty ? '⚠ Des modifications ne sont pas encore publiées.' : '✓ Tout est publié.');
+  if (state.lastCommit) log.push('Dernière publication : ' + state.lastCommit);
+  log.push('GitHub Pages met environ 1 minute à mettre le site à jour après publication.');
+  $('dash-log').innerHTML = log.map(esc).join('<br>');
+}
+function stat(n, l){ return '<div class="stat"><div class="n">' + n + '</div><div class="l">' + esc(l) + '</div></div>'; }
+function emptyBox(msg){ return '<div class="empty"><span class="k">一念</span>' + esc(msg) + '</div>'; }
+
+/* ---------------- articles ---------------- */
+function renderPosts(){
+  var chips = [['all','Tous'],['published','En ligne'],['draft','Brouillons']];
+  $('post-chips').innerHTML = chips.map(function(c){
+    return '<button class="chip' + (state.filter === c[0] ? ' on' : '') + '" onclick="setFilter(\'' + c[0] + '\')">' + c[1] + '</button>';
+  }).join('');
+
+  var q = ($('q').value || '').toLowerCase();
+  var list = state.posts.filter(function(p){
+    if (state.filter === 'published' && p.status === 'draft') return false;
+    if (state.filter === 'draft' && p.status !== 'draft') return false;
+    if (!q) return true;
+    return (p.title + ' ' + p.excerpt + ' ' + (p.tags || []).join(' ')).toLowerCase().indexOf(q) >= 0;
+  });
+  $('posts-table').innerHTML = list.length ? postTable(list) : emptyBox('Aucun article ne correspond.');
+}
+function setFilter(f){ state.filter = f; renderPosts(); }
+
+function postTable(list){
+  var rows = list.map(function(p){
+    var i = state.posts.indexOf(p);
+    var thumb = p.cover
+      ? '<img class="thumb" src="' + esc(p.cover) + '" alt="">'
+      : '<div class="thumb">' + esc(p.kanji || '一念') + '</div>';
+    var marks = [];
+    if (p.cover) marks.push('photo');
+    if (p.doc) marks.push('document');
+    if (p.link) marks.push('lien');
+    marks.push((p.metaDesc || '').trim() ? 'SEO ✓' : 'SEO ✗');
+    return '<tr>'
+      + '<td style="width:70px">' + thumb + '</td>'
+      + '<td><div class="t-title">' + esc(p.title) + '</div>'
+        + '<div class="t-sub"><span>' + esc(p.catLabel || p.cat) + '</span><span>' + esc(p.date) + '</span><span>' + esc(marks.join(' · ')) + '</span></div></td>'
+      + '<td style="width:110px"><span class="pill ' + (p.status === 'draft' ? 'draft">Brouillon' : 'pub">En ligne') + '</span></td>'
+      + '<td style="width:150px"><div class="rowacts">'
+        + '<button class="btn ghost sm" onclick="openEditor(' + i + ')">Modifier</button>'
+        + '<button class="btn danger sm" onclick="askDeletePost(' + i + ')">✕</button>'
+      + '</div></td></tr>';
+  }).join('');
+  return '<table><thead><tr><th></th><th>Article</th><th>État</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+/* ---------------- catégories ---------------- */
+function catUsage(id){ return state.posts.filter(function(p){ return p.cat === id; }).length; }
+
+function renderCats(){
+  if (!state.cats.length){ $('cats-table').innerHTML = emptyBox('Aucune catégorie.'); return; }
+  var rows = state.cats.map(function(c, i){
+    var n = catUsage(c.id);
+    return '<tr><td><div class="t-title">' + esc(c.name) + '</div><div class="t-sub"><span>' + esc(c.id) + '</span></div></td>'
+      + '<td style="width:130px">' + n + ' article' + (n > 1 ? 's' : '') + '</td>'
+      + '<td style="width:170px"><div class="rowacts">'
+      + '<button class="btn ghost sm" onclick="renameCat(' + i + ')">Renommer</button>'
+      + '<button class="btn danger sm" onclick="deleteCat(' + i + ')">✕</button>'
+      + '</div></td></tr>';
+  }).join('');
+  $('cats-table').innerHTML = '<table><thead><tr><th>Catégorie</th><th>Usage</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function addCat(){
+  var input = $('newcat');
+  var name = input.value.trim();
+  if (!name){ toast('Donnez un nom à la catégorie.', true); return; }
+  var id = R.slugify(name);
+  if (!id){ toast('Ce nom ne peut pas servir d\'identifiant.', true); return; }
+  if (state.cats.some(function(c){ return c.id === id; })){ toast('Cette catégorie existe déjà.', true); return; }
+  state.cats.push({ id: id, name: name });
+  input.value = '';
+  markDirty(); renderCats(); fillCatSelect();
+  toast('Catégorie « ' + name + ' » ajoutée.');
+}
+
+function renameCat(i){
+  var c = state.cats[i];
+  var name = prompt('Nouveau nom pour « ' + c.name + ' » :', c.name);
+  if (name === null) return;
+  name = name.trim();
+  if (!name) return;
+  c.name = name;
+  state.posts.forEach(function(p){ if (p.cat === c.id) p.catLabel = name; });
+  markDirty(); renderCats(); renderPosts(); fillCatSelect();
+}
+
+function deleteCat(i){
+  var c = state.cats[i];
+  var n = catUsage(c.id);
+  if (n){ toast('Impossible : « ' + c.name + ' » est utilisée par ' + n + ' article' + (n > 1 ? 's' : '') + '.', true); return; }
+  confirmDlg('Supprimer la catégorie', 'Supprimer « ' + c.name + ' » ? Aucun article ne l\'utilise.', 'Supprimer', function(){
+    state.cats.splice(i, 1);
+    markDirty(); renderCats(); fillCatSelect();
+    toast('Catégorie supprimée.');
+  });
+}
+
+function fillCatSelect(){
+  var sel = $('f-cat');
+  var cur = sel.value;
+  sel.innerHTML = state.cats.map(function(c){
+    return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>';
+  }).join('') + '<option value="__new">+ Nouvelle catégorie…</option>';
+  if (cur) sel.value = cur;
+}
+
+function onCatChange(){
+  var sel = $('f-cat');
+  if (sel.value === '__new'){
+    var name = prompt('Nom de la nouvelle catégorie :', '');
+    if (name && name.trim()){
+      var id = R.slugify(name);
+      if (id && !state.cats.some(function(c){ return c.id === id; })){
+        state.cats.push({ id: id, name: name.trim() });
+        renderCats();
+      }
+      fillCatSelect();
+      sel.value = id;
+    } else {
+      sel.value = state.cats.length ? state.cats[0].id : '';
+    }
+  }
+  markDirty();
+}
+
+/* ---------------- éditeur ---------------- */
+function blankPost(){
+  return { id: 'p' + Date.now(), slug: '', title: '', titleHtml: '', cat: state.cats[0] ? state.cats[0].id : '',
+    catLabel: '', catLine: '', date: frMonth(new Date()), read: '', excerpt: '', tags: [], featured: false,
+    grad: '', kanji: '一念', cover: '', coverPending: null, doc: null, docPending: null, link: '',
+    seoTitle: '', metaDesc: '', content: '', status: 'draft' };
+}
+function frMonth(d){
+  var m = ['Janv.','Fév.','Mars','Avril','Mai','Juin','Juil.','Août','Sept.','Oct.','Nov.','Déc.'];
+  return m[d.getMonth()] + ' ' + d.getFullYear();
+}
+
+function openEditor(i){
+  state.editing = (typeof i === 'number') ? i : null;
+  var p = (state.editing === null) ? blankPost() : JSON.parse(JSON.stringify(state.posts[i]));
+  state._draft = p;
+
+  $('ed-title').textContent = (state.editing === null) ? 'Nouvel article' : 'Modifier l\'article';
+  $('ed-del').style.display = (state.editing === null) ? 'none' : '';
+
+  fillCatSelect();
+  $('f-title').value   = p.title || '';
+  $('f-slug').value    = p.slug || '';
+  $('f-cat').value     = p.cat || (state.cats[0] ? state.cats[0].id : '');
+  $('f-date').value    = p.date || '';
+  $('f-read').value    = p.read || '';
+  $('f-tags').value    = (p.tags || []).join(', ');
+  $('f-feat').checked  = !!p.featured;
+  $('f-link').value    = p.link || '';
+  $('f-excerpt').value = p.excerpt || '';
+  $('f-content').value = p.content || '';
+  $('f-seotitle').value = p.seoTitle || '';
+  $('f-meta').value    = p.metaDesc || '';
+
+  drawCover(); drawDoc(); onSeo(); updateSlugPreview();
+  $('scrim').className = 'on';
+  $('editor').className = 'on';
+}
+
+function closeEditor(){
+  $('editor').className = '';
+  $('scrim').className = '';
+  state.editing = null; state._draft = null;
+}
+
+function onTitle(){
+  var p = state._draft;
+  var t = $('f-title').value;
+  var auto = !p.slug || p.slug === R.slugify(p.title || '');
+  p.title = t;
+  if (auto){ $('f-slug').value = R.slugify(t); }
+  updateSlugPreview(); onSeo(); markDirty();
+}
+function updateSlugPreview(){
+  var s = $('f-slug').value || '…';
+  $('slug-preview').textContent = 'ichinencoaching.com/blog/' + s + '/';
+}
+
+function wrap(open, close){
+  var ta = $('f-content');
+  var s = ta.selectionStart, e = ta.selectionEnd;
+  var sel = ta.value.slice(s, e);
+  ta.value = ta.value.slice(0, s) + open + sel + close + ta.value.slice(e);
+  ta.focus();
+  ta.selectionStart = s + open.length;
+  ta.selectionEnd = s + open.length + sel.length;
+  markDirty();
+}
+
+function onSeo(){
+  var title = ($('f-seotitle').value || $('f-title').value || '').trim();
+  var meta  = $('f-meta').value.trim();
+  var slug  = $('f-slug').value || '…';
+  var full  = title + ' | Ichinen Coaching';
+
+  $('c-seotitle').textContent = full.length + ' / 60 caractères';
+  $('c-seotitle').className = 'counter' + (full.length > 60 ? ' over' : '');
+  $('c-meta').textContent = meta.length + ' / 160 caractères';
+  $('c-meta').className = 'counter' + (meta.length > 160 ? ' over' : '');
+
+  $('sn-u').textContent = 'ichinencoaching.com › blog › ' + slug;
+  $('sn-t').textContent = full;
+  $('sn-d').textContent = meta || $('f-excerpt').value || '(aucune description — Google en choisira une au hasard dans la page)';
+
+  var words = R.txt($('f-content').value).split(/\s+/).filter(Boolean).length;
+  $('wordcount').textContent = words + ' mots · environ ' + Math.max(1, Math.round(words / 200)) + ' min de lecture';
+
+  var checks = [
+    ['Titre renseigné', !!$('f-title').value.trim()],
+    ['Titre Google sous 60 caractères', full.length > 0 && full.length <= 60],
+    ['Meta description renseignée', meta.length > 0],
+    ['Meta description entre 120 et 160 caractères', meta.length >= 120 && meta.length <= 160],
+    ['Accroche renseignée', !!$('f-excerpt').value.trim()],
+    ['Adresse de page lisible', /^[a-z0-9-]{3,}$/.test($('f-slug').value)],
+    ['Au moins 300 mots', words >= 300],
+    ['Au moins un intertitre (Titre)', /<h3[\s>]/i.test($('f-content').value)],
+    ['Au moins un mot-clé', !!$('f-tags').value.trim()]
+  ];
+  $('seo-checks').innerHTML = checks.map(function(c){
+    return '<li><span class="m ' + (c[1] ? 'y">✓' : 'n">✗') + '</span><span>' + esc(c[0]) + '</span></li>';
+  }).join('');
+  markDirty();
+}
+
+/* --- média --- */
+function drawCover(){
+  var p = state._draft;
+  var src = p.coverPending || p.cover;
+  $('cover-zone').innerHTML = src
+    ? '<div class="cover-prev"><img src="' + esc(src) + '" alt=""><div class="cover-acts">'
+      + '<button type="button" onclick="document.getElementById(\'f-cover\').click()">Changer</button>'
+      + '<button type="button" onclick="removeCover()">Retirer</button></div></div>'
+    : '<div class="drop" onclick="document.getElementById(\'f-cover\').click()">Cliquez pour choisir une image<br><span style="font-size:11.5px;opacity:.75">JPG ou PNG — format paysage recommandé</span></div>';
+}
+function removeCover(){
+  state._draft.cover = ''; state._draft.coverPending = null;
+  drawCover(); markDirty();
+}
+function handleCover(input){
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var img = new Image();
+    img.onload = function(){
+      var max = 1400;
+      var w = img.width, h = img.height;
+      if (w > max){ h = Math.round(h * max / w); w = max; }
+      var c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      state._draft.coverPending = c.toDataURL('image/jpeg', 0.82);
+      state._draft.coverName = (file.name || 'cover').replace(/\.[^.]+$/, '');
+      drawCover(); markDirty();
+      toast('Image prête — elle sera envoyée à la publication.');
+    };
+    img.onerror = function(){ toast('Image illisible.', true); };
+    img.src = ev.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+function drawDoc(){
+  var p = state._draft;
+  var d = p.docPending || p.doc;
+  $('doc-zone').innerHTML = d
+    ? '<div class="filechip"><span>📄</span><span class="nm">' + esc(d.name) + '</span>'
+      + '<button class="btn ghost sm" type="button" onclick="removeDoc()">Retirer</button></div>'
+    : '<div class="drop" onclick="document.getElementById(\'f-doc\').click()">Joindre un document (PDF)<br><span style="font-size:11.5px;opacity:.75">5 Mo maximum</span></div>';
+}
+function removeDoc(){
+  state._draft.doc = null; state._draft.docPending = null;
+  drawDoc(); markDirty();
+}
+function handleDoc(input){
+  var file = input.files && input.files[0];
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024){ toast('Document trop lourd (5 Mo maximum).', true); input.value = ''; return; }
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    state._draft.docPending = { name: file.name, size: file.size, data: ev.target.result };
+    drawDoc(); markDirty();
+    toast('Document prêt — il sera envoyé à la publication.');
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
+}
+
+/* --- enregistrement --- */
+function savePost(status){
+  var p = state._draft;
+  p.title = $('f-title').value.trim();
+  if (!p.title){ toast('Le titre est obligatoire.', true); $('f-title').focus(); return; }
+
+  p.slug = R.slugify($('f-slug').value || p.title);
+  if (!p.slug){ toast('L\'adresse de la page est invalide.', true); return; }
+
+  var clash = state.posts.some(function(o, i){ return i !== state.editing && o.slug === p.slug; });
+  if (clash){ toast('Un autre article utilise déjà cette adresse de page.', true); return; }
+
+  p.cat = $('f-cat').value;
+  var cat = state.cats.filter(function(c){ return c.id === p.cat; })[0];
+  p.catLabel = cat ? cat.name : p.cat;
+  p.catLine  = p.catLabel;
+  p.date     = $('f-date').value.trim() || frMonth(new Date());
+  p.tags     = $('f-tags').value.split(',').map(function(t){ return t.trim(); }).filter(Boolean);
+  p.featured = $('f-feat').checked;
+  p.link     = $('f-link').value.trim();
+  p.excerpt  = $('f-excerpt').value.trim();
+  p.content  = $('f-content').value.trim();
+  p.seoTitle = $('f-seotitle').value.trim();
+  p.metaDesc = $('f-meta').value.trim();
+  p.titleHtml = esc(p.title);
+  p.status   = status;
+  p.modified = new Date().toISOString().slice(0, 10);
+
+  var words = R.txt(p.content).split(/\s+/).filter(Boolean).length;
+  p.read = $('f-read').value.trim() || (Math.max(1, Math.round(words / 200)) + ' min');
+
+  if (state.editing === null){
+    if (p.featured) state.posts.forEach(function(o){ o.featured = false; });
+    state.posts.unshift(p);
+  } else {
+    if (p.featured) state.posts.forEach(function(o, i){ if (i !== state.editing) o.featured = false; });
+    state.posts[state.editing] = p;
+  }
+
+  markDirty(); renderAll(); closeEditor();
+  toast(status === 'draft'
+    ? 'Brouillon enregistré. Cliquez « Publier en ligne » quand vous serez prête.'
+    : 'Article validé. Cliquez « Publier en ligne » pour le mettre sur le site.');
+}
+
+function askDeletePost(i){
+  var idx = (typeof i === 'number') ? i : state.editing;
+  if (idx === null || idx === undefined) return;
+  var p = state.posts[idx];
+  confirmDlg('Supprimer l\'article', 'Supprimer définitivement « ' + p.title + ' » ? La page sera retirée du site à la prochaine publication.', 'Supprimer', function(){
+    state.posts.splice(idx, 1);
+    markDirty(); renderAll();
+    if (state.editing === idx) closeEditor();
+    toast('Article supprimé. Publiez pour appliquer sur le site.');
+  });
+}
+
+/* ---------------- référencement ---------------- */
+function renderSeo(){
+  var pub = state.posts.filter(function(p){ return p.status !== 'draft'; });
+  var withMeta = pub.filter(function(p){ return (p.metaDesc || '').trim(); }).length;
+  var longEnough = pub.filter(function(p){ return R.txt(p.content).split(/\s+/).length >= 300; }).length;
+  $('seo-stats').innerHTML =
+    stat(pub.length, 'Pages indexables') +
+    stat(withMeta + '/' + pub.length, 'Meta descriptions') +
+    stat(longEnough + '/' + pub.length, 'Articles ≥ 300 mots') +
+    stat(state.cats.length, 'Thématiques');
+
+  if (!pub.length){ $('seo-table').innerHTML = emptyBox('Publiez un article pour voir les contrôles.'); }
+  else {
+    var rows = pub.map(function(p){
+      var i = state.posts.indexOf(p);
+      var meta = (p.metaDesc || '').trim();
+      var words = R.txt(p.content).split(/\s+/).filter(Boolean).length;
+      var full = (p.seoTitle || p.title) + ' | Ichinen Coaching';
+      function m(ok){ return '<span class="pill ' + (ok ? 'ok">OK' : 'no">À revoir') + '</span>'; }
+      return '<tr><td><div class="t-title">' + esc(p.title) + '</div>'
+        + '<div class="t-sub"><span>/blog/' + esc(p.slug) + '/</span><span>' + words + ' mots</span></div></td>'
+        + '<td style="width:120px">' + m(full.length <= 60) + '</td>'
+        + '<td style="width:120px">' + m(meta.length >= 120 && meta.length <= 160) + '</td>'
+        + '<td style="width:120px">' + m(words >= 300) + '</td>'
+        + '<td style="width:110px"><div class="rowacts"><button class="btn ghost sm" onclick="openEditor(' + i + ')">Corriger</button></div></td></tr>';
+    }).join('');
+    $('seo-table').innerHTML = '<table><thead><tr><th>Article</th><th>Titre</th><th>Description</th><th>Longueur</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+  }
+
+  $('seo-files').innerHTML =
+    '<div class="hint" style="margin:0 0 14px">Ces fichiers sont régénérés automatiquement à chaque publication. Ils indiquent aux moteurs de recherche et aux assistants IA (ChatGPT, Claude, Perplexity, Google AI) ce que contient le site.</div>'
+    + [['sitemap.xml', 'Liste toutes les pages pour Google et Bing'],
+       ['robots.txt', 'Autorise les robots des moteurs et des IA, protège la console'],
+       ['llms.txt', 'Présente le cabinet et les articles aux assistants IA'],
+       ['llms-full.txt', 'Contenu intégral des articles, prêt à être cité']]
+      .map(function(f){
+        return '<div class="filechip" style="margin-bottom:9px"><span class="nm"><b>' + f[0] + '</b> — ' + esc(f[1]) + '</span>'
+          + '<a class="btn ghost sm" href="https://ichinencoaching.com/' + f[0] + '" target="_blank" rel="noopener">Ouvrir</a></div>';
+      }).join('');
+}
+
+/* ---------------- inscrits ---------------- */
+function renderLeads(){
+  var ep = state.cfg.formEndpoint || '';
+  $('leads-cfg').innerHTML =
+    '<div class="f"><label for="s-form">Adresse de réception du formulaire</label>'
+    + '<input id="s-form" value="' + esc(ep) + '" placeholder="https://formspree.io/f/xxxxxxx">'
+    + '<div class="hint">Créez un formulaire gratuit sur <a href="https://formspree.io" target="_blank" rel="noopener" style="color:var(--te)">formspree.io</a> avec votre propre compte, puis collez ici l\'adresse fournie. '
+    + 'Tant que ce champ est vide, le bouton d\'inscription du blog affiche un message d\'indisponibilité.</div></div>'
+    + '<button class="btn sm" onclick="saveFormEndpoint()">Enregistrer</button>'
+    + (ep ? '' : '<div class="hint" style="color:var(--te);margin-top:12px">⚠ Aucun formulaire configuré : les inscriptions ne sont pas collectées.</div>');
+
+  if (!state.leads.length){ $('leads-table').innerHTML = emptyBox('Aucun inscrit enregistré ici.\nLes inscriptions arrivent dans votre boîte mail via le formulaire ; importez-les en CSV pour les suivre ici.'); return; }
+  var rows = state.leads.map(function(l, i){
+    return '<tr><td><div class="t-title">' + esc(l.name || '—') + '</div><div class="t-sub"><span>' + esc(l.email) + '</span><span>' + esc(l.date || '') + '</span></div></td>'
+      + '<td style="width:130px"><button class="pill" onclick="cycleLead(' + i + ')">' + esc(l.status || 'Nouveau') + '</button></td>'
+      + '<td style="width:170px"><div class="rowacts">'
+      + '<a class="btn ghost sm" href="mailto:' + esc(l.email) + '">Écrire</a>'
+      + '<button class="btn danger sm" onclick="deleteLead(' + i + ')">✕</button></div></td></tr>';
+  }).join('');
+  $('leads-table').innerHTML = '<table><thead><tr><th>Inscrit</th><th>Statut</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function saveFormEndpoint(){
+  state.cfg.formEndpoint = $('s-form').value.trim();
+  markDirty(); renderLeads();
+  toast('Enregistré. Publiez pour l\'activer sur le blog.');
+}
+function addLead(){
+  var email = prompt('Adresse email de l\'inscrit :', '');
+  if (!email || !email.trim()) return;
+  var name = prompt('Prénom (optionnel) :', '') || '';
+  state.leads.unshift({ name: name.trim(), email: email.trim(), date: new Date().toISOString().slice(0, 10), status: 'Nouveau' });
+  markDirty(); renderLeads();
+}
+function cycleLead(i){
+  var order = ['Nouveau', 'Contacté', 'Cliente'];
+  var cur = order.indexOf(state.leads[i].status || 'Nouveau');
+  state.leads[i].status = order[(cur + 1) % order.length];
+  markDirty(); renderLeads();
+}
+function deleteLead(i){
+  confirmDlg('Retirer cet inscrit', 'Retirer ' + state.leads[i].email + ' de la liste ?', 'Retirer', function(){
+    state.leads.splice(i, 1); markDirty(); renderLeads();
+  });
+}
+function exportLeads(){
+  var rows = [['Prenom', 'Email', 'Date', 'Statut']].concat(state.leads.map(function(l){
+    return [l.name || '', l.email, l.date || '', l.status || 'Nouveau'];
+  }));
+  var csv = '﻿' + rows.map(function(r){
+    return r.map(function(c){ return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';');
+  }).join('\r\n');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'inscrits-ichinen-' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+}
+function importLeads(input){
+  var file = input.files && input.files[0];
+  if (!file) return;
+  var reader = new FileReader();
+  reader.onload = function(ev){
+    var lines = String(ev.target.result).replace(/^﻿/, '').split(/\r?\n/).filter(Boolean);
+    var added = 0;
+    lines.forEach(function(line, idx){
+      var cells = line.split(/[;,]/).map(function(c){ return c.trim().replace(/^"|"$/g, ''); });
+      var email = cells.filter(function(c){ return c.indexOf('@') > 0; })[0];
+      if (!email) return;
+      if (state.leads.some(function(l){ return l.email.toLowerCase() === email.toLowerCase(); })) return;
+      var name = cells.filter(function(c){ return c && c !== email && !/^\d{4}-/.test(c); })[0] || '';
+      state.leads.unshift({ name: name, email: email, date: new Date().toISOString().slice(0, 10), status: 'Nouveau' });
+      added++;
+    });
+    markDirty(); renderLeads();
+    toast(added + ' inscrit(s) importé(s).');
+  };
+  reader.readAsText(file);
+  input.value = '';
+}
+
+/* ---------------- réglages ---------------- */
+function renderSettings(){
+  $('s-title').value = state.cfg.blogTitle || '';
+  $('s-desc').value  = state.cfg.blogDesc || '';
+  $('s-cal').value   = state.cfg.calendly || '';
+  $('s-mail').value  = state.cfg.email || '';
+  countField('s-title', 'c-stitle', 60);
+  countField('s-desc', 'c-sdesc', 160);
+  $('set-conn').innerHTML =
+    '<div class="hint" style="margin:0 0 12px">Connectée en tant que <b>' + esc(state.user || '—') + '</b> sur <b>' + esc(OWNER + '/' + REPO) + '</b>.</div>'
+    + '<div class="hint" style="margin:0 0 16px">Le jeton est conservé uniquement dans ce navigateur. Sur un ordinateur partagé, déconnectez-vous en partant.</div>'
+    + '<button class="btn ghost sm" onclick="logout()">Se déconnecter</button>';
+}
+function countField(id, cid, max){
+  var el = $(id), c = $(cid);
+  function upd(){
+    c.textContent = el.value.length + ' / ' + max + ' caractères';
+    c.className = 'counter' + (el.value.length > max ? ' over' : '');
+  }
+  el.oninput = upd; upd();
+}
+function saveSettings(){
+  state.cfg.blogTitle = $('s-title').value.trim();
+  state.cfg.blogDesc  = $('s-desc').value.trim();
+  state.cfg.calendly  = $('s-cal').value.trim();
+  state.cfg.email     = $('s-mail').value.trim();
+  markDirty();
+  toast('Réglages enregistrés. Publiez pour les appliquer au site.');
+}
+
+/* ---------------- publication ---------------- */
+function askPublish(){
+  var pub = state.posts.filter(function(p){ return p.status !== 'draft'; }).length;
+  confirmDlg('Publier en ligne',
+    'Le site ichinencoaching.com/blog sera mis à jour avec ' + pub + ' article(s). GitHub Pages met environ une minute à afficher les changements.',
+    'Publier', publish);
+}
+
+function publish(){
+  busy(true, 'Préparation des fichiers…');
+
+  state.cfg.cats = state.cats;
+  var files = [];   // {path, content} ou {path, dataUrl}
+  var media = [];
+
+  // 1. médias en attente -> fichiers dans blog/media/
+  state.posts.forEach(function(p){
+    if (p.coverPending){
+      var name = R.slugify(p.coverName || p.slug || 'image') + '-' + Date.now().toString(36) + '.jpg';
+      media.push({ path: 'blog/media/' + name, dataUrl: p.coverPending });
+      p.cover = '/blog/media/' + name;
+      p.coverPending = null; p.coverName = null;
+    }
+    if (p.docPending){
+      var ext = (p.docPending.name.match(/\.[a-z0-9]+$/i) || ['.pdf'])[0];
+      var dname = R.slugify(p.docPending.name.replace(/\.[^.]+$/, '')) + '-' + Date.now().toString(36) + ext;
+      media.push({ path: 'blog/media/' + dname, dataUrl: p.docPending.data });
+      p.doc = { name: p.docPending.name, url: '/blog/media/' + dname };
+      p.docPending = null;
+    }
+  });
+
+  // 2. HTML régénéré
+  var assets = state.assets;
+  files.push({ path: 'blog/index.html',   content: R.renderIndex(state.posts, state.cfg, assets) });
+  R.published(state.posts).forEach(function(p){
+    files.push({ path: 'blog/' + p.slug + '/index.html', content: R.renderPost(p, state.posts, state.cfg, assets) });
+  });
+
+  // 3. données + fichiers SEO/IA
+  files.push({ path: 'blog/posts.json',  content: JSON.stringify(state.posts, null, 1) });
+  files.push({ path: 'blog/config.json', content: JSON.stringify(state.cfg, null, 1) });
+  files.push({ path: 'blog/leads.json',  content: JSON.stringify(state.leads, null, 1) });
+  files.push({ path: 'sitemap.xml',      content: R.renderSitemap(state.posts) });
+  files.push({ path: 'robots.txt',       content: R.renderRobots() });
+  files.push({ path: 'llms.txt',         content: R.renderLlms(state.posts, state.cfg) });
+  files.push({ path: 'llms-full.txt',    content: R.renderLlmsFull(state.posts) });
+
+  var keep = {};
+  files.concat(media).forEach(function(f){ keep[f.path] = 1; });
+
+  var base = '/repos/' + OWNER + '/' + REPO;
+  var headSha, treeSha, stale = [];
+
+  busy(true, 'Lecture du dépôt…');
+  gh(base + '/git/ref/heads/' + BRANCH)
+    .then(function(ref){
+      headSha = ref.object.sha;
+      return gh(base + '/git/commits/' + headSha);
+    })
+    .then(function(commit){
+      treeSha = commit.tree.sha;
+      return gh(base + '/git/trees/' + treeSha + '?recursive=1');
+    })
+    .then(function(tree){
+      // pages d'articles et médias devenus inutiles -> suppression
+      (tree.tree || []).forEach(function(node){
+        if (node.type !== 'blob') return;
+        var isBlogPage = /^blog\/[^/]+\/index\.html$/.test(node.path);
+        var isMedia    = /^blog\/media\//.test(node.path);
+        if ((isBlogPage || isMedia) && !keep[node.path]) stale.push(node.path);
+      });
+
+      busy(true, 'Envoi des fichiers (0 / ' + (files.length + media.length) + ')…');
+      var done = 0, total = files.length + media.length;
+      function tick(){ done++; busy(true, 'Envoi des fichiers (' + done + ' / ' + total + ')…'); }
+
+      var jobs = files.map(function(f){
+        return function(){
+          return gh(base + '/git/blobs', { method: 'POST', body: { content: b64encode(f.content), encoding: 'base64' } })
+            .then(function(b){ tick(); return { path: f.path, mode: '100644', type: 'blob', sha: b.sha }; });
+        };
+      }).concat(media.map(function(f){
+        return function(){
+          var b64 = String(f.dataUrl).split(',')[1] || '';
+          return gh(base + '/git/blobs', { method: 'POST', body: { content: b64, encoding: 'base64' } })
+            .then(function(b){ tick(); return { path: f.path, mode: '100644', type: 'blob', sha: b.sha }; });
+        };
+      }));
+
+      return serialBatch(jobs, 4);
+    })
+    .then(function(entries){
+      stale.forEach(function(p){ entries.push({ path: p, mode: '100644', type: 'blob', sha: null }); });
+      busy(true, 'Création du commit…');
+      return gh(base + '/git/trees', { method: 'POST', body: { base_tree: treeSha, tree: entries } });
+    })
+    .then(function(newTree){
+      var n = R.published(state.posts).length;
+      return gh(base + '/git/commits', {
+        method: 'POST',
+        body: {
+          message: 'Blog : mise à jour depuis la console (' + n + ' article' + (n > 1 ? 's' : '') + ')',
+          tree: newTree.sha, parents: [headSha]
+        }
+      });
+    })
+    .then(function(commit){
+      busy(true, 'Mise en ligne…');
+      return gh(base + '/git/refs/heads/' + BRANCH, { method: 'PATCH', body: { sha: commit.sha } })
+        .then(function(){ return commit; });
+    })
+    .then(function(commit){
+      state.lastCommit = new Date().toLocaleString('fr-FR') + ' (' + commit.sha.slice(0, 7) + ')';
+      clearDirty();
+      Object.keys(state.shas).forEach(function(k){ delete state.shas[k]; });
+      busy(false);
+      renderAll();
+      toast('Publié. Le site sera à jour dans une minute environ.');
+    })
+    .catch(function(err){
+      busy(false);
+      toast('Publication impossible — ' + err.message, true);
+    });
+}
+
+/* exécute les tâches par lots de `width` en parallèle */
+function serialBatch(jobs, width){
+  var results = [], i = 0;
+  function runner(){
+    if (i >= jobs.length) return Promise.resolve();
+    var idx = i++;
+    return jobs[idx]().then(function(r){ results[idx] = r; return runner(); });
+  }
+  var lanes = [];
+  for (var k = 0; k < Math.min(width, jobs.length); k++) lanes.push(runner());
+  return Promise.all(lanes).then(function(){ return results; });
+}
+
+/* ---------------- démarrage ---------------- */
+window.addEventListener('beforeunload', function(e){
+  if (state.dirty){ e.preventDefault(); e.returnValue = ''; }
+});
+
+(function init(){
+  var saved = lsGet(K_TOK);
+  if (saved){
+    $('tok').value = saved;
+    doLogin(null);
+  }
+})();
+
+</script>
+</body>
+</html>
