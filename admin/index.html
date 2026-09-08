@@ -258,18 +258,17 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
     <!-- LEADS -->
     <section class="view" id="v-leads">
       <div class="panel">
-        <div class="panel-h"><h3>Formulaire d'inscription</h3></div>
+        <div class="panel-h"><h3>Connexion au service d'inscription</h3></div>
         <div class="panel-b" id="leads-cfg"></div>
       </div>
       <div class="panel">
         <div class="panel-h"><h3>Inscrits</h3>
           <div style="display:flex;gap:8px">
-            <button class="btn ghost sm" onclick="document.getElementById('lead-import').click()">Importer un CSV</button>
+            <button class="btn ghost sm" onclick="loadLeads()">Actualiser</button>
             <button class="btn ghost sm" onclick="exportLeads()">Exporter</button>
             <button class="btn sm" onclick="addLead()">Ajouter</button>
           </div>
         </div>
-        <input type="file" id="lead-import" accept=".csv,text/csv" style="display:none" onchange="importLeads(this)">
         <div id="leads-table"></div>
       </div>
     </section>
@@ -589,18 +588,20 @@ function card(p){
     +'        </div>\n      </div>\n    </article>\n';
 }
 
-function newsletter(cfg){
-  var ep=cfg.formEndpoint||'';
+function newsletter(cfg,slug){
+  var ep=cfg.apiUrl||'';
   return '<section class="newsletter" id="newsletter">\n'
     +'  <div class="nl-text">\n'
     +'    <div style="font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--ca);margin-bottom:10px">Newsletter</div>\n'
     +'    <h2>Un article par mois,<br>pour <em>nourrir votre transformation</em></h2>\n'
     +'    <p>Chaque mois, je partage un article de fond, un outil pratique et une réflexion sur le coaching et les transitions de vie. Sans spam, toujours avec soin.</p>\n'
     +'  </div>\n'
-    +'  <form class="nl-form" id="nl-form" data-endpoint="'+esc(ep)+'">\n'
+    +'  <form class="nl-form" id="nl-form" data-api="'+esc(ep)+'" data-slug="'+esc(slug||'')+'">\n'
+    +'    <div class="nl-pot" aria-hidden="true"><label>Ne pas remplir<input type="text" name="site" tabindex="-1" autocomplete="off"></label></div>\n'
     +'    <input type="text" name="prenom" placeholder="Votre prénom" autocomplete="given-name" required>\n'
     +'    <input type="email" name="email" placeholder="Votre adresse email" autocomplete="email" required>\n'
     +'    <button type="submit">S\'abonner à la newsletter</button>\n'
+    +'    <p class="nl-rgpd">En vous inscrivant, vous acceptez de recevoir un email par mois. Désinscription à tout moment. <a href="/ichinen-rgpd.html">Vos données</a>.</p>\n'
     +'    <div class="nl-msg" id="nl-msg" role="status" aria-live="polite"></div>\n'
     +'  </form>\n'
     +'</section>\n';
@@ -670,7 +671,7 @@ function renderPost(p,posts,cfg,assets){
       +related.map(function(r){return card(Object.assign({},r,{featured:false}));}).join('')
       +'  </div>\n</section>\n';
   }
-  h+=newsletter(cfg)+footer()+'\n<script>\n'+CLIENT_JS+'\n<\/script>\n</body>\n</html>\n';
+  h+=newsletter(cfg,p.slug)+footer()+'\n<script>\n'+CLIENT_JS+'\n<\/script>\n</body>\n</html>\n';
   return h;
 }
 
@@ -796,6 +797,9 @@ var EXTRA_CSS=[
 '.related{max-width:1080px;margin:60px auto 0;padding:0 40px}',
 '.related h2{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:400;color:var(--td);margin-bottom:26px}',
 '.nl-msg{font-size:13px;color:var(--ol);margin-top:10px;min-height:18px}',
+'.nl-pot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}',
+'.nl-rgpd{font-size:11px;line-height:1.6;color:var(--tm);margin-top:12px;opacity:.85}',
+'.nl-rgpd a{color:inherit}',
 '.nl-msg.err{color:var(--te)}',
 '@media(max-width:700px){.post,.crumbs,.related{padding-left:22px;padding-right:22px}}',
 '@media(prefers-reduced-motion:reduce){.trail{display:none!important}html{scroll-behavior:auto}}'
@@ -847,21 +851,27 @@ var CLIENT_JS=[
 'var f=document.getElementById("nl-form");',
 'if(f)f.addEventListener("submit",function(e){',
 '  e.preventDefault();',
-'  var msg=document.getElementById("nl-msg"),btn=f.querySelector("button");',
-'  var ep=f.dataset.endpoint;',
+'  var msg=document.getElementById("nl-msg"),btn=f.querySelector("button[type=submit]");',
+'  var api=f.dataset.api;',
 '  msg.className="nl-msg";',
-'  if(!ep){msg.className="nl-msg err";msg.textContent="Inscription momentanément indisponible — écrivez-moi directement.";return;}',
-'  btn.disabled=true;btn.textContent="Envoi\\u2026";',
-'  fetch(ep,{method:"POST",headers:{"Accept":"application/json"},body:new FormData(f)})',
-'    .then(function(r){',
-'      if(!r.ok)throw new Error("http");',
+'  if(!api){msg.className="nl-msg err";msg.textContent="Inscription momentan\u00e9ment indisponible \u2014 \u00e9crivez-moi directement.";return;}',
+'  var d=new FormData(f);',
+'  btn.disabled=true;btn.textContent="Envoi\u2026";',
+'  fetch(api,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({',
+'    action:"subscribe",prenom:d.get("prenom"),email:d.get("email"),',
+'    site:d.get("site"),source:"blog",article_slug:f.dataset.slug||null',
+'  })})',
+'    .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});})',
+'    .then(function(res){',
+'      if(!res.ok)throw new Error(res.j&&res.j.erreur||"echec");',
 '      f.querySelectorAll("input").forEach(function(i){i.value="";});',
-'      btn.textContent="Merci ! \\u00c0 tr\\u00e8s vite";btn.style.background="var(--ol)";',
-'      msg.textContent="Votre inscription est bien enregistr\\u00e9e.";',
+'      btn.textContent="Merci ! \u00c0 tr\u00e8s vite";btn.style.background="var(--ol)";',
+'      msg.textContent="Votre inscription est bien enregistr\u00e9e.";',
 '    })',
-'    .catch(function(){',
-'      btn.disabled=false;btn.textContent="S\'abonner \\u00e0 la newsletter";',
-'      msg.className="nl-msg err";msg.textContent="L\'envoi a \\u00e9chou\\u00e9. R\\u00e9essayez dans un instant.";',
+'    .catch(function(err){',
+'      btn.disabled=false;btn.textContent="S\'abonner \u00e0 la newsletter";',
+'      msg.className="nl-msg err";',
+'      msg.textContent=(err.message==="adresse email invalide")?"Cette adresse email n\'est pas valide.":"L\'envoi a \u00e9chou\u00e9. R\u00e9essayez dans un instant.";',
 '    });',
 '});',
 '})();'
@@ -882,13 +892,13 @@ return {SITE:SITE,CTA:CTA,slugify:slugify,isoDate:isoDate,esc:esc,txt:txt,
 
 var R = window.IchinenRender;
 var API = 'https://api.github.com';
-var K_TOK = 'ichinen_gh_token', K_DRAFT = 'ichinen_local_draft';
+var K_TOK = 'ichinen_gh_token', K_DRAFT = 'ichinen_local_draft', K_SEC = 'ichinen_api_secret';
 
 var OWNER = 'ichinen-coaching', REPO = 'ichinen-coaching.github.io', BRANCH = 'main';
 
 var state = {
   token: null, user: null,
-  posts: [], cats: [], leads: [], cfg: {}, assets: {},
+  posts: [], cats: [], leads: [], leadsErr: null, cfg: {}, assets: {},
   shas: {},              // chemin -> sha du blob distant
   editing: null,         // index dans state.posts, ou null pour un nouvel article
   dirty: false,
@@ -941,7 +951,7 @@ function clearDirty(){
 }
 function saveLocalDraft(){
   try {
-    lsSet(K_DRAFT, JSON.stringify({ posts: state.posts, cats: state.cats, leads: state.leads, cfg: state.cfg }));
+    lsSet(K_DRAFT, JSON.stringify({ posts: state.posts, cats: state.cats, cfg: state.cfg }));
   } catch(e){}
 }
 
@@ -994,6 +1004,28 @@ function getFile(path){
   return gh('/repos/' + OWNER + '/' + REPO + '/contents/' + path + '?ref=' + BRANCH)
     .then(function(d){ state.shas[path] = d.sha; return b64decode(d.content); })
     .catch(function(e){ if (e.status === 404) return null; throw e; });
+}
+
+
+/* ---------------- API des inscrits ---------------- */
+function apiSecret(){ return lsGet(K_SEC) || ''; }
+function api(action, payload){
+  var url = (state.cfg && state.cfg.apiUrl) || '';
+  if (!url) return Promise.reject(new Error("Aucune adresse d'API configurée (Réglages)."));
+  var body = payload || {}; body.action = action;
+  var headers = { 'content-type': 'application/json' };
+  var sec = apiSecret();
+  if (sec) headers['x-ichinen-secret'] = sec;
+  return fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(body) })
+    .then(function(r){
+      return r.json().catch(function(){ return {}; }).then(function(j){
+        if (!r.ok){
+          if (r.status === 401) throw new Error('Clé de la console refusée. Vérifiez-la dans Réglages.');
+          throw new Error(j.erreur || ('HTTP ' + r.status));
+        }
+        return j;
+      });
+    });
 }
 
 /* ---------------- connexion ---------------- */
@@ -1051,13 +1083,11 @@ function loadAll(){
   return Promise.all([
     getFile('blog/posts.json'),
     getFile('blog/config.json'),
-    getFile('blog/assets.json'),
-    getFile('blog/leads.json')
+    getFile('blog/assets.json')
   ]).then(function(res){
     state.posts  = res[0] ? JSON.parse(res[0]) : [];
     state.cfg    = res[1] ? JSON.parse(res[1]) : {};
     state.assets = res[2] ? JSON.parse(res[2]) : { css: '', authorImg: '' };
-    state.leads  = res[3] ? JSON.parse(res[3]) : [];
 
     OWNER  = state.cfg.repoOwner || OWNER;
     REPO   = state.cfg.repoName  || REPO;
@@ -1074,7 +1104,6 @@ function loadAll(){
           'Reprendre', function(){
             state.posts = d.posts || state.posts;
             state.cats  = d.cats  || state.cats;
-            state.leads = d.leads || state.leads;
             state.cfg   = d.cfg   || state.cfg;
             markDirty(); renderAll();
           });
@@ -1082,6 +1111,7 @@ function loadAll(){
     }
     renderAll();
     busy(false);
+    loadLeads();
   }).catch(function(err){
     busy(false);
     toast(err.message, true);
@@ -1111,7 +1141,7 @@ function go(v){
   document.querySelectorAll('.menu button').forEach(function(b){ b.className = b.dataset.v === v ? 'on' : ''; });
   $('vtitle').textContent = TITLES[v] || '';
   if (v === 'seo') renderSeo();
-  if (v === 'leads') renderLeads();
+  if (v === 'leads') loadLeads();
   if (v === 'set') renderSettings();
 }
 
@@ -1534,53 +1564,96 @@ function renderSeo(){
 }
 
 /* ---------------- inscrits ---------------- */
-function renderLeads(){
-  var ep = state.cfg.formEndpoint || '';
-  $('leads-cfg').innerHTML =
-    '<div class="f"><label for="s-form">Adresse de réception du formulaire</label>'
-    + '<input id="s-form" value="' + esc(ep) + '" placeholder="https://formspree.io/f/xxxxxxx">'
-    + '<div class="hint">Créez un formulaire gratuit sur <a href="https://formspree.io" target="_blank" rel="noopener" style="color:var(--te)">formspree.io</a> avec votre propre compte, puis collez ici l\'adresse fournie. '
-    + 'Tant que ce champ est vide, le bouton d\'inscription du blog affiche un message d\'indisponibilité.</div></div>'
-    + '<button class="btn sm" onclick="saveFormEndpoint()">Enregistrer</button>'
-    + (ep ? '' : '<div class="hint" style="color:var(--te);margin-top:12px">⚠ Aucun formulaire configuré : les inscriptions ne sont pas collectées.</div>');
+function loadLeads(){
+  if (!state.cfg.apiUrl){ renderLeads(); return Promise.resolve(); }
+  if (!apiSecret()){ renderLeads(); return Promise.resolve(); }
+  return api('leads').then(function(r){
+    state.leads = r.leads || [];
+    state.leadsErr = null;
+    renderLeads(); renderDash();
+  }).catch(function(e){
+    state.leadsErr = e.message;
+    renderLeads();
+  });
+}
 
-  if (!state.leads.length){ $('leads-table').innerHTML = emptyBox('Aucun inscrit enregistré ici.\nLes inscriptions arrivent dans votre boîte mail via le formulaire ; importez-les en CSV pour les suivre ici.'); return; }
-  var rows = state.leads.map(function(l, i){
-    return '<tr><td><div class="t-title">' + esc(l.name || '—') + '</div><div class="t-sub"><span>' + esc(l.email) + '</span><span>' + esc(l.date || '') + '</span></div></td>'
-      + '<td style="width:130px"><button class="pill" onclick="cycleLead(' + i + ')">' + esc(l.status || 'Nouveau') + '</button></td>'
+function renderLeads(){
+  var url = state.cfg.apiUrl || '';
+  var sec = apiSecret();
+
+  $('leads-cfg').innerHTML =
+    '<div class="f"><label for="s-api">Adresse de l\'API</label>'
+    + '<input id="s-api" value="' + esc(url) + '" placeholder="https://…/functions/v1/ichinen-api">'
+    + '<div class="hint">C\'est le service qui reçoit les inscriptions du blog. Il est publié avec le site.</div></div>'
+    + '<div class="f"><label for="s-sec">Clé de la console</label>'
+    + '<input id="s-sec" type="password" value="' + esc(sec) + '" placeholder="collez votre clé">'
+    + '<div class="hint">Cette clé donne accès à la liste des inscrits. Elle reste sur cet appareil et n\'est jamais publiée sur le site.</div></div>'
+    + '<button class="btn sm" onclick="saveApiSettings()">Enregistrer et charger</button>'
+    + (url ? '' : '<div class="hint" style="color:var(--te);margin-top:12px">⚠ Aucune API configurée : les inscriptions ne sont pas collectées.</div>')
+    + (state.leadsErr ? '<div class="hint" style="color:var(--te);margin-top:12px">⚠ ' + esc(state.leadsErr) + '</div>' : '');
+
+  if (!url || !sec){
+    $('leads-table').innerHTML = emptyBox('Renseignez l\'adresse de l\'API et votre clé pour voir les inscrits.');
+    return;
+  }
+  if (!state.leads.length){
+    $('leads-table').innerHTML = emptyBox('Aucun inscrit pour le moment.\nLes inscriptions du blog arrivent ici automatiquement.');
+    return;
+  }
+  var rows = state.leads.map(function(l){
+    var d = (l.created_at || '').slice(0, 10);
+    var src = l.article_slug ? ('depuis /blog/' + l.article_slug + '/') : (l.source || '');
+    return '<tr><td><div class="t-title">' + esc(l.prenom || '—') + '</div>'
+      + '<div class="t-sub"><span>' + esc(l.email) + '</span><span>' + esc(d) + '</span><span>' + esc(src) + '</span></div></td>'
+      + '<td style="width:130px"><button class="pill" onclick="cycleLead(\'' + esc(l.id) + '\')">' + esc(l.statut || 'Nouveau') + '</button></td>'
       + '<td style="width:170px"><div class="rowacts">'
       + '<a class="btn ghost sm" href="mailto:' + esc(l.email) + '">Écrire</a>'
-      + '<button class="btn danger sm" onclick="deleteLead(' + i + ')">✕</button></div></td></tr>';
+      + '<button class="btn danger sm" onclick="deleteLead(\'' + esc(l.id) + '\')">✕</button></div></td></tr>';
   }).join('');
   $('leads-table').innerHTML = '<table><thead><tr><th>Inscrit</th><th>Statut</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
 }
 
-function saveFormEndpoint(){
-  state.cfg.formEndpoint = $('s-form').value.trim();
-  markDirty(); renderLeads();
-  toast('Enregistré. Publiez pour l\'activer sur le blog.');
+function saveApiSettings(){
+  state.cfg.apiUrl = $('s-api').value.trim();
+  lsSet(K_SEC, $('s-sec').value.trim());
+  markDirty();
+  toast('Enregistré. Chargement des inscrits…');
+  loadLeads();
 }
+
 function addLead(){
-  var email = prompt('Adresse email de l\'inscrit :', '');
+  var email = prompt('Adresse email de l\'inscrite :', '');
   if (!email || !email.trim()) return;
-  var name = prompt('Prénom (optionnel) :', '') || '';
-  state.leads.unshift({ name: name.trim(), email: email.trim(), date: new Date().toISOString().slice(0, 10), status: 'Nouveau' });
-  markDirty(); renderLeads();
+  var prenom = prompt('Prénom (optionnel) :', '') || '';
+  api('lead_add', { email: email.trim(), prenom: prenom.trim() })
+    .then(function(){ toast('Inscrite ajoutée.'); return loadLeads(); })
+    .catch(function(e){ toast(e.message, true); });
 }
-function cycleLead(i){
-  var order = ['Nouveau', 'Contacté', 'Cliente'];
-  var cur = order.indexOf(state.leads[i].status || 'Nouveau');
-  state.leads[i].status = order[(cur + 1) % order.length];
-  markDirty(); renderLeads();
+
+function cycleLead(id){
+  var l = state.leads.filter(function(x){ return x.id === id; })[0];
+  if (!l) return;
+  var order = ['Nouveau', 'Contactée', 'Cliente'];
+  var next = order[(order.indexOf(l.statut || 'Nouveau') + 1) % order.length];
+  l.statut = next; renderLeads();
+  api('lead_update', { id: id, statut: next })
+    .catch(function(e){ toast(e.message, true); loadLeads(); });
 }
-function deleteLead(i){
-  confirmDlg('Retirer cet inscrit', 'Retirer ' + state.leads[i].email + ' de la liste ?', 'Retirer', function(){
-    state.leads.splice(i, 1); markDirty(); renderLeads();
+
+function deleteLead(id){
+  var l = state.leads.filter(function(x){ return x.id === id; })[0];
+  if (!l) return;
+  confirmDlg('Retirer cette inscrite', 'Retirer ' + l.email + ' de la liste ? Cette suppression est définitive.', 'Retirer', function(){
+    api('lead_delete', { id: id })
+      .then(function(){ toast('Inscrite retirée.'); return loadLeads(); })
+      .catch(function(e){ toast(e.message, true); });
   });
 }
+
 function exportLeads(){
-  var rows = [['Prenom', 'Email', 'Date', 'Statut']].concat(state.leads.map(function(l){
-    return [l.name || '', l.email, l.date || '', l.status || 'Nouveau'];
+  if (!state.leads.length){ toast('Aucun inscrit à exporter.', true); return; }
+  var rows = [['Prenom', 'Email', 'Date', 'Statut', 'Source']].concat(state.leads.map(function(l){
+    return [l.prenom || '', l.email, (l.created_at || '').slice(0, 10), l.statut || 'Nouveau', l.article_slug || l.source || ''];
   }));
   var csv = '﻿' + rows.map(function(r){
     return r.map(function(c){ return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';');
@@ -1589,28 +1662,6 @@ function exportLeads(){
   a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
   a.download = 'inscrits-ichinen-' + new Date().toISOString().slice(0, 10) + '.csv';
   a.click();
-}
-function importLeads(input){
-  var file = input.files && input.files[0];
-  if (!file) return;
-  var reader = new FileReader();
-  reader.onload = function(ev){
-    var lines = String(ev.target.result).replace(/^﻿/, '').split(/\r?\n/).filter(Boolean);
-    var added = 0;
-    lines.forEach(function(line, idx){
-      var cells = line.split(/[;,]/).map(function(c){ return c.trim().replace(/^"|"$/g, ''); });
-      var email = cells.filter(function(c){ return c.indexOf('@') > 0; })[0];
-      if (!email) return;
-      if (state.leads.some(function(l){ return l.email.toLowerCase() === email.toLowerCase(); })) return;
-      var name = cells.filter(function(c){ return c && c !== email && !/^\d{4}-/.test(c); })[0] || '';
-      state.leads.unshift({ name: name, email: email, date: new Date().toISOString().slice(0, 10), status: 'Nouveau' });
-      added++;
-    });
-    markDirty(); renderLeads();
-    toast(added + ' inscrit(s) importé(s).');
-  };
-  reader.readAsText(file);
-  input.value = '';
 }
 
 /* ---------------- réglages ---------------- */
@@ -1685,7 +1736,6 @@ function publish(){
   // 3. données + fichiers SEO/IA
   files.push({ path: 'blog/posts.json',  content: JSON.stringify(state.posts, null, 1) });
   files.push({ path: 'blog/config.json', content: JSON.stringify(state.cfg, null, 1) });
-  files.push({ path: 'blog/leads.json',  content: JSON.stringify(state.leads, null, 1) });
   files.push({ path: 'sitemap.xml',      content: R.renderSitemap(state.posts) });
   files.push({ path: 'robots.txt',       content: R.renderRobots() });
   files.push({ path: 'llms.txt',         content: R.renderLlms(state.posts, state.cfg) });

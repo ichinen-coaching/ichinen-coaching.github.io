@@ -209,6 +209,9 @@ nav.crumbs{position:static;display:block;background:none;backdrop-filter:none;bo
 .related{max-width:1080px;margin:60px auto 0;padding:0 40px}
 .related h2{font-family:"Cormorant Garamond",serif;font-size:30px;font-weight:400;color:var(--td);margin-bottom:26px}
 .nl-msg{font-size:13px;color:var(--ol);margin-top:10px;min-height:18px}
+.nl-pot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.nl-rgpd{font-size:11px;line-height:1.6;color:var(--tm);margin-top:12px;opacity:.85}
+.nl-rgpd a{color:inherit}
 .nl-msg.err{color:var(--te)}
 @media(max-width:700px){.post,.crumbs,.related{padding-left:22px;padding-right:22px}}
 @media(prefers-reduced-motion:reduce){.trail{display:none!important}html{scroll-behavior:auto}}</style>
@@ -305,10 +308,12 @@ nav.crumbs{position:static;display:block;background:none;backdrop-filter:none;bo
     <h2>Un article par mois,<br>pour <em>nourrir votre transformation</em></h2>
     <p>Chaque mois, je partage un article de fond, un outil pratique et une réflexion sur le coaching et les transitions de vie. Sans spam, toujours avec soin.</p>
   </div>
-  <form class="nl-form" id="nl-form" data-endpoint="">
+  <form class="nl-form" id="nl-form" data-api="https://tcawjvyefzlkvngcklqm.supabase.co/functions/v1/ichinen-api" data-slug="les-5-signaux-silencieux-du-burn-out-professionnel">
+    <div class="nl-pot" aria-hidden="true"><label>Ne pas remplir<input type="text" name="site" tabindex="-1" autocomplete="off"></label></div>
     <input type="text" name="prenom" placeholder="Votre prénom" autocomplete="given-name" required>
     <input type="email" name="email" placeholder="Votre adresse email" autocomplete="email" required>
     <button type="submit">S'abonner à la newsletter</button>
+    <p class="nl-rgpd">En vous inscrivant, vous acceptez de recevoir un email par mois. Désinscription à tout moment. <a href="/ichinen-rgpd.html">Vos données</a>.</p>
     <div class="nl-msg" id="nl-msg" role="status" aria-live="polite"></div>
   </form>
 </section>
@@ -363,21 +368,27 @@ window.filterCards=function(cat,btn){
 var f=document.getElementById("nl-form");
 if(f)f.addEventListener("submit",function(e){
   e.preventDefault();
-  var msg=document.getElementById("nl-msg"),btn=f.querySelector("button");
-  var ep=f.dataset.endpoint;
+  var msg=document.getElementById("nl-msg"),btn=f.querySelector("button[type=submit]");
+  var api=f.dataset.api;
   msg.className="nl-msg";
-  if(!ep){msg.className="nl-msg err";msg.textContent="Inscription momentanément indisponible — écrivez-moi directement.";return;}
-  btn.disabled=true;btn.textContent="Envoi\u2026";
-  fetch(ep,{method:"POST",headers:{"Accept":"application/json"},body:new FormData(f)})
-    .then(function(r){
-      if(!r.ok)throw new Error("http");
+  if(!api){msg.className="nl-msg err";msg.textContent="Inscription momentanément indisponible — écrivez-moi directement.";return;}
+  var d=new FormData(f);
+  btn.disabled=true;btn.textContent="Envoi…";
+  fetch(api,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({
+    action:"subscribe",prenom:d.get("prenom"),email:d.get("email"),
+    site:d.get("site"),source:"blog",article_slug:f.dataset.slug||null
+  })})
+    .then(function(r){return r.json().then(function(j){return{ok:r.ok,j:j};});})
+    .then(function(res){
+      if(!res.ok)throw new Error(res.j&&res.j.erreur||"echec");
       f.querySelectorAll("input").forEach(function(i){i.value="";});
-      btn.textContent="Merci ! \u00c0 tr\u00e8s vite";btn.style.background="var(--ol)";
-      msg.textContent="Votre inscription est bien enregistr\u00e9e.";
+      btn.textContent="Merci ! À très vite";btn.style.background="var(--ol)";
+      msg.textContent="Votre inscription est bien enregistrée.";
     })
-    .catch(function(){
-      btn.disabled=false;btn.textContent="S'abonner \u00e0 la newsletter";
-      msg.className="nl-msg err";msg.textContent="L'envoi a \u00e9chou\u00e9. R\u00e9essayez dans un instant.";
+    .catch(function(err){
+      btn.disabled=false;btn.textContent="S'abonner à la newsletter";
+      msg.className="nl-msg err";
+      msg.textContent=(err.message==="adresse email invalide")?"Cette adresse email n'est pas valide.":"L'envoi a échoué. Réessayez dans un instant.";
     });
 });
 })();
