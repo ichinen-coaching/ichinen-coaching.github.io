@@ -507,6 +507,11 @@ footer{background:var(--td);color:var(--cr);padding:60px 80px 40px;display:grid;
 .fc a{display:block;font-size:13px;color:rgba(240,234,210,.6);text-decoration:none;margin-bottom:10px;transition:color .3s,transform .3s;cursor:none;}
 .fc a:hover{color:var(--ca);transform:translateX(4px);}
 .fbot{background:var(--td);border-top:1px solid rgba(255,255,255,.08);padding:20px 80px;display:flex;justify-content:space-between;align-items:center;font-size:12px;color:rgba(240,234,210,.4);}
+.bz-credit{display:inline-flex;align-items:center;gap:8px;font-size:12px;letter-spacing:.04em;color:rgba(240,234,210,.45);}
+.bz-credit a{display:inline-flex;align-items:center;gap:7px;color:rgba(240,234,210,.75);text-decoration:none;font-weight:600;letter-spacing:.08em;transition:color .3s;cursor:none;}
+.bz-credit a:hover{color:var(--cr);}
+.bz-credit img{height:22px;width:22px;display:block;opacity:.85;}
+@media(max-width:900px){.fbot{flex-direction:column;gap:12px;text-align:center;}}
 /* ═══════════════════════════════════════
    TABLET (max 900px)
 ═══════════════════════════════════════ */
@@ -1267,7 +1272,8 @@ footer{background:var(--td);color:var(--cr);padding:60px 80px 40px;display:grid;
 </footer>
 <div class="fbot">
   <span>© 2026 Ichinen Coaching · Christèle Fibleuil · Coach certifiée ICF</span>
-  <a href="/blog/" style="color:rgba(240,234,210,.2);text-decoration:none;font-size:11px;letter-spacing:.04em;transition:color .4s;" onmouseenter="this.style.color='var(--ca)'" onmouseleave="this.style.color='rgba(240,234,210,.2)'">Journal</a> &nbsp;·&nbsp; 
+  <a href="/blog/" style="color:rgba(240,234,210,.2);text-decoration:none;font-size:11px;letter-spacing:.04em;transition:color .4s;" onmouseenter="this.style.color='var(--ca)'" onmouseleave="this.style.color='rgba(240,234,210,.2)'">Journal</a>
+  <span class="bz-credit">Créé par <a href="https://www.bizzyconsulting.agency/" target="_blank" rel="noopener noreferrer" aria-label="BIZZY CONSULTING — l’agence qui a créé ce site"><img src="/bizzy.png" alt="" width="128" height="128"><span>BIZZY CONSULTING</span></a></span>
 </div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
