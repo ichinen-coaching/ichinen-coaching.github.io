@@ -1935,7 +1935,11 @@ function lireCSV(input){
       var cells = l.split(/[;,\t]/).map(function(x){ return x.trim().replace(/^"|"$/g, ''); });
       var email = cells.filter(function(x){ return x.indexOf('@') > 0; })[0];
       if (!email) return;
-      if (state.contacts.some(function(c){ return c.email.toLowerCase() === email.toLowerCase(); })) return;
+      var deja = email.toLowerCase();
+      if (state.contacts.some(function(c){ return c.email.toLowerCase() === deja; })) return;
+      // Un même email peut apparaître deux fois DANS le fichier : sans ce test, on
+      // annonçait un nombre de contacts supérieur à ce qui serait vraiment ajouté.
+      if (aFaire.some(function(c){ return c.email.toLowerCase() === deja; })) return;
       var autres = cells.filter(function(x){ return x && x !== email && !/^\d{4}-/.test(x); });
       aFaire.push({ email: email, prenom: autres[0] || '', nom: autres[1] || '', tags: ['prospect'] });
     });
