@@ -171,7 +171,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 
     <!-- étape 1 : adresse -->
     <form id="etape-email" onsubmit="return demanderCode(event)">
-      <p>Entrez votre adresse pour recevoir un code de connexion.</p>
+      <p>Entre ton adresse pour recevoir un code de connexion.</p>
       <label for="l-email">Adresse email</label>
       <input id="l-email" type="email" value="contact@ichinencoaching.com" autocomplete="username" spellcheck="false">
       <div style="margin-top:22px"><button class="btn" type="submit" id="btn-code" style="width:100%;justify-content:center">Recevoir mon code</button></div>
@@ -193,7 +193,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 
     <div class="login-help">
       Le code arrive sur la boîte reliée à <b>contact@ichinencoaching.com</b>.
-      Pensez à regarder dans les indésirables la première fois.
+      Pense à regarder dans les indésirables la première fois.
     </div>
   </div>
 </div>
@@ -427,7 +427,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
     <div class="f">
       <label>Variables disponibles</label>
       <div class="chips" id="tm-vars" style="margin:0"></div>
-      <div class="hint">Cliquez pour insérer. Elles seront remplacées par les vraies valeurs à l'envoi.</div>
+      <div class="hint">Clique pour insérer. Elles seront remplacées par les vraies valeurs à l'envoi.</div>
     </div>
     <div class="f"><label for="tm-html">Contenu</label><textarea id="tm-html" rows="14" oninput="apercuDiffere()" spellcheck="true"></textarea></div>
     <div class="f">
@@ -483,7 +483,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
   <div class="ed-h"><h3 id="nw-titre">Newsletter</h3><button class="btn ghost sm" onclick="fermerCampagne()">Fermer</button></div>
   <div class="ed-b">
     <div class="f"><label for="nw-nom">Nom interne</label><input id="nw-nom" placeholder="ex. Newsletter de septembre">
-      <div class="hint">Pour vous y retrouver. Les destinataires ne le voient pas.</div></div>
+      <div class="hint">Pour t'y retrouver. Les destinataires ne le voient pas.</div></div>
     <div class="f"><label for="nw-sujet">Objet de l'email</label><input id="nw-sujet" oninput="apercuCampagneDiffere()"></div>
     <div class="grid2">
       <div class="f"><label for="nw-cible">À qui</label><select id="nw-cible" onchange="compterCible()"></select></div>
@@ -1125,7 +1125,7 @@ function gh(path, opts){
         if (r.status === 401) m = 'Jeton refusé par GitHub (401). Il a peut-être expiré.';
         if (r.status === 403) m = 'Accès refusé (403). Vérifiez la permission « Contents : Read and write ».';
         if (r.status === 404) m = 'Introuvable (404) — le jeton ne voit pas le dépôt ' + OWNER + '/' + REPO + '.';
-        if (r.status === 409) m = 'Le dépôt a changé entre-temps. Cliquez « Recharger » puis republiez.';
+        if (r.status === 409) m = 'Le dépôt a changé entre-temps. Clique sur « Recharger » puis republie.';
         var err = new Error(m); err.status = r.status; throw err;
       }
       return data;
@@ -1176,7 +1176,7 @@ function api(action, payload){
 }
 function deconnexionForcee(){
   lsDel(K_SESSION);
-  toast('Votre session a expiré. Reconnectez-vous.', true);
+  toast('Ta session a expiré. Reconnecte-toi.', true);
   setTimeout(function(){ location.reload(); }, 1500);
 }
 
@@ -1254,7 +1254,7 @@ function entrer(){
 }
 
 function logout(){
-  confirmDlg('Se déconnecter', 'Votre session sera fermée. Les modifications non publiées seront perdues.', 'Se déconnecter', function(){
+  confirmDlg('Se déconnecter', 'Ta session sera fermée. Les modifications non publiées seront perdues.', 'Se déconnecter', function(){
     api('logout').catch(function(){}).then(function(){
       lsDel(K_SESSION); lsDel(K_DRAFT);
       location.reload();
@@ -1284,8 +1284,8 @@ function loadAll(){
     if (draft){
       try {
         var d = JSON.parse(draft);
-        confirmDlg('Reprendre votre travail ?',
-          'Des modifications non publiées ont été retrouvées sur cet appareil. Voulez-vous les reprendre ? Sinon la version en ligne sera rechargée.',
+        confirmDlg('Reprendre ton travail ?',
+          'Des modifications non publiées ont été retrouvées sur cet appareil. Veux-tu les reprendre ? Sinon la version en ligne sera rechargée.',
           'Reprendre', function(){
             state.posts = d.posts || state.posts;
             state.cats  = d.cats  || state.cats;
@@ -1305,7 +1305,7 @@ function loadAll(){
 
 function reload(){
   var go = function(){ lsDel(K_DRAFT); clearDirty(); loadAll(); };
-  if (state.dirty) confirmDlg('Recharger depuis le site', 'Vos modifications non publiées seront perdues.', 'Recharger', go);
+  if (state.dirty) confirmDlg('Recharger depuis le site', 'Tes modifications non publiées seront perdues.', 'Recharger', go);
   else go();
 }
 
@@ -1423,7 +1423,7 @@ function renderCats(){
 function addCat(){
   var input = $('newcat');
   var name = input.value.trim();
-  if (!name){ toast('Donnez un nom à la catégorie.', true); return; }
+  if (!name){ toast('Donne un nom à la catégorie.', true); return; }
   var id = R.slugify(name);
   if (!id){ toast('Ce nom ne peut pas servir d\'identifiant.', true); return; }
   if (state.cats.some(function(c){ return c.id === id; })){ toast('Cette catégorie existe déjà.', true); return; }
@@ -1595,7 +1595,7 @@ function drawCover(){
     ? '<div class="cover-prev"><img src="' + esc(src) + '" alt=""><div class="cover-acts">'
       + '<button type="button" onclick="document.getElementById(\'f-cover\').click()">Changer</button>'
       + '<button type="button" onclick="removeCover()">Retirer</button></div></div>'
-    : '<div class="drop" onclick="document.getElementById(\'f-cover\').click()">Cliquez pour choisir une image<br><span style="font-size:11.5px;opacity:.75">JPG ou PNG — format paysage recommandé</span></div>';
+    : '<div class="drop" onclick="document.getElementById(\'f-cover\').click()">Clique pour choisir une image<br><span style="font-size:11.5px;opacity:.75">JPG ou PNG — format paysage recommandé</span></div>';
 }
 function removeCover(){
   state._draft.cover = ''; state._draft.coverPending = null;
@@ -1693,8 +1693,8 @@ function savePost(status){
 
   markDirty(); renderAll(); closeEditor();
   toast(status === 'draft'
-    ? 'Brouillon enregistré. Cliquez « Publier en ligne » quand vous serez prête.'
-    : 'Article validé. Cliquez « Publier en ligne » pour le mettre sur le site.');
+    ? 'Brouillon enregistré. Clique sur « Publier en ligne » quand tu seras prête.'
+    : 'Article validé. Clique sur « Publier en ligne » pour le mettre sur le site.');
 }
 
 function askDeletePost(i){
@@ -1834,7 +1834,7 @@ function ouvrirContact(i){
     : '';
   if (c){
     $('ct-sujet').value = '';
-    $('ct-html').value = '<p class="p">Bonjour {{prenom}},</p>\n<p class="p"></p>\n<p class="p">Bien à vous,<br><em>Christèle</em></p>';
+    $('ct-html').value = '<p class="p">Bonjour {{prenom}},</p>\n<p class="p"></p>\n<p class="p">Bien à toi,<br><em>Christèle</em></p>';
   }
   dessinerTags();
   $('scrim-c').className = 'on';
@@ -1901,7 +1901,7 @@ function envoyerAContact(){
   if (!sujet){ toast("L'objet est obligatoire.", true); return; }
   api('contact_email', {
     dest: contactCourant.email, sujet: sujet, html: $('ct-html').value,
-    vars: { prenom: contactCourant.prenom || 'à vous', nom: contactCourant.nom || '', email: contactCourant.email },
+    vars: { prenom: contactCourant.prenom || 'à toi', nom: contactCourant.nom || '', email: contactCourant.email },
   }).then(function(){ toast('Message envoyé à ' + contactCourant.email + '.'); $('ct-sujet').value = ''; })
     .catch(function(e){ toast('Envoi impossible — ' + e.message, true); });
 }
@@ -2090,7 +2090,7 @@ function testerCampagne(){
   api('template_test', {
     cle: 'newsletter', sujet: $('nw-sujet').value, html: $('nw-html').value,
     vars: { prenom: 'Marie', nom: 'Dupont' },
-  }).then(function(){ toast('Test envoyé sur votre adresse.'); })
+  }).then(function(){ toast('Test envoyé sur ton adresse.'); })
     .catch(function(e){ toast('Envoi impossible — ' + e.message, true); });
 }
 
@@ -2182,7 +2182,7 @@ function verifierBrevo(){
 
 function enregistrerCleBrevo(){
   var k = $('b-cle').value.trim();
-  if (!k){ toast('Collez la clé avant d\'enregistrer.', true); return; }
+  if (!k){ toast('Colle la clé avant d\'enregistrer.', true); return; }
   api('brevo_set_key', { cle_api: k })
     .then(function(){ $('b-cle').value = ''; toast('Clé enregistrée.'); return verifierBrevo(); })
     .catch(function(e){ toast(e.message, true); });
@@ -2267,7 +2267,7 @@ function enregistrerModele(){
 function testerModele(){
   if (!modeleCourant) return;
   api('template_test', { cle: modeleCourant.cle, sujet: $('tm-sujet').value, html: $('tm-html').value, vars: varsExemple() })
-    .then(function(){ toast('Test envoyé sur votre adresse.'); return chargerEmails(); })
+    .then(function(){ toast('Test envoyé sur ton adresse.'); return chargerEmails(); })
     .catch(function(e){ toast('Envoi impossible — ' + e.message, true); });
 }
 
@@ -2283,7 +2283,7 @@ function renderSettings(){
     '<div class="hint" style="margin:0 0 12px">Connectée en tant que <b>' + esc(state.user || '—') + '</b>.</div>'
     + '<div class="hint" style="margin:0 0 16px">La publication se fait sur <b>' + esc(OWNER + '/' + REPO) + '</b>'
     + (state.token ? '' : ' — <span style="color:var(--te)">indisponible : aucun accès de publication</span>') + '.</div>'
-    + '<div class="hint" style="margin:0 0 16px">Votre session se ferme d\'elle-même au bout de douze heures.</div>'
+    + '<div class="hint" style="margin:0 0 16px">Ta session se ferme d\'elle-même au bout de douze heures.</div>'
     + '<button class="btn ghost sm" onclick="logout()">Se déconnecter</button>';
 }
 function countField(id, cid, max){
