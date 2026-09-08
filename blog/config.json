@@ -1,32 +1,10 @@
 {
  "blogTitle": "Blog — Leadership, transitions & équilibre de vie | Ichinen Coaching",
- "blogDesc": "Articles de fond sur le leadership conscient, la reconversion, le burn-out et l'équilibre de vie, par Christèle Fibleuil, coach professionnelle certifiée RNCP 7 en Martinique.",
+ "blogDesc": "Articles de fond sur le leadership conscient, la reconversion, le burn-out et l'équilibre de vie, par Christèle Fibleuil, coach certifiée RNCP 7 en Martinique.",
  "calendly": "https://calendly.com/christele_ichinencoaching/premierrdv",
  "email": "contact@ichinencoaching.com",
  "repoOwner": "ichinen-coaching",
  "repoName": "ichinen-coaching.github.io",
  "branch": "main",
- "apiUrl": "https://tcawjvyefzlkvngcklqm.supabase.co/functions/v1/ichinen-api",
- "cats": [
-  {
-   "id": "leadership",
-   "name": "Leadership"
-  },
-  {
-   "id": "burnout",
-   "name": "Burn-out"
-  },
-  {
-   "id": "transition",
-   "name": "Transitions"
-  },
-  {
-   "id": "identite",
-   "name": "Identité"
-  },
-  {
-   "id": "equilibre",
-   "name": "Équilibre"
-  }
- ]
+ "apiUrl": "https://tcawjvyefzlkvngcklqm.supabase.co/functions/v1/ichinen-api"
 }
