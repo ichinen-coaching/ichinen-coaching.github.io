@@ -1060,6 +1060,9 @@ function lsDel(k){ try { localStorage.removeItem(k); } catch(e){ delete _mem[k];
 /* ---------------- utilitaires UI ---------------- */
 function $(id){ return document.getElementById(id); }
 function esc(s){ return R.esc(s); }
+// esc() protège le HTML mais pas l'apostrophe, qui casse un onclick="f('…')".
+// Toute chaîne insérée DANS du JavaScript passe par ici.
+function escJs(s){ return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
 
 var toastTimer;
 function toast(msg, isErr){
@@ -1779,7 +1782,7 @@ function renderContacts(){
   $('ct-chips').innerHTML = ['tous'].concat(tags).map(function(t){
     var n = t === 'tous' ? state.contacts.length
       : state.contacts.filter(function(c){ return (c.tags || []).indexOf(t) >= 0; }).length;
-    return '<button class="chip' + (filtreTag === t ? ' on' : '') + '" onclick="setFiltreTag(\'' + esc(t) + '\')">'
+    return '<button class="chip' + (filtreTag === t ? ' on' : '') + '" onclick="setFiltreTag(\'' + escJs(t) + '\')">'
       + esc(t === 'tous' ? 'Tous' : t) + ' · ' + n + '</button>';
   }).join('');
 
@@ -1848,7 +1851,7 @@ function dessinerTags(){
     : '<span class="hint" style="margin:0">Aucune étiquette.</span>';
   if (tagsCourants.indexOf('client') < 0 || tagsCourants.indexOf('prospect') < 0){
     $('ct-tags').innerHTML += ['client', 'prospect'].filter(function(t){ return tagsCourants.indexOf(t) < 0; })
-      .map(function(t){ return ' <button class="chip" type="button" onclick="mettreTag(\'' + t + '\')">+ ' + t + '</button>'; }).join('');
+      .map(function(t){ return ' <button class="chip" type="button" onclick="mettreTag(\'' + escJs(t) + '\')">+ ' + t + '</button>'; }).join('');
   }
 }
 function mettreTag(t){ if (tagsCourants.indexOf(t) < 0) tagsCourants.push(t); dessinerTags(); }
@@ -2201,7 +2204,7 @@ function ouvrirModele(i){
   $('tm-sujet').value = t.sujet;
   $('tm-html').value = t.html;
   $('tm-vars').innerHTML = (t.variables || []).map(function(v){
-    return '<button class="chip var" type="button" onclick="insererVar(\'' + esc(v) + '\')">{{' + esc(v) + '}}</button>';
+    return '<button class="chip var" type="button" onclick="insererVar(\'' + escJs(v) + '\')">{{' + esc(v) + '}}</button>';
   }).join('') || '<span class="hint" style="margin:0">Aucune variable.</span>';
   $('scrim-t').className = 'on';
   $('editeur-modele').className = 'on';
