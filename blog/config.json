@@ -6,5 +6,27 @@
  "repoOwner": "ichinen-coaching",
  "repoName": "ichinen-coaching.github.io",
  "branch": "main",
- "apiUrl": "https://tcawjvyefzlkvngcklqm.supabase.co/functions/v1/ichinen-api"
+ "apiUrl": "https://tcawjvyefzlkvngcklqm.supabase.co/functions/v1/ichinen-api",
+ "cats": [
+  {
+   "id": "leadership",
+   "name": "Leadership"
+  },
+  {
+   "id": "burnout",
+   "name": "Burn-out"
+  },
+  {
+   "id": "transition",
+   "name": "Transitions"
+  },
+  {
+   "id": "identite",
+   "name": "Identité"
+  },
+  {
+   "id": "equilibre",
+   "name": "Équilibre"
+  }
+ ]
 }
