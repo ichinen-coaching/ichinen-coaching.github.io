@@ -1156,13 +1156,30 @@ function getFile(path){
 
 /* ---------------- API des inscrits ---------------- */
 function apiSession(){ return lsGet(K_SESSION) || ''; }
+
+// Servie en http, la console ne peut pas parler à l'API (qui n'accepte que https),
+// et il ne FAUT pas qu'elle le puisse : le code de connexion et le jeton de session
+// passeraient en clair. On le dit, au lieu de laisser un « Failed to fetch ».
+function pageNonChiffree(){
+  return location.protocol === 'http:' && location.hostname !== 'localhost';
+}
 function api(action, payload){
   var url = API_URL;
   var body = payload || {}; body.action = action;
   var headers = { 'content-type': 'application/json' };
   var s = apiSession();
   if (s) headers['x-ichinen-session'] = s;
+  if (pageNonChiffree()){
+    return Promise.reject(new Error(
+      'Cette page est ouverte en http, sans chiffrement — la connexion est bloquée exprès. '
+      + 'Ouvre https://' + location.hostname + location.pathname + ', ou passe par ichinencoaching.com/admin.'));
+  }
   return fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(body) })
+    .catch(function(e){
+      // fetch ne rejette que sur un problème réseau : DNS, CORS, coupure.
+      if (e instanceof TypeError) throw new Error("Le service ne répond pas. Vérifie ta connexion ; si ça persiste, préviens BIZZY.");
+      throw e;
+    })
     .then(function(r){
       return r.json().catch(function(){ return {}; }).then(function(j){
         if (!r.ok){
