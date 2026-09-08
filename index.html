@@ -90,6 +90,8 @@ nav.small{padding:10px 40px;}
 .logo{display:flex;align-items:center;cursor:pointer;}
 
 .nav-socials{display:flex;gap:10px;align-items:center;}
+.nav-blog{display:inline-flex;align-items:center;gap:7px;border:1.5px solid var(--ca);color:var(--td);padding:9px 20px;border-radius:2px;text-decoration:none;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;white-space:nowrap;cursor:none;transition:background .35s,color .35s,border-color .35s,transform .35s;}
+.nav-blog:hover{background:var(--ca);border-color:var(--ca);color:var(--wh);transform:translateY(-2px);}
 /* ── SOCIAL ICONS — premium flat avec bordure fine dorée ── */
 .ns-icon{
   display:flex;align-items:center;justify-content:center;
@@ -524,6 +526,7 @@ footer{background:var(--td);color:var(--cr);padding:60px 80px 40px;display:grid;
   .logo img{height:34px!important;}
   .nav-socials{display:none;}
   .nav-cta{padding:8px 14px;font-size:11px;}
+  .nav-blog{padding:8px 14px;font-size:11px;letter-spacing:.1em;}
 
   /* HERO */
   .hero{grid-template-columns:1fr;min-height:auto;}
@@ -584,6 +587,7 @@ footer{background:var(--td);color:var(--cr);padding:60px 80px 40px;display:grid;
   /* NAV */
   nav{padding:10px 16px;}
   .nav-cta{display:none;}
+  .nav-blog{padding:8px 14px;font-size:10px;letter-spacing:.1em;}
 
   /* BAR */
   .bar{font-size:11px;padding:8px 12px;}
@@ -758,6 +762,7 @@ footer{background:var(--td);color:var(--cr);padding:60px 80px 40px;display:grid;
       </svg>
     </a>
   </div>
+  <a href="/blog/" class="nav-blog">Le Blog</a>
   <a href="#discovery" class="nav-cta mag">Session Découverte Gratuite</a>
 </nav>
 
@@ -1415,6 +1420,110 @@ document.querySelector('.hero')?.addEventListener('mousemove',e=>{const r=e.curr
 function faq(el){const p=el.parentElement,was=p.classList.contains('open');document.querySelectorAll('.fi').forEach(i=>i.classList.remove('open'));if(!was)p.classList.add('open');}
 let rs=false;
 document.addEventListener('click',e=>{if(!rs){const s=document.createElement('style');s.textContent='@keyframes cr{to{width:90px;height:90px;opacity:0}}';document.head.appendChild(s);rs=true;}const r=document.createElement('div');r.style.cssText=`position:fixed;left:${e.clientX}px;top:${e.clientY}px;width:0;height:0;border-radius:50%;background:rgba(200,134,90,.22);transform:translate(-50%,-50%);pointer-events:none;z-index:9995;animation:cr .65s ease-out forwards`;document.body.appendChild(r);setTimeout(()=>r.remove(),750);});
+</script>
+
+<!-- ═══ POP-UP COMMUNAUTÉ 1001 VIES ═══ -->
+<style>
+@keyframes badgePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.7)}}
+#pop1001{position:fixed;inset:0;z-index:9998;display:none;align-items:center;justify-content:center;padding:24px;background:rgba(44,42,36,.72);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);opacity:0;transition:opacity .35s;}
+#pop1001.on{display:flex;opacity:1;}
+#pop1001 .p-card{position:relative;width:100%;max-width:520px;background:linear-gradient(160deg,#3D2010 0%,#4A2818 45%,#3A2215 100%);border:1px solid rgba(200,134,90,.28);border-radius:18px;padding:44px 42px 38px;box-shadow:0 30px 80px rgba(0,0,0,.45);transform:translateY(18px) scale(.98);transition:transform .45s cubic-bezier(.23,1,.32,1);overflow:hidden;}
+#pop1001.on .p-card{transform:none;}
+#pop1001 .p-deco{position:absolute;right:-10px;bottom:-56px;font-family:'Cormorant Garamond',serif;font-size:190px;font-weight:700;color:rgba(200,134,90,.07);line-height:1;pointer-events:none;user-select:none;}
+#pop1001 .p-glow{position:absolute;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(181,82,30,.22) 0%,transparent 70%);top:-160px;right:-120px;pointer-events:none;}
+#pop1001 .p-close{position:absolute;top:14px;right:14px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(240,234,210,.22);background:transparent;color:rgba(240,234,210,.7);font-size:19px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .3s,color .3s,border-color .3s;z-index:2;}
+#pop1001 .p-close:hover{background:rgba(240,234,210,.12);color:#F0EAD2;border-color:rgba(240,234,210,.45);}
+#pop1001 .p-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(200,134,90,.15);border:1px solid rgba(200,134,90,.25);padding:5px 14px;border-radius:20px;margin-bottom:16px;position:relative;z-index:1;}
+#pop1001 .p-badge i{width:6px;height:6px;border-radius:50%;background:#C8865A;animation:badgePulse 2s infinite;display:block;}
+#pop1001 .p-badge span{font-size:10px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#D4C49A;}
+#pop1001 h3{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4.4vw,38px);font-weight:700;color:#F0EAD2;line-height:1.14;margin-bottom:14px;position:relative;z-index:1;}
+#pop1001 h3 em{font-style:italic;color:#C8865A;}
+#pop1001 .p-cit{font-size:14px;font-style:italic;color:rgba(212,196,154,.75);line-height:1.6;margin-bottom:10px;position:relative;z-index:1;}
+#pop1001 .p-txt{font-size:14.5px;font-weight:300;color:rgba(240,234,210,.62);line-height:1.7;margin-bottom:26px;position:relative;z-index:1;}
+#pop1001 .p-cta{display:inline-flex;align-items:center;gap:10px;background:#B5521E;color:#FDFAF4;padding:16px 34px;border-radius:12px;font-family:'Jost',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;box-shadow:0 8px 28px rgba(181,82,30,.4);transition:background .35s,box-shadow .35s,transform .35s;position:relative;z-index:1;}
+#pop1001 .p-cta:hover{background:#C8865A;box-shadow:0 14px 40px rgba(181,82,30,.55);transform:translateY(-3px);}
+#pop1001 .p-plus{display:block;margin-top:18px;background:none;border:none;font-family:'Jost',sans-serif;font-size:12px;letter-spacing:.06em;color:rgba(240,234,210,.42);text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0;position:relative;z-index:1;transition:color .3s;}
+#pop1001 .p-plus:hover{color:rgba(240,234,210,.75);}
+@media(max-width:520px){#pop1001 .p-card{padding:38px 24px 30px;}#pop1001 .p-deco{font-size:140px;}}
+@media(prefers-reduced-motion:reduce){#pop1001,#pop1001 .p-card{transition:none;}}
+</style>
+<div id="pop1001" role="dialog" aria-modal="true" aria-labelledby="pop1001-t">
+  <div class="p-card">
+    <div class="p-glow"></div>
+    <div class="p-deco">1001</div>
+    <button type="button" class="p-close" aria-label="Fermer">&times;</button>
+    <div class="p-badge"><i></i><span>Communauté gratuite</span></div>
+    <h3 id="pop1001-t">Rejoins <em>l&rsquo;Acad&eacute;mie</em><br>des 1001 Vies</h3>
+    <p class="p-cit">&laquo;&nbsp;Mille Vies &agrave; g&eacute;rer, 1 seule pour r&eacute;aliser son plein potentiel&nbsp;!&nbsp;&raquo;</p>
+    <p class="p-txt">La communaut&eacute; des femmes ambitieuses qui reprennent sereinement le cap d&rsquo;une vie align&eacute;e. Tu y trouves les &eacute;changes, les ressources et l&rsquo;&eacute;lan pour avancer &mdash; sans rien payer.</p>
+    <a class="p-cta" href="https://www.skool.com/lacademie-1001-vies-8552" target="_blank" rel="noopener noreferrer">Rejoindre gratuitement
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    </a>
+    <button type="button" class="p-plus">Plus tard</button>
+  </div>
+</div>
+<script>
+(function(){
+  var el=document.getElementById('pop1001'); if(!el) return;
+  var card=el.querySelector('.p-card'), fermer=el.querySelector('.p-close'),
+      plus=el.querySelector('.p-plus'), cta=el.querySelector('.p-cta');
+  var CLE='ic_pop1001', JOURS=14, memoire=null, ouvert=false, fini=false, avant=null;
+
+  function lu(){ try{ return localStorage.getItem(CLE); }catch(e){ return memoire; } }
+  function ecrire(v){ memoire=v; try{ localStorage.setItem(CLE,v); }catch(e){} }
+  function dejaVu(){
+    var v=lu(); if(!v) return false;
+    var t=parseInt(v,10); if(!t) return true;
+    return (Date.now()-t) < JOURS*864e5;
+  }
+
+  function ouvrir(){
+    if(ouvert||fini||dejaVu()) return;
+    ouvert=true; fini=true; ecrire(String(Date.now()));
+    avant=document.activeElement;
+    el.classList.add('on');
+    document.body.style.overflow='hidden';
+    setTimeout(function(){ fermer.focus(); },60);
+  }
+  function refermer(){
+    if(!ouvert) return;
+    ouvert=false;
+    el.classList.remove('on');
+    document.body.style.overflow='';
+    if(avant && avant.focus) avant.focus();
+  }
+
+  fermer.addEventListener('click',refermer);
+  plus.addEventListener('click',refermer);
+  el.addEventListener('click',function(e){ if(e.target===el) refermer(); });
+  document.addEventListener('keydown',function(e){
+    if(!ouvert) return;
+    if(e.key==='Escape'){ refermer(); return; }
+    if(e.key==='Tab'){
+      var f=[fermer,cta,plus], i=f.indexOf(document.activeElement);
+      e.preventDefault();
+      f[(i + (e.shiftKey?-1:1) + f.length) % f.length].focus();
+    }
+  });
+  cta.addEventListener('click',function(){ ecrire(String(Date.now()+180*864e5)); refermer(); });
+
+  if(dejaVu()) return;
+  var tactile = window.matchMedia('(hover:none)').matches || window.innerWidth<=900;
+  if(tactile){
+    setTimeout(ouvrir,25000);
+    window.addEventListener('scroll',function(){
+      var h=document.documentElement;
+      if((h.scrollTop+window.innerHeight)/h.scrollHeight > .55) ouvrir();
+    },{passive:true});
+  }else{
+    setTimeout(function(){
+      document.addEventListener('mouseout',function(e){
+        if(!e.relatedTarget && !e.toElement && e.clientY<=6) ouvrir();
+      });
+    },8000);
+    setTimeout(ouvrir,45000);
+  }
+})();
 </script>
 </body>
 </html>
