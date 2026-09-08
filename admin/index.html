@@ -94,6 +94,12 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 .empty .k{font-family:'Cormorant Garamond',serif;font-size:34px;color:var(--ca);opacity:.35;display:block;margin-bottom:10px}
 
 /* ---------- EDITOR ---------- */
+#editeur-modele{position:fixed;top:0;right:0;bottom:0;width:min(820px,100%);background:var(--wh);border-left:1px solid var(--cd);box-shadow:-14px 0 44px rgba(44,42,36,.1);transform:translateX(102%);transition:transform .5s cubic-bezier(.23,1,.32,1);z-index:60;display:flex;flex-direction:column}
+#editeur-modele.on{transform:none}
+#scrim-t{position:fixed;inset:0;background:rgba(44,42,36,.32);opacity:0;pointer-events:none;transition:opacity .35s;z-index:55}
+#scrim-t.on{opacity:1;pointer-events:auto}
+.chip.var{cursor:pointer;font-family:ui-monospace,Menlo,monospace;font-size:11.5px}
+.chip.var:hover{border-color:var(--ca);color:var(--te)}
 #editor{position:fixed;top:0;right:0;bottom:0;width:min(760px,100%);background:var(--wh);border-left:1px solid var(--cd);box-shadow:-14px 0 44px rgba(44,42,36,.1);transform:translateX(102%);transition:transform .5s cubic-bezier(.23,1,.32,1);z-index:60;display:flex;flex-direction:column}
 #editor.on{transform:none}
 #scrim{position:fixed;inset:0;background:rgba(44,42,36,.32);opacity:0;pointer-events:none;transition:opacity .35s;z-index:55}
@@ -150,30 +156,37 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 
 <!-- =============== CONNEXION =============== -->
 <div id="login">
-  <form class="login-card" onsubmit="return doLogin(event)">
+  <div class="login-card">
     <div class="login-kanji">一念</div>
     <h1>Console <em>Ichinen</em></h1>
-    <p>Gérez les articles de votre blog. Les modifications sont publiées directement sur ichinencoaching.com.</p>
 
-    <label for="tok">Jeton d'accès GitHub</label>
-    <input id="tok" type="password" placeholder="github_pat_…" autocomplete="current-password" spellcheck="false">
-    <div class="hint">Ce jeton reste sur cet appareil, dans ce navigateur. Il n'est jamais envoyé ailleurs qu'à GitHub.</div>
+    <!-- étape 1 : adresse -->
+    <form id="etape-email" onsubmit="return demanderCode(event)">
+      <p>Entrez votre adresse pour recevoir un code de connexion.</p>
+      <label for="l-email">Adresse email</label>
+      <input id="l-email" type="email" value="contact@ichinencoaching.com" autocomplete="username" spellcheck="false">
+      <div style="margin-top:22px"><button class="btn" type="submit" id="btn-code" style="width:100%;justify-content:center">Recevoir mon code</button></div>
+    </form>
+
+    <!-- étape 2 : code -->
+    <form id="etape-code" style="display:none" onsubmit="return verifierCode(event)">
+      <p>Un code à six chiffres vient d'être envoyé à <strong id="l-dest"></strong>. Il est valable dix minutes.</p>
+      <label for="l-code">Code reçu</label>
+      <input id="l-code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6"
+             placeholder="123456" style="font-size:24px;letter-spacing:10px;text-align:center">
+      <div style="margin-top:22px;display:flex;gap:9px">
+        <button class="btn ghost" type="button" onclick="retourEmail()">Retour</button>
+        <button class="btn" type="submit" id="btn-verif" style="flex:1;justify-content:center">Ouvrir la console</button>
+      </div>
+    </form>
 
     <div id="login-err"></div>
 
-    <div style="margin-top:22px"><button class="btn" type="submit" id="login-btn" style="width:100%;justify-content:center">Se connecter</button></div>
-
     <div class="login-help">
-      <b>Première connexion ?</b> Créez votre jeton en 5 étapes :
-      <ol>
-        <li>Ouvrez <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="color:var(--te)">github.com → jetons d'accès</a></li>
-        <li>Nom : <code>Console Ichinen</code> · Expiration : <code>1 an</code></li>
-        <li>Repository access : <b>Only select repositories</b> → <code>ichinen-coaching.github.io</code></li>
-        <li>Permissions → Repository → <b>Contents</b> : <code>Read and write</code></li>
-        <li>Cliquez « Generate token », copiez-le et collez-le ci-dessus</li>
-      </ol>
+      Le code arrive sur la boîte reliée à <b>contact@ichinencoaching.com</b>.
+      Pensez à regarder dans les indésirables la première fois.
     </div>
-  </form>
+  </div>
 </div>
 
 <!-- =============== APPLICATION =============== -->
@@ -187,6 +200,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
       <button data-v="cats" onclick="go('cats')"><span class="ico">◆</span> Catégories</button>
       <button data-v="seo" onclick="go('seo')"><span class="ico">◎</span> Référencement</button>
       <button data-v="leads" onclick="go('leads')"><span class="ico">✉</span> Inscrits</button>
+      <button data-v="mails" onclick="go('mails')"><span class="ico">✉</span> Modèles d'emails</button>
       <button data-v="set" onclick="go('set')"><span class="ico">⚙</span> Réglages</button>
     </nav>
     <div class="side-foot">
@@ -270,6 +284,23 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
           </div>
         </div>
         <div id="leads-table"></div>
+      </div>
+    </section>
+
+
+    <!-- MODELES D'EMAILS -->
+    <section class="view" id="v-mails">
+      <div class="panel">
+        <div class="panel-h"><h3>Envoi des emails</h3></div>
+        <div class="panel-b" id="brevo-cfg"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Modèles</h3></div>
+        <div id="mails-table"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-h"><h3>Derniers envois</h3><button class="btn ghost sm" onclick="chargerEmails()">Actualiser</button></div>
+        <div id="mails-log"></div>
       </div>
     </section>
 
@@ -366,6 +397,34 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
       <button class="btn ghost sm" onclick="savePost('draft')">Garder en brouillon</button>
       <button class="btn sm" onclick="savePost('published')">Valider l'article</button>
     </div>
+  </div>
+</div>
+
+
+<!-- =============== EDITEUR DE MODELE =============== -->
+<div id="scrim-t" onclick="fermerModele()"></div>
+<div id="editeur-modele">
+  <div class="ed-h">
+    <h3 id="tm-titre">Modèle</h3>
+    <button class="btn ghost sm" onclick="fermerModele()">Fermer</button>
+  </div>
+  <div class="ed-b">
+    <div class="f"><label>À quoi il sert</label><div class="hint" id="tm-desc" style="margin:0"></div></div>
+    <div class="f"><label for="tm-sujet">Objet de l'email</label><input id="tm-sujet" oninput="apercuDiffere()"></div>
+    <div class="f">
+      <label>Variables disponibles</label>
+      <div class="chips" id="tm-vars" style="margin:0"></div>
+      <div class="hint">Cliquez pour insérer. Elles seront remplacées par les vraies valeurs à l'envoi.</div>
+    </div>
+    <div class="f"><label for="tm-html">Contenu</label><textarea id="tm-html" rows="14" oninput="apercuDiffere()" spellcheck="true"></textarea></div>
+    <div class="f">
+      <label>Aperçu</label>
+      <iframe id="tm-apercu" style="width:100%;height:460px;border:1px solid var(--cd);border-radius:4px;background:#fff"></iframe>
+    </div>
+  </div>
+  <div class="ed-f">
+    <button class="btn ghost sm" onclick="testerModele()">M'envoyer un test</button>
+    <button class="btn sm" onclick="enregistrerModele()">Enregistrer</button>
   </div>
 </div>
 
@@ -892,13 +951,14 @@ return {SITE:SITE,CTA:CTA,slugify:slugify,isoDate:isoDate,esc:esc,txt:txt,
 
 var R = window.IchinenRender;
 var API = 'https://api.github.com';
-var K_TOK = 'ichinen_gh_token', K_DRAFT = 'ichinen_local_draft', K_SEC = 'ichinen_api_secret';
+var K_SESSION = 'ichinen_session', K_DRAFT = 'ichinen_local_draft';
 
 var OWNER = 'ichinen-coaching', REPO = 'ichinen-coaching.github.io', BRANCH = 'main';
+var API_URL = 'https://tcawjvyefzlkvngcklqm.supabase.co/functions/v1/ichinen-api';
 
 var state = {
   token: null, user: null,
-  posts: [], cats: [], leads: [], leadsErr: null, cfg: {}, assets: {},
+  posts: [], cats: [], leads: [], leadsErr: null, templates: [], emails: [], pret: false, cfg: {}, assets: {},
   shas: {},              // chemin -> sha du blob distant
   editing: null,         // index dans state.posts, ou null pour un nouvel article
   dirty: false,
@@ -1008,72 +1068,109 @@ function getFile(path){
 
 
 /* ---------------- API des inscrits ---------------- */
-function apiSecret(){ return lsGet(K_SEC) || ''; }
+function apiSession(){ return lsGet(K_SESSION) || ''; }
 function api(action, payload){
-  var url = (state.cfg && state.cfg.apiUrl) || '';
-  if (!url) return Promise.reject(new Error("Aucune adresse d'API configurée (Réglages)."));
+  var url = API_URL;
   var body = payload || {}; body.action = action;
   var headers = { 'content-type': 'application/json' };
-  var sec = apiSecret();
-  if (sec) headers['x-ichinen-secret'] = sec;
+  var s = apiSession();
+  if (s) headers['x-ichinen-session'] = s;
   return fetch(url, { method: 'POST', headers: headers, body: JSON.stringify(body) })
     .then(function(r){
       return r.json().catch(function(){ return {}; }).then(function(j){
         if (!r.ok){
-          if (r.status === 401) throw new Error('Clé de la console refusée. Vérifiez-la dans Réglages.');
+          if (r.status === 401 && state.pret){ deconnexionForcee(); }
           throw new Error(j.erreur || ('HTTP ' + r.status));
         }
         return j;
       });
     });
 }
+function deconnexionForcee(){
+  lsDel(K_SESSION);
+  toast('Votre session a expiré. Reconnectez-vous.', true);
+  setTimeout(function(){ location.reload(); }, 1500);
+}
 
-/* ---------------- connexion ---------------- */
+/* ---------------- connexion par code email ---------------- */
+var ticket = null;
+
 function loginError(msg){
   var box = $('login-err');
   box.textContent = msg;
   box.style.display = 'block';
 }
-
-function doLogin(e){
-  if (e && e.preventDefault) e.preventDefault();
-  var tok = $('tok').value.trim();
+function retourEmail(){
+  $('etape-code').style.display = 'none';
+  $('etape-email').style.display = '';
   $('login-err').style.display = 'none';
-  if (!tok){ loginError('Collez votre jeton GitHub pour continuer.'); return false; }
+  ticket = null;
+}
 
-  var btn = $('login-btn');
-  btn.disabled = true; btn.textContent = 'Vérification…';
-  state.token = tok;
+function demanderCode(e){
+  if (e && e.preventDefault) e.preventDefault();
+  var email = $('l-email').value.trim().toLowerCase();
+  $('login-err').style.display = 'none';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ loginError('Cette adresse n\'est pas valide.'); return false; }
 
-  gh('/repos/' + OWNER + '/' + REPO)
-    .then(function(repo){
-      if (!repo.permissions || !repo.permissions.push){
-        throw new Error('Ce jeton peut lire le dépôt mais pas y écrire. Régénérez-le avec la permission « Contents : Read and write ».');
-      }
-      return gh('/user').catch(function(){ return { login: 'jeton' }; });
+  var b = $('btn-code'); b.disabled = true; b.textContent = 'Envoi du code…';
+  api('login_start', { email: email })
+    .then(function(r){
+      ticket = r.ticket;
+      $('l-dest').textContent = email;
+      $('etape-email').style.display = 'none';
+      $('etape-code').style.display = '';
+      setTimeout(function(){ $('l-code').focus(); }, 100);
     })
-    .then(function(u){
-      state.user = u.login;
-      lsSet(K_TOK, tok);
-      $('login').style.display = 'none';
-      $('app').style.display = 'block';
-      $('repo-label').textContent = OWNER + '/' + REPO;
-      return loadAll();
+    .catch(function(err){ loginError(err.message); })
+    .then(function(){ b.disabled = false; b.textContent = 'Recevoir mon code'; });
+  return false;
+}
+
+function verifierCode(e){
+  if (e && e.preventDefault) e.preventDefault();
+  var code = $('l-code').value.trim();
+  $('login-err').style.display = 'none';
+  if (!/^\d{6}$/.test(code)){ loginError('Le code fait six chiffres.'); return false; }
+
+  var b = $('btn-verif'); b.disabled = true; b.textContent = 'Vérification…';
+  api('login_verify', { ticket: ticket, code: code })
+    .then(function(r){
+      lsSet(K_SESSION, r.session);
+      state.user = r.email;
+      return entrer();
     })
     .catch(function(err){
-      state.token = null;
       loginError(err.message);
-    })
-    .then(function(){
-      btn.disabled = false; btn.textContent = 'Se connecter';
+      b.disabled = false; b.textContent = 'Ouvrir la console';
     });
   return false;
 }
 
+// Ouvre l'application : récupère le jeton GitHub pour la durée de la session
+// (il vit en mémoire, jamais dans le navigateur) puis charge le contenu.
+function entrer(){
+  return api('github_token')
+    .then(function(r){ state.token = r.token; })
+    .catch(function(err){
+      toast('Publication indisponible : ' + err.message, true);
+      state.token = null;
+    })
+    .then(function(){
+      $('login').style.display = 'none';
+      $('app').style.display = 'block';
+      $('repo-label').textContent = OWNER + '/' + REPO;
+      state.pret = true;
+      return loadAll();
+    });
+}
+
 function logout(){
-  confirmDlg('Se déconnecter', 'Le jeton sera effacé de cet appareil. Les modifications non publiées seront perdues.', 'Se déconnecter', function(){
-    lsDel(K_TOK); lsDel(K_DRAFT);
-    location.reload();
+  confirmDlg('Se déconnecter', 'Votre session sera fermée. Les modifications non publiées seront perdues.', 'Se déconnecter', function(){
+    api('logout').catch(function(){}).then(function(){
+      lsDel(K_SESSION); lsDel(K_DRAFT);
+      location.reload();
+    });
   });
 }
 
@@ -1134,7 +1231,7 @@ function rebuildCats(){
 }
 
 /* ---------------- navigation ---------------- */
-var TITLES = { dash:'Tableau de bord', posts:'Articles', cats:'Catégories', seo:'Référencement', leads:'Inscrits', set:'Réglages' };
+var TITLES = { dash:'Tableau de bord', posts:'Articles', cats:'Catégories', seo:'Référencement', leads:'Inscrits', mails:'Modèles d\'emails', set:'Réglages' };
 function go(v){
   document.querySelectorAll('.view').forEach(function(s){ s.className = 'view'; });
   $('v-' + v).className = 'view on';
@@ -1142,6 +1239,7 @@ function go(v){
   $('vtitle').textContent = TITLES[v] || '';
   if (v === 'seo') renderSeo();
   if (v === 'leads') loadLeads();
+  if (v === 'mails'){ chargerModeles(); chargerEmails(); verifierBrevo(); }
   if (v === 'set') renderSettings();
 }
 
@@ -1565,8 +1663,6 @@ function renderSeo(){
 
 /* ---------------- inscrits ---------------- */
 function loadLeads(){
-  if (!state.cfg.apiUrl){ renderLeads(); return Promise.resolve(); }
-  if (!apiSecret()){ renderLeads(); return Promise.resolve(); }
   return api('leads').then(function(r){
     state.leads = r.leads || [];
     state.leadsErr = null;
@@ -1578,26 +1674,13 @@ function loadLeads(){
 }
 
 function renderLeads(){
-  var url = state.cfg.apiUrl || '';
-  var sec = apiSecret();
-
   $('leads-cfg').innerHTML =
-    '<div class="f"><label for="s-api">Adresse de l\'API</label>'
-    + '<input id="s-api" value="' + esc(url) + '" placeholder="https://…/functions/v1/ichinen-api">'
-    + '<div class="hint">C\'est le service qui reçoit les inscriptions du blog. Il est publié avec le site.</div></div>'
-    + '<div class="f"><label for="s-sec">Clé de la console</label>'
-    + '<input id="s-sec" type="password" value="' + esc(sec) + '" placeholder="collez votre clé">'
-    + '<div class="hint">Cette clé donne accès à la liste des inscrits. Elle reste sur cet appareil et n\'est jamais publiée sur le site.</div></div>'
-    + '<button class="btn sm" onclick="saveApiSettings()">Enregistrer et charger</button>'
-    + (url ? '' : '<div class="hint" style="color:var(--te);margin-top:12px">⚠ Aucune API configurée : les inscriptions ne sont pas collectées.</div>')
+    '<div class="hint" style="margin:0">Les inscriptions du blog arrivent ici automatiquement, avec l\'article qui les a amenées. '
+    + 'Chaque nouvelle inscrite reçoit le mail de bienvenue, et vous recevez une alerte.</div>'
     + (state.leadsErr ? '<div class="hint" style="color:var(--te);margin-top:12px">⚠ ' + esc(state.leadsErr) + '</div>' : '');
 
-  if (!url || !sec){
-    $('leads-table').innerHTML = emptyBox('Renseignez l\'adresse de l\'API et votre clé pour voir les inscrits.');
-    return;
-  }
   if (!state.leads.length){
-    $('leads-table').innerHTML = emptyBox('Aucun inscrit pour le moment.\nLes inscriptions du blog arrivent ici automatiquement.');
+    $('leads-table').innerHTML = emptyBox('Aucune inscrite pour le moment.');
     return;
   }
   var rows = state.leads.map(function(l){
@@ -1610,15 +1693,7 @@ function renderLeads(){
       + '<a class="btn ghost sm" href="mailto:' + esc(l.email) + '">Écrire</a>'
       + '<button class="btn danger sm" onclick="deleteLead(\'' + esc(l.id) + '\')">✕</button></div></td></tr>';
   }).join('');
-  $('leads-table').innerHTML = '<table><thead><tr><th>Inscrit</th><th>Statut</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
-}
-
-function saveApiSettings(){
-  state.cfg.apiUrl = $('s-api').value.trim();
-  lsSet(K_SEC, $('s-sec').value.trim());
-  markDirty();
-  toast('Enregistré. Chargement des inscrits…');
-  loadLeads();
+  $('leads-table').innerHTML = '<table><thead><tr><th>Inscrite</th><th>Statut</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
 }
 
 function addLead(){
@@ -1664,6 +1739,161 @@ function exportLeads(){
   a.click();
 }
 
+
+/* ---------------- modèles d'emails ---------------- */
+var modeleCourant = null, minuteurApercu = null;
+
+function chargerModeles(){
+  return api('templates').then(function(r){
+    state.templates = r.templates || [];
+    renderModeles();
+  }).catch(function(e){
+    $('mails-table').innerHTML = emptyBox(e.message);
+  });
+}
+
+function chargerEmails(){
+  return api('emails').then(function(r){
+    state.emails = r.emails || [];
+    renderJournalEmails();
+  }).catch(function(e){
+    $('mails-log').innerHTML = emptyBox(e.message);
+  });
+}
+
+function renderModeles(){
+  renderBrevo();
+  if (!state.templates.length){ $('mails-table').innerHTML = emptyBox('Aucun modèle.'); return; }
+  var rows = state.templates.map(function(t, i){
+    return '<tr><td><div class="t-title">' + esc(t.nom) + (t.systeme ? ' <span class="pill">automatique</span>' : '') + '</div>'
+      + '<div class="t-sub"><span>' + esc(t.description || '') + '</span></div></td>'
+      + '<td style="width:210px"><div class="t-sub"><span>Objet : ' + esc(t.sujet) + '</span></div></td>'
+      + '<td style="width:120px"><div class="rowacts"><button class="btn ghost sm" onclick="ouvrirModele(' + i + ')">Modifier</button></div></td></tr>';
+  }).join('');
+  $('mails-table').innerHTML = '<table><thead><tr><th>Modèle</th><th>Objet</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function renderBrevo(){
+  var e = state.brevo || {};
+  var lignes = '';
+  if (e.cle === false){
+    lignes = '<div class="hint" style="color:var(--te);margin:0 0 14px">⚠ Aucune clé d\'envoi configurée : aucun email ne part, y compris les codes de connexion.</div>';
+  } else if (e.expediteurOk === false){
+    lignes = '<div class="hint" style="color:var(--te);margin:0 0 14px">⚠ Le compte d\'envoi connecté ne reconnaît pas <b>contact@ichinencoaching.com</b> comme expéditeur. Les emails seront refusés tant que ce n\'est pas réglé.</div>';
+  } else if (e.expediteurOk === true){
+    lignes = '<div class="hint" style="margin:0 0 14px">✓ Envoi actif depuis <b>contact@ichinencoaching.com</b>.</div>';
+  }
+  $('brevo-cfg').innerHTML = lignes
+    + '<div class="f"><label for="b-cle">Clé d\'envoi Brevo</label>'
+    + '<input id="b-cle" type="password" placeholder="xkeysib-…">'
+    + '<div class="hint">Depuis le compte Brevo d\'Ichinen : Paramètres → Clés API → Générer une nouvelle clé. Elle reste sur le serveur, jamais dans cette page.</div></div>'
+    + '<div style="display:flex;gap:9px"><button class="btn sm" onclick="enregistrerCleBrevo()">Enregistrer la clé</button>'
+    + '<button class="btn ghost sm" onclick="verifierBrevo()">Vérifier l\'envoi</button></div>';
+}
+
+function verifierBrevo(){
+  return api('brevo_status').then(function(r){
+    var envs = (r.expediteurs && r.expediteurs.senders) || [];
+    state.brevo = {
+      cle: r.cle,
+      expediteurOk: r.cle ? envs.some(function(x){ return x.email === 'contact@ichinencoaching.com'; }) : null,
+    };
+    renderBrevo();
+    toast(state.brevo.expediteurOk ? 'Envoi opérationnel.' : 'Envoi non opérationnel — voir le message ci-dessus.', !state.brevo.expediteurOk);
+  }).catch(function(e){ toast(e.message, true); });
+}
+
+function enregistrerCleBrevo(){
+  var k = $('b-cle').value.trim();
+  if (!k){ toast('Collez la clé avant d\'enregistrer.', true); return; }
+  api('brevo_set_key', { cle_api: k })
+    .then(function(){ $('b-cle').value = ''; toast('Clé enregistrée.'); return verifierBrevo(); })
+    .catch(function(e){ toast(e.message, true); });
+}
+
+function renderJournalEmails(){
+  if (!state.emails.length){ $('mails-log').innerHTML = emptyBox('Aucun email envoyé pour l\'instant.'); return; }
+  var rows = state.emails.slice(0, 40).map(function(m){
+    var q = m.statut === 'envoye' ? '<span class="pill ok">Envoyé</span>' : '<span class="pill no">Échec</span>';
+    return '<tr><td><div class="t-title">' + esc(m.sujet) + '</div>'
+      + '<div class="t-sub"><span>' + esc(m.destinataire) + '</span><span>' + esc((m.created_at || '').replace('T', ' ').slice(0, 16)) + '</span>'
+      + (m.erreur ? '<span style="color:var(--te)">' + esc(String(m.erreur).slice(0, 90)) + '</span>' : '') + '</div></td>'
+      + '<td style="width:110px">' + q + '</td></tr>';
+  }).join('');
+  $('mails-log').innerHTML = '<table><thead><tr><th>Email</th><th>Statut</th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function ouvrirModele(i){
+  var t = state.templates[i];
+  modeleCourant = t;
+  $('tm-titre').textContent = t.nom;
+  $('tm-desc').textContent = t.description || '';
+  $('tm-sujet').value = t.sujet;
+  $('tm-html').value = t.html;
+  $('tm-vars').innerHTML = (t.variables || []).map(function(v){
+    return '<button class="chip var" type="button" onclick="insererVar(\'' + esc(v) + '\')">{{' + esc(v) + '}}</button>';
+  }).join('') || '<span class="hint" style="margin:0">Aucune variable.</span>';
+  $('scrim-t').className = 'on';
+  $('editeur-modele').className = 'on';
+  apercuModele();
+}
+
+function fermerModele(){
+  $('editeur-modele').className = '';
+  $('scrim-t').className = '';
+  modeleCourant = null;
+}
+
+function insererVar(v){
+  var ta = $('tm-html');
+  var pos = ta.selectionStart;
+  var jeton = '{{' + v + '}}';
+  ta.value = ta.value.slice(0, pos) + jeton + ta.value.slice(ta.selectionEnd);
+  ta.focus();
+  ta.selectionStart = ta.selectionEnd = pos + jeton.length;
+  apercuDiffere();
+}
+
+function apercuDiffere(){
+  clearTimeout(minuteurApercu);
+  minuteurApercu = setTimeout(apercuModele, 450);
+}
+
+// Valeurs d'exemple, pour que l'aperçu ressemble à un vrai email plutôt qu'à un gabarit.
+function varsExemple(){
+  return {
+    prenom: 'Marie', code: '482913', email: 'marie@exemple.fr',
+    calendly: 'https://calendly.com/christele_ichinencoaching/premierrdv',
+    titre: 'Reconversion à 40 ans : mythe ou réalité ?',
+    accroche: 'Pourquoi le milieu de vie est souvent le meilleur moment pour changer de cap.',
+    lien: 'https://ichinencoaching.com/blog/reconversion-a-40-ans-mythe-ou-realite/',
+    origine: 'https://ichinencoaching.com/blog/reconversion-a-40-ans-mythe-ou-realite/',
+  };
+}
+
+function apercuModele(){
+  api('template_preview', { sujet: $('tm-sujet').value, html: $('tm-html').value, vars: varsExemple() })
+    .then(function(r){
+      var f = $('tm-apercu');
+      f.srcdoc = r.html;
+    })
+    .catch(function(e){ toast(e.message, true); });
+}
+
+function enregistrerModele(){
+  if (!modeleCourant) return;
+  api('template_save', { cle: modeleCourant.cle, sujet: $('tm-sujet').value, html: $('tm-html').value })
+    .then(function(){ toast('Modèle enregistré.'); fermerModele(); return chargerModeles(); })
+    .catch(function(e){ toast(e.message, true); });
+}
+
+function testerModele(){
+  if (!modeleCourant) return;
+  api('template_test', { cle: modeleCourant.cle, sujet: $('tm-sujet').value, html: $('tm-html').value, vars: varsExemple() })
+    .then(function(){ toast('Test envoyé sur votre adresse.'); return chargerEmails(); })
+    .catch(function(e){ toast('Envoi impossible — ' + e.message, true); });
+}
+
 /* ---------------- réglages ---------------- */
 function renderSettings(){
   $('s-title').value = state.cfg.blogTitle || '';
@@ -1673,8 +1903,10 @@ function renderSettings(){
   countField('s-title', 'c-stitle', 60);
   countField('s-desc', 'c-sdesc', 160);
   $('set-conn').innerHTML =
-    '<div class="hint" style="margin:0 0 12px">Connectée en tant que <b>' + esc(state.user || '—') + '</b> sur <b>' + esc(OWNER + '/' + REPO) + '</b>.</div>'
-    + '<div class="hint" style="margin:0 0 16px">Le jeton est conservé uniquement dans ce navigateur. Sur un ordinateur partagé, déconnectez-vous en partant.</div>'
+    '<div class="hint" style="margin:0 0 12px">Connectée en tant que <b>' + esc(state.user || '—') + '</b>.</div>'
+    + '<div class="hint" style="margin:0 0 16px">La publication se fait sur <b>' + esc(OWNER + '/' + REPO) + '</b>'
+    + (state.token ? '' : ' — <span style="color:var(--te)">indisponible : aucun accès de publication</span>') + '.</div>'
+    + '<div class="hint" style="margin:0 0 16px">Votre session se ferme d\'elle-même au bout de douze heures.</div>'
     + '<button class="btn ghost sm" onclick="logout()">Se déconnecter</button>';
 }
 function countField(id, cid, max){
@@ -1838,11 +2070,12 @@ window.addEventListener('beforeunload', function(e){
 });
 
 (function init(){
-  var saved = lsGet(K_TOK);
-  if (saved){
-    $('tok').value = saved;
-    doLogin(null);
-  }
+  var s = lsGet(K_SESSION);
+  if (!s) return;
+  // On vérifie que la session tient toujours avant d'ouvrir quoi que ce soit.
+  api('moi')
+    .then(function(r){ state.user = r.email; return entrer(); })
+    .catch(function(){ lsDel(K_SESSION); });
 })();
 
 </script>
