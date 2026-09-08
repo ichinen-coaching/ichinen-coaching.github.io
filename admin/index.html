@@ -94,6 +94,15 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 .empty .k{font-family:'Cormorant Garamond',serif;font-size:34px;color:var(--ca);opacity:.35;display:block;margin-bottom:10px}
 
 /* ---------- EDITOR ---------- */
+#fiche-contact,#editeur-campagne{position:fixed;top:0;right:0;bottom:0;width:min(760px,100%);background:var(--wh);border-left:1px solid var(--cd);box-shadow:-14px 0 44px rgba(44,42,36,.1);transform:translateX(102%);transition:transform .5s cubic-bezier(.23,1,.32,1);z-index:60;display:flex;flex-direction:column}
+#fiche-contact.on,#editeur-campagne.on{transform:none}
+#scrim-c,#scrim-n{position:fixed;inset:0;background:rgba(44,42,36,.32);opacity:0;pointer-events:none;transition:opacity .35s;z-index:55}
+#scrim-c.on,#scrim-n.on{opacity:1;pointer-events:auto}
+.tag-chip{display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:20px;font-size:12px;border:1px solid var(--cd);color:var(--tm)}
+.tag-chip.client{background:rgba(74,82,64,.12);border-color:transparent;color:var(--ol);font-weight:500}
+.tag-chip.prospect{background:rgba(200,134,90,.14);border-color:transparent;color:var(--te)}
+.tag-chip button{font-size:14px;line-height:1;opacity:.5}
+.tag-chip button:hover{opacity:1}
 #editeur-modele{position:fixed;top:0;right:0;bottom:0;width:min(820px,100%);background:var(--wh);border-left:1px solid var(--cd);box-shadow:-14px 0 44px rgba(44,42,36,.1);transform:translateX(102%);transition:transform .5s cubic-bezier(.23,1,.32,1);z-index:60;display:flex;flex-direction:column}
 #editeur-modele.on{transform:none}
 #scrim-t{position:fixed;inset:0;background:rgba(44,42,36,.32);opacity:0;pointer-events:none;transition:opacity .35s;z-index:55}
@@ -199,7 +208,8 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
       <button data-v="posts" onclick="go('posts')"><span class="ico">✎</span> Articles</button>
       <button data-v="cats" onclick="go('cats')"><span class="ico">◆</span> Catégories</button>
       <button data-v="seo" onclick="go('seo')"><span class="ico">◎</span> Référencement</button>
-      <button data-v="leads" onclick="go('leads')"><span class="ico">✉</span> Inscrits</button>
+      <button data-v="leads" onclick="go('leads')"><span class="ico">◕</span> Contacts</button>
+      <button data-v="news" onclick="go('news')"><span class="ico">✦</span> Newsletter</button>
       <button data-v="mails" onclick="go('mails')"><span class="ico">✉</span> Modèles d'emails</button>
       <button data-v="set" onclick="go('set')"><span class="ico">⚙</span> Réglages</button>
     </nav>
@@ -269,24 +279,27 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
       </div>
     </section>
 
-    <!-- LEADS -->
+    <!-- CONTACTS -->
     <section class="view" id="v-leads">
-      <div class="panel">
-        <div class="panel-h"><h3>Connexion au service d'inscription</h3></div>
-        <div class="panel-b" id="leads-cfg"></div>
+      <div class="stats" id="ct-stats"></div>
+      <div class="f" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <input id="ct-q" type="search" placeholder="Rechercher un nom, un email…" oninput="renderContacts()" style="flex:1;min-width:220px">
+        <button class="btn ghost sm" onclick="importerContacts()">Importer un CSV</button>
+        <button class="btn ghost sm" onclick="exporterContacts()">Exporter</button>
+        <button class="btn sm" onclick="ouvrirContact()">Nouveau contact</button>
       </div>
-      <div class="panel">
-        <div class="panel-h"><h3>Inscrits</h3>
-          <div style="display:flex;gap:8px">
-            <button class="btn ghost sm" onclick="loadLeads()">Actualiser</button>
-            <button class="btn ghost sm" onclick="exportLeads()">Exporter</button>
-            <button class="btn sm" onclick="addLead()">Ajouter</button>
-          </div>
-        </div>
-        <div id="leads-table"></div>
-      </div>
+      <input type="file" id="ct-fichier" accept=".csv,text/csv" style="display:none" onchange="lireCSV(this)">
+      <div class="chips" id="ct-chips"></div>
+      <div class="panel"><div id="ct-table"></div></div>
     </section>
 
+    <!-- NEWSLETTER -->
+    <section class="view" id="v-news">
+      <div class="panel">
+        <div class="panel-h"><h3>Campagnes</h3><button class="btn sm" onclick="ouvrirCampagne()">Nouvelle newsletter</button></div>
+        <div id="nw-table"></div>
+      </div>
+    </section>
 
     <!-- MODELES D'EMAILS -->
     <section class="view" id="v-mails">
@@ -425,6 +438,78 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
   <div class="ed-f">
     <button class="btn ghost sm" onclick="testerModele()">M'envoyer un test</button>
     <button class="btn sm" onclick="enregistrerModele()">Enregistrer</button>
+  </div>
+</div>
+
+
+<!-- =============== FICHE CONTACT =============== -->
+<div id="scrim-c" onclick="fermerContact()"></div>
+<div id="fiche-contact">
+  <div class="ed-h"><h3 id="ct-titre">Contact</h3><button class="btn ghost sm" onclick="fermerContact()">Fermer</button></div>
+  <div class="ed-b">
+    <div class="grid2">
+      <div class="f"><label for="ct-prenom">Prénom</label><input id="ct-prenom"></div>
+      <div class="f"><label for="ct-nom">Nom</label><input id="ct-nom"></div>
+    </div>
+    <div class="f"><label for="ct-email">Email</label><input id="ct-email" type="email"></div>
+    <div class="f">
+      <label>Étiquettes</label>
+      <div class="chips" id="ct-tags" style="margin:0"></div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <input id="ct-newtag" placeholder="autre étiquette…" onkeydown="if(event.key==='Enter'){ajouterTag();return false;}">
+        <button class="btn ghost sm" type="button" onclick="ajouterTag()">Ajouter</button>
+      </div>
+    </div>
+    <div class="f"><label for="ct-note">Note</label><textarea id="ct-note" rows="3"></textarea></div>
+    <div class="f" id="ct-infos"></div>
+
+    <div class="ed-sec" id="ct-ecrire">
+      <h4><span class="num">✉</span> Lui écrire</h4>
+      <div class="f"><label for="ct-sujet">Objet</label><input id="ct-sujet"></div>
+      <div class="f"><label for="ct-html">Message</label><textarea id="ct-html" rows="9"></textarea>
+        <div class="hint">{{prenom}} et {{nom}} sont remplacés à l'envoi.</div></div>
+      <div class="f"><button class="btn ghost sm" type="button" onclick="envoyerAContact()">Envoyer ce message</button></div>
+    </div>
+  </div>
+  <div class="ed-f">
+    <button class="btn danger sm" id="ct-suppr" onclick="supprimerContact()">Supprimer</button>
+    <button class="btn sm" onclick="enregistrerContact()">Enregistrer</button>
+  </div>
+</div>
+
+<!-- =============== EDITEUR DE NEWSLETTER =============== -->
+<div id="scrim-n" onclick="fermerCampagne()"></div>
+<div id="editeur-campagne">
+  <div class="ed-h"><h3 id="nw-titre">Newsletter</h3><button class="btn ghost sm" onclick="fermerCampagne()">Fermer</button></div>
+  <div class="ed-b">
+    <div class="f"><label for="nw-nom">Nom interne</label><input id="nw-nom" placeholder="ex. Newsletter de septembre">
+      <div class="hint">Pour vous y retrouver. Les destinataires ne le voient pas.</div></div>
+    <div class="f"><label for="nw-sujet">Objet de l'email</label><input id="nw-sujet" oninput="apercuCampagneDiffere()"></div>
+    <div class="grid2">
+      <div class="f"><label for="nw-cible">À qui</label><select id="nw-cible" onchange="compterCible()"></select></div>
+      <div class="f"><label>Destinataires</label><div class="hint" id="nw-compte" style="margin:0;font-size:14px;color:var(--td)">—</div></div>
+    </div>
+    <div class="f"><label for="nw-html">Contenu</label>
+      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
+        <button class="btn ghost sm" type="button" onclick="wrapNw('<p class=\'p\'>','</p>')">Paragraphe</button>
+        <button class="btn ghost sm" type="button" onclick="wrapNw('<h3 class=\'titre\'>','</h3>')">Titre</button>
+        <button class="btn ghost sm" type="button" onclick="wrapNw('<strong>','</strong>')">Gras</button>
+        <button class="btn ghost sm" type="button" onclick="wrapNw('<em>','</em>')">Italique</button>
+        <button class="btn ghost sm" type="button" onclick="insererLienNw()">Bouton</button>
+        <button class="btn ghost sm" type="button" onclick="insererVarNw('prenom')">{{prenom}}</button>
+      </div>
+      <textarea id="nw-html" rows="13" oninput="apercuCampagneDiffere()" spellcheck="true"></textarea>
+    </div>
+    <div class="f"><label>Aperçu</label>
+      <iframe id="nw-apercu" style="width:100%;height:440px;border:1px solid var(--cd);border-radius:4px;background:#fff"></iframe></div>
+  </div>
+  <div class="ed-f">
+    <button class="btn danger sm" id="nw-suppr" onclick="supprimerCampagne()">Supprimer</button>
+    <div style="display:flex;gap:9px">
+      <button class="btn ghost sm" onclick="testerCampagne()">M'envoyer un test</button>
+      <button class="btn ghost sm" onclick="enregistrerCampagne()">Enregistrer</button>
+      <button class="btn sm" onclick="demanderEnvoi()" style="background:var(--ol)">Envoyer</button>
+    </div>
   </div>
 </div>
 
@@ -958,7 +1043,7 @@ var API_URL = 'https://tcawjvyefzlkvngcklqm.supabase.co/functions/v1/ichinen-api
 
 var state = {
   token: null, user: null,
-  posts: [], cats: [], leads: [], leadsErr: null, templates: [], emails: [], pret: false, cfg: {}, assets: {},
+  posts: [], cats: [], contacts: [], contactsErr: null, campagnes: [], templates: [], emails: [], pret: false, cfg: {}, assets: {},
   shas: {},              // chemin -> sha du blob distant
   editing: null,         // index dans state.posts, ou null pour un nouvel article
   dirty: false,
@@ -1208,7 +1293,7 @@ function loadAll(){
     }
     renderAll();
     busy(false);
-    loadLeads();
+    chargerContacts();
   }).catch(function(err){
     busy(false);
     toast(err.message, true);
@@ -1231,19 +1316,20 @@ function rebuildCats(){
 }
 
 /* ---------------- navigation ---------------- */
-var TITLES = { dash:'Tableau de bord', posts:'Articles', cats:'Catégories', seo:'Référencement', leads:'Inscrits', mails:'Modèles d\'emails', set:'Réglages' };
+var TITLES = { dash:'Tableau de bord', posts:'Articles', cats:'Catégories', seo:'Référencement', leads:'Contacts', news:'Newsletter', mails:'Modèles d\'emails', set:'Réglages' };
 function go(v){
   document.querySelectorAll('.view').forEach(function(s){ s.className = 'view'; });
   $('v-' + v).className = 'view on';
   document.querySelectorAll('.menu button').forEach(function(b){ b.className = b.dataset.v === v ? 'on' : ''; });
   $('vtitle').textContent = TITLES[v] || '';
   if (v === 'seo') renderSeo();
-  if (v === 'leads') loadLeads();
+  if (v === 'leads') chargerContacts();
+  if (v === 'news'){ chargerContacts().then(chargerCampagnes); }
   if (v === 'mails'){ chargerModeles(); chargerEmails(); verifierBrevo(); }
   if (v === 'set') renderSettings();
 }
 
-function renderAll(){ renderDash(); renderPosts(); renderCats(); renderSeo(); renderLeads(); renderSettings(); }
+function renderAll(){ renderDash(); renderPosts(); renderCats(); renderSeo(); renderContacts(); renderSettings(); }
 
 /* ---------------- tableau de bord ---------------- */
 function renderDash(){
@@ -1254,7 +1340,7 @@ function renderDash(){
     stat(pub.length, 'Articles en ligne') +
     stat(dr, 'Brouillons') +
     stat(state.cats.length, 'Catégories') +
-    stat(state.leads.length, 'Inscrits');
+    stat(state.contacts.length, 'Contacts');
 
   var recent = state.posts.slice(0, 5);
   $('dash-posts').innerHTML = recent.length ? postTable(recent) : emptyBox('Aucun article pour l\'instant.');
@@ -1661,84 +1747,368 @@ function renderSeo(){
       }).join('');
 }
 
-/* ---------------- inscrits ---------------- */
-function loadLeads(){
-  return api('leads').then(function(r){
-    state.leads = r.leads || [];
-    state.leadsErr = null;
-    renderLeads(); renderDash();
+/* ---------------- contacts ---------------- */
+var filtreTag = 'tous', contactCourant = null, tagsCourants = [];
+
+function chargerContacts(){
+  return api('contacts').then(function(r){
+    state.contacts = r.contacts || [];
+    state.contactsErr = null;
+    renderContacts(); renderDash();
   }).catch(function(e){
-    state.leadsErr = e.message;
-    renderLeads();
+    state.contactsErr = e.message;
+    renderContacts();
   });
 }
 
-function renderLeads(){
-  $('leads-cfg').innerHTML =
-    '<div class="hint" style="margin:0">Les inscriptions du blog arrivent ici automatiquement, avec l\'article qui les a amenées. '
-    + 'Chaque nouvelle inscrite reçoit le mail de bienvenue, et vous recevez une alerte.</div>'
-    + (state.leadsErr ? '<div class="hint" style="color:var(--te);margin-top:12px">⚠ ' + esc(state.leadsErr) + '</div>' : '');
-
-  if (!state.leads.length){
-    $('leads-table').innerHTML = emptyBox('Aucune inscrite pour le moment.');
-    return;
-  }
-  var rows = state.leads.map(function(l){
-    var d = (l.created_at || '').slice(0, 10);
-    var src = l.article_slug ? ('depuis /blog/' + l.article_slug + '/') : (l.source || '');
-    return '<tr><td><div class="t-title">' + esc(l.prenom || '—') + '</div>'
-      + '<div class="t-sub"><span>' + esc(l.email) + '</span><span>' + esc(d) + '</span><span>' + esc(src) + '</span></div></td>'
-      + '<td style="width:130px"><button class="pill" onclick="cycleLead(\'' + esc(l.id) + '\')">' + esc(l.statut || 'Nouveau') + '</button></td>'
-      + '<td style="width:170px"><div class="rowacts">'
-      + '<a class="btn ghost sm" href="mailto:' + esc(l.email) + '">Écrire</a>'
-      + '<button class="btn danger sm" onclick="deleteLead(\'' + esc(l.id) + '\')">✕</button></div></td></tr>';
-  }).join('');
-  $('leads-table').innerHTML = '<table><thead><tr><th>Inscrite</th><th>Statut</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+function tousLesTags(){
+  var vus = {};
+  state.contacts.forEach(function(c){ (c.tags || []).forEach(function(t){ vus[t] = (vus[t] || 0) + 1; }); });
+  return Object.keys(vus).sort(function(a, b){ return vus[b] - vus[a]; });
 }
 
-function addLead(){
-  var email = prompt('Adresse email de l\'inscrite :', '');
-  if (!email || !email.trim()) return;
-  var prenom = prompt('Prénom (optionnel) :', '') || '';
-  api('lead_add', { email: email.trim(), prenom: prenom.trim() })
-    .then(function(){ toast('Inscrite ajoutée.'); return loadLeads(); })
+function renderContacts(){
+  var actifs = state.contacts.filter(function(c){ return !c.desabonne; });
+  $('ct-stats').innerHTML =
+    stat(state.contacts.length, 'Contacts') +
+    stat(state.contacts.filter(function(c){ return (c.tags || []).indexOf('client') >= 0; }).length, 'Clientes') +
+    stat(state.contacts.filter(function(c){ return (c.tags || []).indexOf('prospect') >= 0; }).length, 'Prospects') +
+    stat(actifs.length, 'Abonnées');
+
+  var tags = tousLesTags();
+  $('ct-chips').innerHTML = ['tous'].concat(tags).map(function(t){
+    var n = t === 'tous' ? state.contacts.length
+      : state.contacts.filter(function(c){ return (c.tags || []).indexOf(t) >= 0; }).length;
+    return '<button class="chip' + (filtreTag === t ? ' on' : '') + '" onclick="setFiltreTag(\'' + esc(t) + '\')">'
+      + esc(t === 'tous' ? 'Tous' : t) + ' · ' + n + '</button>';
+  }).join('');
+
+  var q = ($('ct-q').value || '').toLowerCase();
+  var liste = state.contacts.filter(function(c){
+    if (filtreTag !== 'tous' && (c.tags || []).indexOf(filtreTag) < 0) return false;
+    if (!q) return true;
+    return ((c.prenom || '') + ' ' + (c.nom || '') + ' ' + c.email).toLowerCase().indexOf(q) >= 0;
+  });
+
+  if (state.contactsErr){ $('ct-table').innerHTML = emptyBox(state.contactsErr); return; }
+  if (!liste.length){ $('ct-table').innerHTML = emptyBox('Aucun contact ne correspond.'); return; }
+
+  var rows = liste.map(function(c){
+    var i = state.contacts.indexOf(c);
+    var nom = [c.prenom, c.nom].filter(Boolean).join(' ') || '—';
+    var src = c.article_slug ? ('inscrite depuis /blog/' + c.article_slug + '/') : (c.source || '');
+    var puces = (c.tags || []).map(function(t){
+      return '<span class="tag-chip ' + esc(t) + '">' + esc(t) + '</span>';
+    }).join(' ');
+    return '<tr><td><div class="t-title">' + esc(nom) + (c.desabonne ? ' <span class="pill no">désinscrite</span>' : '') + '</div>'
+      + '<div class="t-sub"><span>' + esc(c.email) + '</span><span>' + esc((c.created_at || '').slice(0, 10)) + '</span><span>' + esc(src) + '</span></div></td>'
+      + '<td style="width:210px">' + puces + '</td>'
+      + '<td style="width:150px"><div class="rowacts">'
+      + '<button class="btn ghost sm" onclick="ouvrirContact(' + i + ')">Ouvrir</button>'
+      + '<button class="btn danger sm" onclick="supprimerContactDirect(' + i + ')">✕</button>'
+      + '</div></td></tr>';
+  }).join('');
+  $('ct-table').innerHTML = '<table><thead><tr><th>Contact</th><th>Étiquettes</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function setFiltreTag(t){ filtreTag = t; renderContacts(); }
+
+function ouvrirContact(i){
+  var c = (typeof i === 'number') ? state.contacts[i] : null;
+  contactCourant = c;
+  tagsCourants = c ? (c.tags || []).slice() : ['prospect'];
+  $('ct-titre').textContent = c ? ([c.prenom, c.nom].filter(Boolean).join(' ') || c.email) : 'Nouveau contact';
+  $('ct-prenom').value = c ? (c.prenom || '') : '';
+  $('ct-nom').value = c ? (c.nom || '') : '';
+  $('ct-email').value = c ? c.email : '';
+  $('ct-email').disabled = !!c;
+  $('ct-note').value = c ? (c.note || '') : '';
+  $('ct-suppr').style.display = c ? '' : 'none';
+  $('ct-ecrire').style.display = c ? '' : 'none';
+  $('ct-infos').innerHTML = c
+    ? '<div class="hint" style="margin:0">Ajoutée le ' + esc((c.created_at || '').slice(0, 10))
+      + (c.desabonne ? ' · <b style="color:var(--te)">désinscrite de la newsletter</b>' : ' · abonnée à la newsletter') + '</div>'
+    : '';
+  if (c){
+    $('ct-sujet').value = '';
+    $('ct-html').value = '<p class="p">Bonjour {{prenom}},</p>\n<p class="p"></p>\n<p class="p">Bien à vous,<br><em>Christèle</em></p>';
+  }
+  dessinerTags();
+  $('scrim-c').className = 'on';
+  $('fiche-contact').className = 'on';
+}
+function fermerContact(){ $('fiche-contact').className = ''; $('scrim-c').className = ''; contactCourant = null; }
+
+function dessinerTags(){
+  $('ct-tags').innerHTML = tagsCourants.length
+    ? tagsCourants.map(function(t, i){
+        return '<span class="tag-chip ' + esc(t) + '">' + esc(t)
+          + '<button type="button" onclick="retirerTag(' + i + ')" title="retirer">×</button></span>';
+      }).join('')
+    : '<span class="hint" style="margin:0">Aucune étiquette.</span>';
+  if (tagsCourants.indexOf('client') < 0 || tagsCourants.indexOf('prospect') < 0){
+    $('ct-tags').innerHTML += ['client', 'prospect'].filter(function(t){ return tagsCourants.indexOf(t) < 0; })
+      .map(function(t){ return ' <button class="chip" type="button" onclick="mettreTag(\'' + t + '\')">+ ' + t + '</button>'; }).join('');
+  }
+}
+function mettreTag(t){ if (tagsCourants.indexOf(t) < 0) tagsCourants.push(t); dessinerTags(); }
+function retirerTag(i){ tagsCourants.splice(i, 1); dessinerTags(); }
+function ajouterTag(){
+  var v = $('ct-newtag').value.trim().toLowerCase();
+  if (!v) return;
+  if (tagsCourants.indexOf(v) < 0) tagsCourants.push(v);
+  $('ct-newtag').value = '';
+  dessinerTags();
+}
+
+function enregistrerContact(){
+  var prenom = $('ct-prenom').value.trim(), nom = $('ct-nom').value.trim();
+  var note = $('ct-note').value.trim();
+  if (contactCourant){
+    api('contact_update', { id: contactCourant.id, prenom: prenom, nom: nom, note: note, tags: tagsCourants })
+      .then(function(){ toast('Contact enregistré.'); fermerContact(); return chargerContacts(); })
+      .catch(function(e){ toast(e.message, true); });
+  } else {
+    var email = $('ct-email').value.trim();
+    api('contact_add', { email: email, prenom: prenom, nom: nom, tags: tagsCourants })
+      .then(function(){ toast('Contact ajouté.'); fermerContact(); return chargerContacts(); })
+      .catch(function(e){ toast(e.message, true); });
+  }
+}
+
+function supprimerContact(){
+  if (!contactCourant) return;
+  var c = contactCourant;
+  confirmDlg('Supprimer ce contact', 'Retirer ' + c.email + ' définitivement ?', 'Supprimer', function(){
+    api('contact_delete', { id: c.id })
+      .then(function(){ toast('Contact supprimé.'); fermerContact(); return chargerContacts(); })
+      .catch(function(e){ toast(e.message, true); });
+  });
+}
+function supprimerContactDirect(i){
+  var c = state.contacts[i];
+  confirmDlg('Supprimer ce contact', 'Retirer ' + c.email + ' définitivement ?', 'Supprimer', function(){
+    api('contact_delete', { id: c.id }).then(chargerContacts).catch(function(e){ toast(e.message, true); });
+  });
+}
+
+function envoyerAContact(){
+  if (!contactCourant) return;
+  var sujet = $('ct-sujet').value.trim();
+  if (!sujet){ toast("L'objet est obligatoire.", true); return; }
+  api('contact_email', {
+    dest: contactCourant.email, sujet: sujet, html: $('ct-html').value,
+    vars: { prenom: contactCourant.prenom || 'à vous', nom: contactCourant.nom || '', email: contactCourant.email },
+  }).then(function(){ toast('Message envoyé à ' + contactCourant.email + '.'); $('ct-sujet').value = ''; })
+    .catch(function(e){ toast('Envoi impossible — ' + e.message, true); });
+}
+
+function exporterContacts(){
+  if (!state.contacts.length){ toast('Aucun contact à exporter.', true); return; }
+  var rows = [['Prenom', 'Nom', 'Email', 'Etiquettes', 'Inscrite le', 'Desabonnee', 'Source']]
+    .concat(state.contacts.map(function(c){
+      return [c.prenom || '', c.nom || '', c.email, (c.tags || []).join(' '),
+              (c.created_at || '').slice(0, 10), c.desabonne ? 'oui' : 'non',
+              c.article_slug || c.source || ''];
+    }));
+  var csv = '﻿' + rows.map(function(r){
+    return r.map(function(x){ return '"' + String(x).replace(/"/g, '""') + '"'; }).join(';');
+  }).join('\r\n');
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+  a.download = 'contacts-ichinen-' + new Date().toISOString().slice(0, 10) + '.csv';
+  a.click();
+}
+
+function importerContacts(){ $('ct-fichier').click(); }
+function lireCSV(input){
+  var f = input.files && input.files[0];
+  if (!f) return;
+  var r = new FileReader();
+  r.onload = function(ev){
+    var lignes = String(ev.target.result).replace(/^﻿/, '').split(/\r?\n/).filter(Boolean);
+    var aFaire = [];
+    lignes.forEach(function(l){
+      var cells = l.split(/[;,\t]/).map(function(x){ return x.trim().replace(/^"|"$/g, ''); });
+      var email = cells.filter(function(x){ return x.indexOf('@') > 0; })[0];
+      if (!email) return;
+      if (state.contacts.some(function(c){ return c.email.toLowerCase() === email.toLowerCase(); })) return;
+      var autres = cells.filter(function(x){ return x && x !== email && !/^\d{4}-/.test(x); });
+      aFaire.push({ email: email, prenom: autres[0] || '', nom: autres[1] || '', tags: ['prospect'] });
+    });
+    if (!aFaire.length){ toast('Aucun nouveau contact trouvé dans ce fichier.', true); return; }
+    confirmDlg('Importer', aFaire.length + ' nouveau(x) contact(s) seront ajoutés avec l\'étiquette « prospect ».', 'Importer', function(){
+      busy(true, 'Import en cours…');
+      var i = 0, ok = 0;
+      function suite(){
+        if (i >= aFaire.length){
+          busy(false); toast(ok + ' contact(s) importé(s).'); return chargerContacts();
+        }
+        var c = aFaire[i++];
+        busy(true, 'Import (' + i + ' / ' + aFaire.length + ')…');
+        return api('contact_add', c).then(function(){ ok++; }).catch(function(){}).then(suite);
+      }
+      suite();
+    });
+  };
+  r.readAsText(f);
+  input.value = '';
+}
+
+/* ---------------- newsletter ---------------- */
+var campagneCourante = null, minuteurNw = null;
+
+function chargerCampagnes(){
+  return api('campagnes').then(function(r){
+    state.campagnes = r.campagnes || [];
+    renderCampagnes();
+  }).catch(function(e){ $('nw-table').innerHTML = emptyBox(e.message); });
+}
+
+function renderCampagnes(){
+  if (!state.campagnes.length){
+    $('nw-table').innerHTML = emptyBox('Aucune newsletter pour l\'instant.\nCliquez sur « Nouvelle newsletter » pour commencer.');
+    return;
+  }
+  var rows = state.campagnes.map(function(c, i){
+    var envoyee = c.statut === 'envoyee';
+    var etat = envoyee
+      ? '<span class="pill pub">Envoyée</span>'
+      : '<span class="pill draft">Brouillon</span>';
+    var detail = envoyee
+      ? (c.destinataires + ' destinataire' + (c.destinataires > 1 ? 's' : '') + (c.echecs ? ' · ' + c.echecs + ' échec(s)' : '')
+         + ' · ' + (c.envoyee_le || '').slice(0, 10))
+      : ('cible : ' + c.cible);
+    return '<tr><td><div class="t-title">' + esc(c.nom) + '</div>'
+      + '<div class="t-sub"><span>' + esc(c.sujet || '(pas d\'objet)') + '</span><span>' + esc(detail) + '</span></div></td>'
+      + '<td style="width:120px">' + etat + '</td>'
+      + '<td style="width:120px"><div class="rowacts"><button class="btn ghost sm" onclick="ouvrirCampagne(' + i + ')">'
+      + (envoyee ? 'Voir' : 'Modifier') + '</button></div></td></tr>';
+  }).join('');
+  $('nw-table').innerHTML = '<table><thead><tr><th>Newsletter</th><th>État</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function ouvrirCampagne(i){
+  var c = (typeof i === 'number') ? state.campagnes[i] : null;
+  campagneCourante = c;
+  var envoyee = c && c.statut === 'envoyee';
+  $('nw-titre').textContent = c ? c.nom : 'Nouvelle newsletter';
+  $('nw-nom').value = c ? c.nom : '';
+  $('nw-sujet').value = c ? c.sujet : '';
+  $('nw-html').value = c ? c.html : '<p class="p">Bonjour {{prenom}},</p>\n<p class="p"></p>\n<div class="cta"><a href="https://ichinencoaching.com/blog/">Lire le blog</a></div>\n<p class="p">À très vite,<br><em>Christèle</em></p>';
+
+  var cibles = ['tous'].concat(tousLesTags());
+  $('nw-cible').innerHTML = cibles.map(function(t){
+    return '<option value="' + esc(t) + '">' + esc(t === 'tous' ? 'Tous les abonnés' : t) + '</option>';
+  }).join('');
+  $('nw-cible').value = c ? c.cible : 'tous';
+
+  ['nw-nom', 'nw-sujet', 'nw-html', 'nw-cible'].forEach(function(id){ $(id).disabled = envoyee; });
+  $('nw-suppr').style.display = (c && !envoyee) ? '' : 'none';
+  document.querySelectorAll('#editeur-campagne .ed-f .btn').forEach(function(b){
+    if (b.id !== 'nw-suppr') b.style.display = envoyee ? 'none' : '';
+  });
+
+  compterCible(); apercuCampagne();
+  $('scrim-n').className = 'on';
+  $('editeur-campagne').className = 'on';
+}
+function fermerCampagne(){ $('editeur-campagne').className = ''; $('scrim-n').className = ''; campagneCourante = null; }
+
+function compterCible(){
+  api('campagne_cible', { cible: $('nw-cible').value })
+    .then(function(r){
+      $('nw-compte').textContent = r.nombre + ' personne' + (r.nombre > 1 ? 's' : '');
+      $('nw-compte').style.color = r.nombre ? 'var(--td)' : 'var(--te)';
+    })
+    .catch(function(){ $('nw-compte').textContent = '—'; });
+}
+
+function wrapNw(av, ap){
+  var ta = $('nw-html'), s = ta.selectionStart, e = ta.selectionEnd, sel = ta.value.slice(s, e);
+  ta.value = ta.value.slice(0, s) + av + sel + ap + ta.value.slice(e);
+  ta.focus(); ta.selectionStart = s + av.length; ta.selectionEnd = s + av.length + sel.length;
+  apercuCampagneDiffere();
+}
+function insererLienNw(){
+  var url = prompt('Adresse du bouton :', 'https://ichinencoaching.com/blog/');
+  if (!url) return;
+  var texte = prompt('Texte du bouton :', 'Lire l\'article') || 'En savoir plus';
+  var ta = $('nw-html');
+  ta.value += '\n<div class="cta"><a href="' + url + '">' + texte + '</a></div>';
+  apercuCampagneDiffere();
+}
+function insererVarNw(v){
+  var ta = $('nw-html'), p = ta.selectionStart, j = '{{' + v + '}}';
+  ta.value = ta.value.slice(0, p) + j + ta.value.slice(ta.selectionEnd);
+  ta.focus(); ta.selectionStart = ta.selectionEnd = p + j.length;
+  apercuCampagneDiffere();
+}
+function apercuCampagneDiffere(){ clearTimeout(minuteurNw); minuteurNw = setTimeout(apercuCampagne, 450); }
+function apercuCampagne(){
+  api('template_preview', {
+    sujet: $('nw-sujet').value, html: $('nw-html').value,
+    vars: { prenom: 'Marie', nom: 'Dupont' }, avec_desabo: true,
+  }).then(function(r){ $('nw-apercu').srcdoc = r.html; })
     .catch(function(e){ toast(e.message, true); });
 }
 
-function cycleLead(id){
-  var l = state.leads.filter(function(x){ return x.id === id; })[0];
-  if (!l) return;
-  var order = ['Nouveau', 'Contactée', 'Cliente'];
-  var next = order[(order.indexOf(l.statut || 'Nouveau') + 1) % order.length];
-  l.statut = next; renderLeads();
-  api('lead_update', { id: id, statut: next })
-    .catch(function(e){ toast(e.message, true); loadLeads(); });
+function enregistrerCampagne(){
+  var corps = {
+    nom: $('nw-nom').value.trim() || 'Sans titre',
+    sujet: $('nw-sujet').value.trim(),
+    html: $('nw-html').value,
+    cible: $('nw-cible').value,
+  };
+  if (campagneCourante) corps.id = campagneCourante.id;
+  return api('campagne_save', corps).then(function(r){
+    if (!campagneCourante) campagneCourante = { id: r.id, statut: 'brouillon' };
+    else campagneCourante.id = r.id;
+    toast('Newsletter enregistrée.');
+    return chargerCampagnes();
+  }).catch(function(e){ toast(e.message, true); throw e; });
 }
 
-function deleteLead(id){
-  var l = state.leads.filter(function(x){ return x.id === id; })[0];
-  if (!l) return;
-  confirmDlg('Retirer cette inscrite', 'Retirer ' + l.email + ' de la liste ? Cette suppression est définitive.', 'Retirer', function(){
-    api('lead_delete', { id: id })
-      .then(function(){ toast('Inscrite retirée.'); return loadLeads(); })
+function supprimerCampagne(){
+  if (!campagneCourante) return;
+  confirmDlg('Supprimer cette newsletter', 'Ce brouillon sera définitivement supprimé.', 'Supprimer', function(){
+    api('campagne_delete', { id: campagneCourante.id })
+      .then(function(){ toast('Newsletter supprimée.'); fermerCampagne(); return chargerCampagnes(); })
       .catch(function(e){ toast(e.message, true); });
   });
 }
 
-function exportLeads(){
-  if (!state.leads.length){ toast('Aucun inscrit à exporter.', true); return; }
-  var rows = [['Prenom', 'Email', 'Date', 'Statut', 'Source']].concat(state.leads.map(function(l){
-    return [l.prenom || '', l.email, (l.created_at || '').slice(0, 10), l.statut || 'Nouveau', l.article_slug || l.source || ''];
-  }));
-  var csv = '﻿' + rows.map(function(r){
-    return r.map(function(c){ return '"' + String(c).replace(/"/g, '""') + '"'; }).join(';');
-  }).join('\r\n');
-  var a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-  a.download = 'inscrits-ichinen-' + new Date().toISOString().slice(0, 10) + '.csv';
-  a.click();
+function testerCampagne(){
+  if (!$('nw-sujet').value.trim()){ toast("L'objet est obligatoire.", true); return; }
+  api('template_test', {
+    cle: 'newsletter', sujet: $('nw-sujet').value, html: $('nw-html').value,
+    vars: { prenom: 'Marie', nom: 'Dupont' },
+  }).then(function(){ toast('Test envoyé sur votre adresse.'); })
+    .catch(function(e){ toast('Envoi impossible — ' + e.message, true); });
 }
 
+function demanderEnvoi(){
+  if (!$('nw-sujet').value.trim()){ toast("L'objet est obligatoire.", true); return; }
+  enregistrerCampagne().then(function(){
+    return api('campagne_cible', { cible: $('nw-cible').value });
+  }).then(function(r){
+    if (!r.nombre){ toast('Personne ne correspond à cette cible.', true); return; }
+    confirmDlg('Envoyer la newsletter',
+      'Elle partira à ' + r.nombre + ' personne' + (r.nombre > 1 ? 's' : '')
+      + '. Un envoi ne peut pas être annulé, et une newsletter ne s\'envoie qu\'une fois.',
+      'Envoyer maintenant', function(){
+        busy(true, 'Envoi en cours…');
+        api('campagne_envoyer', { id: campagneCourante.id })
+          .then(function(res){
+            busy(false);
+            toast('Envoyée à ' + res.envoyes + ' personne(s)' + (res.echecs ? ' · ' + res.echecs + ' échec(s)' : '') + '.');
+            fermerCampagne();
+            return chargerCampagnes();
+          })
+          .catch(function(e){ busy(false); toast('Envoi interrompu — ' + e.message, true); });
+      });
+  }).catch(function(){});
+}
 
 /* ---------------- modèles d'emails ---------------- */
 var modeleCourant = null, minuteurApercu = null;
