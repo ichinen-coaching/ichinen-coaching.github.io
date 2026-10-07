@@ -342,6 +342,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
         <span id="dirty-flag" class="pill draft" style="display:none">Modifications non publiées</span>
         <a class="btn ghost sm" href="https://ichinencoaching.com/blog/" target="_blank" rel="noopener">Voir le blog</a>
         <button class="btn ghost sm" onclick="reload()">Recharger</button>
+        <button class="btn sm" id="btn-contenu" onclick="ouvrirContenu()" style="display:none">Nouveau contenu</button>
         <button class="btn sm" onclick="openEditor()">Nouvel article</button>
         <button class="btn sm" id="pub-btn" onclick="askPublish()" style="background:var(--ol)">Publier en ligne</button>
       </div>
@@ -1521,6 +1522,14 @@ function go(v){
   document.querySelectorAll('.menu button').forEach(function(b){ b.className = b.dataset.v === v ? 'on' : ''; });
   $('vtitle').textContent = TITLES[v] || '';
   ctMenuMobile(v);
+  // Ce qu'on voit est ce sur quoi on agit : les actions du blog n'ont rien à faire
+  // au-dessus du calendrier de contenu.
+  var surContenu = (v === 'contenu');
+  $('btn-contenu').style.display = surContenu ? '' : 'none';
+  ['pub-btn'].forEach(function(id){ $(id).style.display = surContenu ? 'none' : ''; });
+  document.querySelectorAll('.topbar .acts > button').forEach(function(b){
+    if (b.textContent.trim() === 'Nouvel article') b.style.display = surContenu ? 'none' : '';
+  });
   if (v === 'contenu') chargerCalendrier();
   if (v === 'seo') renderSeo();
   if (v === 'leads') chargerContacts();
