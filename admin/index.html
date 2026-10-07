@@ -146,6 +146,9 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 
 /* ---------- DIALOGS / TOAST ---------- */
 #dlg{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(44,42,36,.42);z-index:120;padding:24px}
+#dlg2{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(44,42,36,.42);z-index:121;padding:24px}
+#dlg2.on{display:flex}
+.dlg-acts{flex-wrap:wrap}
 #dlg.on{display:flex}
 .dlg-card{background:var(--wh);border-radius:5px;padding:30px 32px;max-width:440px;width:100%;border:1px solid var(--cd)}
 .dlg-card h3{font-size:22px;margin-bottom:11px}
@@ -160,6 +163,116 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 @keyframes sp{to{transform:rotate(360deg)}}
 #busy .msg{font-size:13px;color:var(--tm)}
 .log{font-size:12px;color:var(--tm);line-height:1.8;max-height:190px;overflow-y:auto;font-family:ui-monospace,Menlo,monospace}
+
+/* ---------- CALENDRIER DE CONTENU ---------- */
+.cal-wrap{display:flex;flex-direction:column;gap:18px}
+.cal-mois{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cal-mois .nom{font-family:'Cormorant Garamond',serif;font-size:26px;line-height:1;text-transform:capitalize;min-width:170px}
+.cal-nav{display:inline-flex;border:1px solid var(--cd);border-radius:3px;overflow:hidden}
+.cal-nav button{padding:7px 13px;font-size:14px;color:var(--tm);background:var(--wh)}
+.cal-nav button:hover{background:var(--cr);color:var(--td)}
+.cal-nav button+button{border-left:1px solid var(--cd)}
+.cal-vues{display:inline-flex;border:1px solid var(--cd);border-radius:3px;overflow:hidden;margin-left:auto}
+.cal-vues button{padding:7px 15px;font-size:12px;letter-spacing:.06em;color:var(--tm);background:var(--wh)}
+.cal-vues button.on{background:var(--ol);color:#fff}
+.cal-vues button+button{border-left:1px solid var(--cd)}
+
+/* thème du mois */
+.theme-bloc{background:linear-gradient(135deg,#3D2010,#4A2818 55%,#3A2215);border-radius:5px;padding:24px 26px;color:var(--cr);position:relative;overflow:hidden}
+.theme-bloc .kanji{position:absolute;right:-6px;bottom:-54px;font-family:'Cormorant Garamond',serif;font-size:150px;color:rgba(200,134,90,.09);line-height:1;pointer-events:none;user-select:none}
+.theme-bloc h3{font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:400;color:#F0EAD2;position:relative}
+.theme-bloc .sous{font-size:13px;line-height:1.7;color:rgba(240,234,210,.65);margin-top:7px;max-width:640px;position:relative}
+.theme-angles{display:flex;gap:7px;flex-wrap:wrap;margin-top:15px;position:relative}
+.theme-angles span{font-size:11.5px;padding:5px 12px;border-radius:20px;background:rgba(200,134,90,.17);border:1px solid rgba(200,134,90,.3);color:#E8D9C4}
+.theme-bloc .modif{position:absolute;top:18px;right:20px;font-size:12px;color:rgba(240,234,210,.7);border:1px solid rgba(240,234,210,.25);padding:6px 13px;border-radius:3px;z-index:2}
+.theme-bloc .modif:hover{color:#fff;border-color:rgba(240,234,210,.6)}
+
+/* tuiles de pilotage */
+.cal-tuiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));gap:12px}
+.tuile{background:var(--cr);border:1px solid var(--cd);border-radius:4px;padding:15px 17px}
+.tuile .n{font-family:'Cormorant Garamond',serif;font-size:28px;line-height:1}
+.tuile .l{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--tm);margin-top:6px}
+.jauge{display:flex;height:6px;border-radius:4px;overflow:hidden;margin-top:11px;background:var(--cd)}
+.jauge i{display:block;height:100%}
+.jauge-lg{font-size:11px;color:var(--tm);margin-top:7px;display:flex;gap:10px;flex-wrap:wrap}
+.jauge-lg b{font-weight:600;color:var(--td)}
+
+/* grille mois */
+.cal-grille{border:1px solid var(--cd);border-radius:4px;overflow:hidden;background:var(--wh)}
+.cal-jours{display:grid;grid-template-columns:repeat(7,1fr);background:var(--cr);border-bottom:1px solid var(--cd)}
+.cal-jours div{padding:9px 10px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--tm);font-weight:600}
+.cal-cases{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-case{min-height:118px;border-right:1px solid var(--cd);border-bottom:1px solid var(--cd);padding:7px;display:flex;flex-direction:column;gap:5px;transition:background .15s}
+.cal-case:nth-child(7n){border-right:none}
+.cal-case.hors{background:repeating-linear-gradient(135deg,var(--wh),var(--wh) 6px,#FBF7EF 6px,#FBF7EF 12px)}
+.cal-case.auj{background:rgba(200,134,90,.09)}
+.cal-case.survol{background:rgba(74,82,64,.12);outline:2px dashed var(--ol);outline-offset:-3px}
+.cal-case .num{font-size:11.5px;color:var(--tm);display:flex;align-items:center;justify-content:space-between}
+.cal-case.auj .num b{background:var(--te);color:#fff;border-radius:11px;padding:1px 7px}
+.cal-case .plus{opacity:0;font-size:15px;color:var(--ca);line-height:1;padding:0 2px}
+.cal-case:hover .plus{opacity:1}
+.cal-batch{font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ol);background:rgba(74,82,64,.12);border-radius:2px;padding:1px 5px}
+
+/* carte de contenu */
+.cc{display:flex;align-items:flex-start;gap:6px;background:var(--wh);border:1px solid var(--cd);border-left:3px solid var(--pf,var(--cd));border-radius:3px;padding:5px 7px;text-align:left;width:100%;cursor:grab;transition:box-shadow .15s,transform .15s}
+.cc:hover{box-shadow:0 2px 8px rgba(44,42,36,.12);transform:translateY(-1px)}
+.cc.drag{opacity:.4}
+.cc .lg{flex:none;width:15px;height:15px;margin-top:1px}
+.cc .lg svg{width:15px;height:15px;display:block;fill:var(--pf)}
+.cc .co{min-width:0;flex:1}
+.cc .h{font-size:10px;color:var(--tm);letter-spacing:.04em;display:flex;align-items:center;gap:5px}
+.cc .t{font-size:11.5px;line-height:1.3;color:var(--td);margin-top:1px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cc.fait .t{text-decoration:line-through;opacity:.55}
+.et{font-size:8.5px;font-weight:700;letter-spacing:.08em;padding:1px 4px;border-radius:2px;text-transform:uppercase}
+.et.tofu{background:rgba(74,82,64,.14);color:var(--ol)}
+.et.mofu{background:rgba(200,134,90,.2);color:#8A5327}
+.et.bofu{background:rgba(181,82,30,.15);color:var(--te)}
+.pt{width:6px;height:6px;border-radius:50%;flex:none}
+.pt.brulant{background:#D13B1F}
+.pt.important{background:var(--ca)}
+.pt.a_faire{background:var(--cd)}
+
+/* vue liste */
+.cl-jour{border-bottom:1px solid var(--cd)}
+.cl-jour>h4{padding:11px 22px;background:var(--cr);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--tm);display:flex;justify-content:space-between}
+.cl-lignes{display:flex;flex-direction:column}
+.cl-l{display:flex;align-items:center;gap:12px;padding:12px 22px;border-top:1px solid var(--cd);text-align:left;width:100%;cursor:pointer}
+.cl-l:hover{background:var(--cr)}
+.cl-l .lg svg{width:18px;height:18px;display:block;fill:var(--pf)}
+.cl-l .hh{font-size:12px;color:var(--tm);width:44px;flex:none;font-variant-numeric:tabular-nums}
+.cl-l .tt{flex:1;min-width:0}
+.cl-l .tt b{font-weight:500;display:block}
+.cl-l .tt span{font-size:11.5px;color:var(--tm)}
+
+/* fiche */
+.ct-grille{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.choix{display:flex;gap:7px;flex-wrap:wrap}
+.choix button{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--cd);border-radius:3px;padding:8px 12px;font-size:12.5px;color:var(--tm);background:var(--wh)}
+.choix button svg{width:15px;height:15px;display:block;fill:currentColor}
+.choix button:hover{border-color:var(--ca)}
+.choix button.on{border-color:var(--pf,var(--ol));background:var(--pf,var(--ol));color:#fff}
+.choix button.on svg{fill:#fff}
+.sugg{display:flex;gap:6px;flex-wrap:wrap;margin-top:7px}
+.sugg button{font-size:11.5px;padding:4px 10px;border-radius:20px;border:1px solid var(--cd);color:var(--tm)}
+.sugg button:hover{border-color:var(--ca);color:var(--te)}
+
+@media(max-width:900px){
+  .cal-cases{grid-template-columns:1fr}
+  .cal-jours{display:none}
+  .cal-case{min-height:0;border-right:none}
+  .cal-case.vide{display:none}
+  .cal-case .num{font-size:12.5px;color:var(--td);font-weight:600;padding:3px 0}
+  .ct-grille{grid-template-columns:1fr}
+  .cal-vues{margin-left:0}
+  .theme-bloc .modif{position:static;display:inline-block;margin-top:14px}
+}
+
+/* ---------- MENU MOBILE ---------- */
+.mob-menu{display:none;gap:7px;overflow-x:auto;padding:11px 20px;border-bottom:1px solid var(--cd);background:var(--cr);position:sticky;top:0;z-index:21;-webkit-overflow-scrolling:touch}
+.mob-menu button{flex:none;padding:7px 13px;border-radius:20px;border:1px solid var(--cd);background:var(--wh);font-size:12.5px;color:var(--tm);white-space:nowrap}
+.mob-menu button.on{background:var(--ol);border-color:var(--ol);color:#fff}
+@media(max-width:900px){.mob-menu{display:flex}}
+
 @media(max-width:900px){.layout{grid-template-columns:1fr}aside{display:none}.view,.topbar{padding-left:20px;padding-right:20px}.grid2,.grid3{grid-template-columns:1fr}}
 </style>
 </head>
@@ -206,6 +319,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
     <div class="brand"><div class="marque logo-ichinen" role="img" aria-label="Ichinen Coaching"></div><div class="s">Console</div></div>
     <nav class="menu">
       <button class="on" data-v="dash" onclick="go('dash')"><span class="ico">◈</span> Tableau de bord</button>
+      <button data-v="contenu" onclick="go('contenu')"><span class="ico">▦</span> Calendrier de contenu</button>
       <button data-v="posts" onclick="go('posts')"><span class="ico">✎</span> Articles</button>
       <button data-v="cats" onclick="go('cats')"><span class="ico">◆</span> Catégories</button>
       <button data-v="seo" onclick="go('seo')"><span class="ico">◎</span> Référencement</button>
@@ -221,6 +335,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
   </aside>
 
   <main>
+    <nav class="mob-menu" id="mob-menu"></nav>
     <div class="topbar">
       <h2 id="vtitle">Tableau de bord</h2>
       <div class="acts">
@@ -292,6 +407,28 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
       <input type="file" id="ct-fichier" accept=".csv,text/csv" style="display:none" onchange="lireCSV(this)">
       <div class="chips" id="ct-chips"></div>
       <div class="panel"><div id="ct-table"></div></div>
+    </section>
+
+    <!-- CALENDRIER DE CONTENU -->
+    <section class="view" id="v-contenu">
+      <div class="cal-wrap">
+        <div id="ct-theme"></div>
+        <div class="cal-tuiles" id="ct-tuiles"></div>
+        <div class="cal-mois">
+          <div class="cal-nav">
+            <button onclick="ctMois(-1)" aria-label="Mois précédent">‹</button>
+            <button onclick="ctAujourdhui()">Aujourd'hui</button>
+            <button onclick="ctMois(1)" aria-label="Mois suivant">›</button>
+          </div>
+          <div class="nom" id="ct-nom">—</div>
+          <div class="cal-vues">
+            <button id="ct-v-mois" class="on" onclick="ctVue('mois')">Mois</button>
+            <button id="ct-v-semaine" onclick="ctVue('semaine')">Semaine</button>
+            <button id="ct-v-liste" onclick="ctVue('liste')">Liste</button>
+          </div>
+        </div>
+        <div id="ct-corps"></div>
+      </div>
     </section>
 
     <!-- NEWSLETTER -->
@@ -519,6 +656,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
   <h3 id="dlg-t"></h3><p id="dlg-p"></p>
   <div class="dlg-acts"><button class="btn ghost sm" onclick="closeDlg()">Annuler</button><button class="btn sm" id="dlg-ok"></button></div>
 </div></div>
+<div id="dlg2"></div>
 <div id="toast"></div>
 <div id="busy"><div class="spin"></div><div class="msg" id="busy-msg">Publication…</div></div>
 
@@ -1376,12 +1514,14 @@ function rebuildCats(){
 }
 
 /* ---------------- navigation ---------------- */
-var TITLES = { dash:'Tableau de bord', posts:'Articles', cats:'Catégories', seo:'Référencement', leads:'Contacts', news:'Newsletter', mails:'Modèles d\'emails', set:'Réglages' };
+var TITLES = { contenu:'Calendrier de contenu', dash:'Tableau de bord', posts:'Articles', cats:'Catégories', seo:'Référencement', leads:'Contacts', news:'Newsletter', mails:'Modèles d\'emails', set:'Réglages' };
 function go(v){
   document.querySelectorAll('.view').forEach(function(s){ s.className = 'view'; });
   $('v-' + v).className = 'view on';
   document.querySelectorAll('.menu button').forEach(function(b){ b.className = b.dataset.v === v ? 'on' : ''; });
   $('vtitle').textContent = TITLES[v] || '';
+  ctMenuMobile(v);
+  if (v === 'contenu') chargerCalendrier();
   if (v === 'seo') renderSeo();
   if (v === 'leads') chargerContacts();
   if (v === 'news'){ chargerContacts().then(chargerCampagnes); }
@@ -2511,6 +2651,505 @@ window.addEventListener('beforeunload', function(e){
     .then(function(r){ state.user = r.email; return entrer(); })
     .catch(function(){ lsDel(K_SESSION); });
 })();
+
+</script>
+<script>
+/* ============================================================
+   CALENDRIER DE CONTENU — Ichinen Coaching
+   Issu de la séance du 06/10 : une thématique par mois, découpée en
+   angles, chaque angle décliné en TOFU / MOFU / BOFU, posé sur un
+   calendrier par plateforme. Les heures proposées sont 12 h et 19 h.
+   ============================================================ */
+
+var CT_API = 'https://tcawjvyefzlkvngcklqm.supabase.co/functions/v1/ichinen-contenu';
+
+/* Les trois marques officielles (tracés officiels, déjà utilisés sur son site),
+   puis des pictogrammes sobres pour ses canaux à elle. */
+var PF = {
+  instagram: { nom:'Instagram', c:'#E1306C', svg:'<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>' },
+  facebook:  { nom:'Facebook', c:'#1877F2', svg:'<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>' },
+  linkedin:  { nom:'LinkedIn', c:'#0A66C2', svg:'<path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>' },
+  school:    { nom:'Communauté', c:'#C8865A', svg:'<path d="M12 2 1 7l11 5 9-4.09V16h2V7L12 2zM5 11.18v3.64c0 1.47 3.13 3.18 7 3.18s7-1.71 7-3.18v-3.64l-7 3.18-7-3.18z"/>' },
+  newsletter:{ nom:'Newsletter', c:'#B5521E', svg:'<path d="M2 4h20c.55 0 1 .45 1 1v14c0 .55-.45 1-1 1H2c-.55 0-1-.45-1-1V5c0-.55.45-1 1-1zm1 3.2V18h18V7.2l-9 5.4-9-5.4zM3.7 6l8.3 5 8.3-5H3.7z"/>' },
+  atelier:   { nom:'Atelier / en personne', c:'#4A5240', svg:'<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-7 2c1.66 0 3-1.34 3-3S6.66 8 5 8s-3 1.34-3 3 1.34 3 3 3zm14 0c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zM5 15.5c-2.33 0-5 1.17-5 3.5V21h6v-1.5c0-.9.32-1.76.86-2.47A6.7 6.7 0 0 0 5 15.5zm14 0c-.66 0-1.3.08-1.86.53.54.71.86 1.57.86 2.47V21h6v-2c0-2.33-2.67-3.5-5-3.5zm-7 .5c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4z"/>' }
+};
+var ORDRE_PF = ['instagram','facebook','linkedin','school','newsletter','atelier'];
+var FORMATS = { post:'Post', story:'Story', reel:'Reel', carrousel:'Carrousel', live:'Live', article:'Article', email:'Email', evenement:'Événement' };
+var ETAGES = {
+  tofu:{ nom:'TOFU', aide:'Parle à tout le monde — storytelling, rien de technique.' },
+  mofu:{ nom:'MOFU', aide:'Parle aux curieuses — la méthode, le comment.' },
+  bofu:{ nom:'BOFU', aide:'Parle à celles qui ont besoin — prise de conscience, offre.' }
+};
+var PRIORITES = { brulant:'Brûlant', important:'Important', a_faire:'À faire' };
+var STATUTS = { idee:'Idée', a_produire:'À produire', pret:'Prêt', publie:'Publié' };
+var JOURS_FR = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi','Dimanche'];
+var MOIS_FR = ['janvier','février','mars','avril','mai','juin','juillet','août','septembre','octobre','novembre','décembre'];
+var JOUR_BATCH = 4; // jeudi : la demi-journée de production (9 h – 13 h)
+
+var ct = { mois:null, vue:'mois', contenus:[], theme:null, charge:false, edit:null, drag:null, semaine:0 };
+
+/* ---------------- utilitaires de date (sans fuseau : on reste en AAAA-MM-JJ) --------- */
+function ctISO(d){
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+function ctParse(iso){ var p = String(iso).split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+function ctAujISO(){ return ctISO(new Date()); }
+function ctMoisCourant(){ var d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'); }
+function ctLundi(d){ var x = new Date(d); var j = (x.getDay()+6)%7; x.setDate(x.getDate()-j); return x; }
+function ctLibelleMois(mois){ var p = mois.split('-'); return MOIS_FR[+p[1]-1] + ' ' + p[0]; }
+function ctLibelleJour(iso){
+  var d = ctParse(iso);
+  return JOURS_FR[(d.getDay()+6)%7] + ' ' + d.getDate() + ' ' + MOIS_FR[d.getMonth()];
+}
+
+/* ---------------- appels ---------------- */
+function ctApi(action, payload){
+  var corps = payload || {}; corps.action = action;
+  if (pageNonChiffree()) return Promise.reject(new Error("Cette page n'est pas en HTTPS : ouvre https://ichinencoaching.com/admin/"));
+  return fetch(CT_API, {
+    method:'POST',
+    headers:{ 'Content-Type':'application/json', 'x-ichinen-session': apiSession() },
+    body: JSON.stringify(corps)
+  }).then(function(r){
+    return r.json().catch(function(){ return {}; }).then(function(j){
+      if (r.status === 401){ deconnexionForcee(); throw new Error('Session expirée'); }
+      if (!r.ok || j.erreur) throw new Error(j.erreur || ('erreur ' + r.status));
+      return j;
+    });
+  });
+}
+
+function chargerCalendrier(force){
+  if (ct.charge && !force) return Promise.resolve();
+  if (!ct.mois) ct.mois = ctMoisCourant();
+  return ctApi('calendrier', { mois: ct.mois }).then(function(j){
+    ct.contenus = j.contenus || [];
+    ct.theme = j.theme || null;
+    ct.charge = true;
+    ctRendre();
+  }).catch(function(e){
+    $('ct-corps').innerHTML = '<div class="panel"><div class="empty"><span class="k">一念</span>' + esc(e.message) + '</div></div>';
+  });
+}
+
+function ctMois(delta){
+  var p = ct.mois.split('-');
+  var d = new Date(+p[0], +p[1]-1+delta, 1);
+  ct.mois = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+  ct.semaine = 0;
+  chargerCalendrier(true);
+}
+function ctAujourdhui(){ ct.mois = ctMoisCourant(); ct.semaine = 0; chargerCalendrier(true); }
+function ctVue(v){
+  ct.vue = v;
+  ['mois','semaine','liste'].forEach(function(x){ $('ct-v-'+x).className = x === v ? 'on' : ''; });
+  ctRendre();
+}
+
+/* ---------------- rendu ---------------- */
+function ctRendre(){
+  $('ct-nom').textContent = ctLibelleMois(ct.mois);
+  ctRendreTheme();
+  ctRendreTuiles();
+  if (ct.vue === 'mois') ctRendreMois();
+  else if (ct.vue === 'semaine') ctRendreSemaine();
+  else ctRendreListe();
+}
+
+function ctDuMois(){
+  return ct.contenus.filter(function(c){ return String(c.jour).slice(0,7) === ct.mois; });
+}
+
+function ctRendreTheme(){
+  var t = ct.theme;
+  if (!t){
+    $('ct-theme').innerHTML =
+      '<div class="theme-bloc"><div class="kanji">一念</div>' +
+      '<h3>Pas encore de thématique pour ' + esc(ctLibelleMois(ct.mois)) + '</h3>' +
+      '<p class="sous">Tout part de là : une thématique du mois, découpée en quatre ou cinq angles. ' +
+      'Chaque angle donne ensuite un TOFU, un MOFU et un BOFU — et ton mois est écrit.</p>' +
+      '<button class="modif" onclick="ouvrirTheme()">Définir la thématique</button></div>';
+    return;
+  }
+  $('ct-theme').innerHTML =
+    '<div class="theme-bloc"><div class="kanji">一念</div>' +
+    '<button class="modif" onclick="ouvrirTheme()">Modifier</button>' +
+    '<h3>' + esc(t.titre) + '</h3>' +
+    (t.intention ? '<p class="sous">' + esc(t.intention) + '</p>' : '') +
+    (t.angles && t.angles.length
+      ? '<div class="theme-angles">' + t.angles.map(function(a){ return '<span>' + esc(a) + '</span>'; }).join('') + '</div>'
+      : '') +
+    '</div>';
+}
+
+function ctRendreTuiles(){
+  var l = ctDuMois();
+  var publies = l.filter(function(c){ return c.statut === 'publie'; }).length;
+  var aProduire = l.filter(function(c){ return c.statut === 'idee' || c.statut === 'a_produire'; }).length;
+  var tofu = l.filter(function(c){ return c.etage === 'tofu'; }).length;
+  var mofu = l.filter(function(c){ return c.etage === 'mofu'; }).length;
+  var bofu = l.filter(function(c){ return c.etage === 'bofu'; }).length;
+  var tot = l.length || 1;
+  var grandPublic = Math.round((tofu + mofu) / tot * 100);
+
+  var parPf = ORDRE_PF.map(function(k){
+    var n = l.filter(function(c){ return c.plateforme === k; }).length;
+    return '<span style="display:inline-flex;align-items:center;gap:5px">' +
+      '<svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:' + PF[k].c + '">' + PF[k].svg + '</svg>' +
+      '<b>' + n + '</b></span>';
+  }).join('');
+
+  $('ct-tuiles').innerHTML =
+    '<div class="tuile"><div class="n">' + l.length + '</div><div class="l">Contenus ce mois</div></div>' +
+    '<div class="tuile"><div class="n">' + publies + '</div><div class="l">Publiés</div></div>' +
+    '<div class="tuile"><div class="n">' + aProduire + '</div><div class="l">Encore à produire</div></div>' +
+    '<div class="tuile"><div class="n">' + grandPublic + '%</div><div class="l">Grand public</div>' +
+      '<div class="jauge">' +
+        '<i style="width:' + (tofu/tot*100) + '%;background:#4A5240"></i>' +
+        '<i style="width:' + (mofu/tot*100) + '%;background:#C8865A"></i>' +
+        '<i style="width:' + (bofu/tot*100) + '%;background:#B5521E"></i>' +
+      '</div>' +
+      '<div class="jauge-lg"><span>TOFU <b>' + tofu + '</b></span><span>MOFU <b>' + mofu + '</b></span><span>BOFU <b>' + bofu + '</b></span></div>' +
+      '<div class="hint" style="margin-top:6px">Vise 70 % grand public, 30 % technique.</div></div>' +
+    '<div class="tuile"><div class="l" style="margin:0 0 9px">Par plateforme</div>' +
+      '<div style="display:flex;gap:13px;flex-wrap:wrap;font-size:15px">' + parPf + '</div></div>';
+}
+
+function ctCarte(c){
+  var p = PF[c.plateforme] || PF.instagram;
+  return '<button class="cc' + (c.statut === 'publie' ? ' fait' : '') + '" style="--pf:' + p.c + '"' +
+    ' draggable="true" data-id="' + c.id + '"' +
+    ' ondragstart="ctDragStart(event,\'' + c.id + '\')" ondragend="ctDragEnd(event)"' +
+    ' onclick="ouvrirContenu(\'' + c.id + '\')" title="' + esc(c.titre) + '">' +
+    '<span class="lg"><svg viewBox="0 0 24 24">' + p.svg + '</svg></span>' +
+    '<span class="co">' +
+      '<span class="h"><span class="pt ' + c.priorite + '" title="' + PRIORITES[c.priorite] + '"></span>' +
+        esc(c.heure) + '<span class="et ' + c.etage + '">' + ETAGES[c.etage].nom + '</span></span>' +
+      '<span class="t">' + esc(c.titre) + '</span>' +
+    '</span></button>';
+}
+
+function ctRendreMois(){
+  var p = ct.mois.split('-');
+  var premier = new Date(+p[0], +p[1]-1, 1);
+  var debut = ctLundi(premier);
+  var fin = new Date(+p[0], +p[1], 0);
+  var nbCases = Math.ceil(((fin - debut) / 86400000 + 1) / 7) * 7;
+
+  var parJour = {};
+  ct.contenus.forEach(function(c){ (parJour[c.jour] = parJour[c.jour] || []).push(c); });
+
+  var auj = ctAujISO();
+  var html = '<div class="cal-grille"><div class="cal-jours">' +
+    JOURS_FR.map(function(j){ return '<div>' + j.slice(0,3) + '</div>'; }).join('') +
+    '</div><div class="cal-cases">';
+
+  for (var i = 0; i < nbCases; i++){
+    var d = new Date(debut); d.setDate(d.getDate() + i);
+    var iso = ctISO(d);
+    var hors = (d.getMonth() !== premier.getMonth());
+    var liste = parJour[iso] || [];
+    var cls = 'cal-case' + (hors ? ' hors' : '') + (iso === auj ? ' auj' : '') + (hors && !liste.length ? ' vide' : '');
+    html += '<div class="' + cls + '" data-jour="' + iso + '"' +
+      ' ondragover="ctDragOver(event)" ondragleave="ctDragLeave(event)" ondrop="ctDrop(event,\'' + iso + '\')">' +
+      '<div class="num"><b>' + d.getDate() + (hors ? '' : '') + '</b>' +
+        (d.getDay() === JOUR_BATCH && !hors ? '<span class="cal-batch">Production</span>' : '') +
+        '<button class="plus" onclick="ouvrirContenu(null,\'' + iso + '\')" title="Ajouter un contenu">＋</button></div>' +
+      liste.map(ctCarte).join('') +
+      '</div>';
+  }
+  html += '</div></div>';
+  html += '<div class="hint" style="margin-top:10px">Glisse une carte sur un autre jour pour la déplacer. ' +
+          'Le jeudi est ta demi-journée de production : tu tournes le matin, tu montes l\'après-midi.</div>';
+  $('ct-corps').innerHTML = html;
+}
+
+function ctRendreSemaine(){
+  var p = ct.mois.split('-');
+  var base = ctLundi(new Date(+p[0], +p[1]-1, 1));
+  base.setDate(base.getDate() + ct.semaine * 7);
+
+  var parJour = {};
+  ct.contenus.forEach(function(c){ (parJour[c.jour] = parJour[c.jour] || []).push(c); });
+
+  var auj = ctAujISO();
+  var html = '<div style="display:flex;gap:9px;align-items:center;margin-bottom:12px;flex-wrap:wrap">' +
+    '<div class="cal-nav"><button onclick="ctSemaine(-1)">‹</button><button onclick="ctSemaine(1)">›</button></div>' +
+    '<span style="font-size:13px;color:var(--tm)">Semaine du ' + esc(ctLibelleJour(ctISO(base))) + '</span></div>';
+  html += '<div class="cal-grille"><div class="cal-cases">';
+  for (var i = 0; i < 7; i++){
+    var d = new Date(base); d.setDate(d.getDate() + i);
+    var iso = ctISO(d);
+    var liste = parJour[iso] || [];
+    html += '<div class="cal-case' + (iso === auj ? ' auj' : '') + '" style="min-height:230px" data-jour="' + iso + '"' +
+      ' ondragover="ctDragOver(event)" ondragleave="ctDragLeave(event)" ondrop="ctDrop(event,\'' + iso + '\')">' +
+      '<div class="num"><b>' + JOURS_FR[i].slice(0,3) + ' ' + d.getDate() + '</b>' +
+        (i === 3 ? '<span class="cal-batch">Production</span>' : '') +
+        '<button class="plus" onclick="ouvrirContenu(null,\'' + iso + '\')">＋</button></div>' +
+      (liste.length ? liste.map(ctCarte).join('')
+                    : '<div style="font-size:11.5px;color:var(--tm);opacity:.6;padding:6px 2px">Rien de prévu</div>') +
+      '</div>';
+  }
+  html += '</div></div>';
+  $('ct-corps').innerHTML = html;
+}
+function ctSemaine(d){ ct.semaine += d; ctRendreSemaine(); }
+
+function ctRendreListe(){
+  var l = ctDuMois().slice().sort(function(a,b){
+    return a.jour === b.jour ? a.heure.localeCompare(b.heure) : a.jour.localeCompare(b.jour);
+  });
+  if (!l.length){
+    $('ct-corps').innerHTML = '<div class="panel"><div class="empty"><span class="k">一念</span>' +
+      'Rien de prévu en ' + esc(ctLibelleMois(ct.mois)) + '.<br>Commence par une seule semaine : six contenus, pas vingt-quatre.' +
+      '<div style="margin-top:16px"><button class="btn" onclick="ouvrirContenu()">Ajouter un contenu</button></div></div></div>';
+    return;
+  }
+  var html = '<div class="panel">', jourCourant = null;
+  l.forEach(function(c){
+    if (c.jour !== jourCourant){
+      if (jourCourant) html += '</div></div>';
+      jourCourant = c.jour;
+      var n = l.filter(function(x){ return x.jour === c.jour; }).length;
+      html += '<div class="cl-jour"><h4><span>' + esc(ctLibelleJour(c.jour)) + '</span><span>' + n + ' contenu' + (n>1?'s':'') + '</span></h4><div class="cl-lignes">';
+    }
+    var p = PF[c.plateforme] || PF.instagram;
+    html += '<button class="cl-l" style="--pf:' + p.c + '" onclick="ouvrirContenu(\'' + c.id + '\')">' +
+      '<span class="hh">' + esc(c.heure) + '</span>' +
+      '<span class="lg"><svg viewBox="0 0 24 24">' + p.svg + '</svg></span>' +
+      '<span class="tt"><b>' + esc(c.titre) + '</b><span>' + esc(FORMATS[c.format] || c.format) +
+        (c.angle ? ' · ' + esc(c.angle) : '') + '</span></span>' +
+      '<span class="et ' + c.etage + '">' + ETAGES[c.etage].nom + '</span>' +
+      '<span class="pill ' + (c.statut === 'publie' ? 'pub' : 'draft') + '">' + STATUTS[c.statut] + '</span>' +
+      '</button>';
+  });
+  html += '</div></div></div>';
+  $('ct-corps').innerHTML = html;
+}
+
+/* ---------------- glisser-déposer ---------------- */
+function ctDragStart(e, id){
+  ct.drag = id;
+  e.currentTarget.classList.add('drag');
+  try { e.dataTransfer.setData('text/plain', id); e.dataTransfer.effectAllowed = 'move'; } catch(err){}
+}
+function ctDragEnd(e){ e.currentTarget.classList.remove('drag'); ct.drag = null; }
+function ctDragOver(e){ if (!ct.drag) return; e.preventDefault(); e.currentTarget.classList.add('survol'); }
+function ctDragLeave(e){ e.currentTarget.classList.remove('survol'); }
+function ctDrop(e, jour){
+  e.preventDefault();
+  e.currentTarget.classList.remove('survol');
+  var id = ct.drag || (e.dataTransfer && e.dataTransfer.getData('text/plain'));
+  if (!id) return;
+  var c = ct.contenus.filter(function(x){ return x.id === id; })[0];
+  if (!c || c.jour === jour) return;
+  var avant = c.jour;
+  c.jour = jour;                  // on bouge l'écran tout de suite, on corrige si le serveur refuse
+  ctRendre();
+  ctApi('contenu_deplacer', { id: id, jour: jour })
+    .then(function(){ toast('Déplacé au ' + ctLibelleJour(jour)); })
+    .catch(function(err){ c.jour = avant; ctRendre(); toast(err.message, true); });
+}
+
+/* ---------------- fiche d'un contenu ---------------- */
+function ctBlanc(jour){
+  return { id:null, jour: jour || ctAujISO(), heure:'12:00', plateforme:'instagram', format:'post',
+           etage:'tofu', titre:'', angle:'', accroche:'', notes:'', lien:'', priorite:'important', statut:'idee' };
+}
+
+function ouvrirContenu(id, jour){
+  var c = id ? ct.contenus.filter(function(x){ return x.id === id; })[0] : null;
+  ct.edit = c ? JSON.parse(JSON.stringify(c)) : ctBlanc(jour);
+  ctFiche();
+}
+
+function ctChoix(champ, options, valeurCourante, avecLogo){
+  return '<div class="choix">' + options.map(function(o){
+    var p = avecLogo ? PF[o.v] : null;
+    return '<button type="button" class="' + (o.v === valeurCourante ? 'on' : '') + '"' +
+      (p ? ' style="--pf:' + p.c + ';' + (o.v === valeurCourante ? '' : 'color:' + p.c) + '"' : '') +
+      ' onclick="ctSet(\'' + champ + '\',\'' + o.v + '\')">' +
+      (p ? '<svg viewBox="0 0 24 24">' + p.svg + '</svg>' : '') + esc(o.l) + '</button>';
+  }).join('') + '</div>';
+}
+
+function ctSet(champ, valeur){
+  ct.edit[champ] = valeur;
+  ctFiche(true);
+}
+
+function ctFiche(reouvre){
+  var c = ct.edit;
+  var angles = (ct.theme && ct.theme.angles) || [];
+  var corps =
+    '<div class="ct-grille">' +
+      '<div class="f"><label for="ct-jour">Date</label><input id="ct-jour" type="date" value="' + esc(c.jour) + '"></div>' +
+      '<div class="f"><label for="ct-heure">Heure</label><input id="ct-heure" type="time" value="' + esc(c.heure) + '">' +
+        '<div class="sugg"><button type="button" onclick="ctHeure(\'12:00\')">12 h — pause méridienne</button>' +
+        '<button type="button" onclick="ctHeure(\'19:00\')">19 h — fin de journée</button></div>' +
+        '<div class="hint">Ni 8 h ni 15 h : personne n\'est là.</div></div>' +
+    '</div>' +
+    '<div class="f"><label>Plateforme</label>' +
+      ctChoix('plateforme', ORDRE_PF.map(function(k){ return { v:k, l:PF[k].nom }; }), c.plateforme, true) + '</div>' +
+    '<div class="f"><label>Format</label>' +
+      ctChoix('format', Object.keys(FORMATS).map(function(k){ return { v:k, l:FORMATS[k] }; }), c.format) + '</div>' +
+    '<div class="f"><label>Étage de l\'entonnoir</label>' +
+      ctChoix('etage', ['tofu','mofu','bofu'].map(function(k){ return { v:k, l:ETAGES[k].nom }; }), c.etage) +
+      '<div class="hint">' + esc(ETAGES[c.etage].aide) + '</div></div>' +
+    '<div class="f"><label for="ct-titre">Titre du contenu</label>' +
+      '<input id="ct-titre" value="' + esc(c.titre) + '" placeholder="Ce que raconte ce contenu, en une ligne"></div>' +
+    '<div class="f"><label for="ct-angle">Angle</label>' +
+      '<input id="ct-angle" value="' + esc(c.angle || '') + '" placeholder="Santé mentale, stress, prendre soin de soi…" list="ct-angles">' +
+      '<datalist id="ct-angles">' + angles.map(function(a){ return '<option value="' + esc(a) + '">'; }).join('') + '</datalist>' +
+      (angles.length ? '<div class="sugg">' + angles.map(function(a){
+          return '<button type="button" onclick="ctAngle(\'' + escJs(a) + '\')">' + esc(a) + '</button>'; }).join('') + '</div>' : '') +
+    '</div>' +
+    '<div class="f"><label for="ct-accroche">Accroche</label>' +
+      '<textarea id="ct-accroche" rows="2" placeholder="La première phrase, celle qui retient">' + esc(c.accroche || '') + '</textarea></div>' +
+    '<div class="f"><label for="ct-notes">Notes</label>' +
+      '<textarea id="ct-notes" rows="4" placeholder="Le déroulé, les images à prendre, ce que tu veux dire">' + esc(c.notes || '') + '</textarea></div>' +
+    '<div class="ct-grille">' +
+      '<div class="f"><label>Priorité</label>' +
+        ctChoix('priorite', Object.keys(PRIORITES).map(function(k){ return { v:k, l:PRIORITES[k] }; }), c.priorite) + '</div>' +
+      '<div class="f"><label>Statut</label>' +
+        ctChoix('statut', Object.keys(STATUTS).map(function(k){ return { v:k, l:STATUTS[k] }; }), c.statut) + '</div>' +
+    '</div>' +
+    '<div class="f"><label for="ct-lien">Lien (une fois publié)</label>' +
+      '<input id="ct-lien" value="' + esc(c.lien || '') + '" placeholder="https://…"></div>';
+
+  var pied =
+    (c.id ? '<button class="btn danger" onclick="supprimerContenu()">Supprimer</button>' +
+            '<button class="btn ghost" onclick="dupliquerContenu()">Dupliquer</button>' : '') +
+    '<button class="btn ghost" onclick="ctFermer()">Annuler</button>' +
+    '<button class="btn" onclick="enregistrerContenu()">Enregistrer</button>';
+
+  ctModale(c.id ? 'Modifier le contenu' : 'Nouveau contenu', corps, pied, reouvre);
+}
+
+function ctFermer(){ $('dlg2').className = ''; $('dlg2').innerHTML = ''; }
+
+/* Petite modale maison : celle de la console est faite pour une confirmation, pas pour un formulaire. */
+function ctModale(titre, corps, pied, garderValeurs){
+  var vals = null;
+  if (garderValeurs && $('ct-titre')) vals = ctLireChamps();
+  $('dlg2').innerHTML =
+    '<div class="dlg-card" style="max-width:720px;max-height:90vh;overflow:auto">' +
+      '<h3>' + esc(titre) + '</h3>' +
+      '<div style="margin-top:14px">' + corps + '</div>' +
+      '<div class="dlg-acts" style="margin-top:20px">' + pied + '</div>' +
+    '</div>';
+  $('dlg2').className = 'on';
+  if (vals) ctEcrireChamps(vals);
+}
+
+function ctLireChamps(){
+  return {
+    jour: $('ct-jour') ? $('ct-jour').value : ct.edit.jour,
+    heure: $('ct-heure') ? $('ct-heure').value : ct.edit.heure,
+    titre: $('ct-titre') ? $('ct-titre').value : '',
+    angle: $('ct-angle') ? $('ct-angle').value : '',
+    accroche: $('ct-accroche') ? $('ct-accroche').value : '',
+    notes: $('ct-notes') ? $('ct-notes').value : '',
+    lien: $('ct-lien') ? $('ct-lien').value : ''
+  };
+}
+function ctEcrireChamps(v){
+  if ($('ct-jour')) $('ct-jour').value = v.jour;
+  if ($('ct-heure')) $('ct-heure').value = v.heure;
+  if ($('ct-titre')) $('ct-titre').value = v.titre;
+  if ($('ct-angle')) $('ct-angle').value = v.angle;
+  if ($('ct-accroche')) $('ct-accroche').value = v.accroche;
+  if ($('ct-notes')) $('ct-notes').value = v.notes;
+  if ($('ct-lien')) $('ct-lien').value = v.lien;
+}
+function ctHeure(h){ if ($('ct-heure')) $('ct-heure').value = h; }
+function ctAngle(a){ if ($('ct-angle')) $('ct-angle').value = a; }
+
+function enregistrerContenu(){
+  var v = ctLireChamps();
+  if (!v.titre.trim()){ toast('Donne un titre à ce contenu', true); if ($('ct-titre')) $('ct-titre').focus(); return; }
+  if (!v.jour){ toast('Choisis une date', true); return; }
+  var corps = {
+    id: ct.edit.id, jour: v.jour, heure: v.heure || '12:00',
+    plateforme: ct.edit.plateforme, format: ct.edit.format, etage: ct.edit.etage,
+    titre: v.titre, angle: v.angle, accroche: v.accroche, notes: v.notes, lien: v.lien,
+    priorite: ct.edit.priorite, statut: ct.edit.statut
+  };
+  busy(true, 'Enregistrement…');
+  ctApi('contenu_save', corps).then(function(){
+    busy(false); ctFermer(); toast('Contenu enregistré');
+    return chargerCalendrier(true);
+  }).catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+function supprimerContenu(){
+  var id = ct.edit.id, titre = ct.edit.titre;
+  ctFermer();
+  confirmDlg('Supprimer ce contenu ?', '« ' + titre +' » sera retiré du calendrier. C\'est définitif.', 'Supprimer', function(){
+    ctApi('contenu_delete', { id: id }).then(function(){
+      toast('Contenu supprimé');
+      return chargerCalendrier(true);
+    }).catch(function(e){ toast(e.message, true); });
+  });
+}
+
+function dupliquerContenu(){
+  var id = ct.edit.id;
+  ctApi('contenu_dupliquer', { id: id }).then(function(){
+    ctFermer(); toast('Copie créée le même jour — change sa plateforme');
+    return chargerCalendrier(true);
+  }).catch(function(e){ toast(e.message, true); });
+}
+
+/* ---------------- thématique du mois ---------------- */
+function ouvrirTheme(){
+  var t = ct.theme || { titre:'', intention:'', angles:[] };
+  var corps =
+    '<div class="f"><label for="th-titre">Thématique de ' + esc(ctLibelleMois(ct.mois)) + '</label>' +
+      '<input id="th-titre" value="' + esc(t.titre) + '" placeholder="Octobre Rose, la place des femmes au travail…"></div>' +
+    '<div class="f"><label for="th-int">Ce que tu vises ce mois-ci</label>' +
+      '<textarea id="th-int" rows="2" placeholder="Prendre un maximum de contacts, remplir la communauté, signer…">' + esc(t.intention || '') + '</textarea></div>' +
+    '<div class="f"><label for="th-angles">Les angles, un par ligne</label>' +
+      '<textarea id="th-angles" rows="5" placeholder="Santé mentale&#10;Le stress&#10;Prendre soin de son corps&#10;Prendre du temps pour soi">' +
+        esc((t.angles || []).join('\n')) + '</textarea>' +
+      '<div class="hint">Quatre à cinq angles suffisent. Chacun donnera un TOFU, un MOFU et un BOFU.</div></div>';
+  var pied =
+    (ct.theme ? '<button class="btn danger" onclick="supprimerTheme()">Retirer</button>' : '') +
+    '<button class="btn ghost" onclick="ctFermer()">Annuler</button>' +
+    '<button class="btn" onclick="enregistrerTheme()">Enregistrer</button>';
+  ctModale('Thématique du mois', corps, pied);
+}
+
+function enregistrerTheme(){
+  var titre = $('th-titre').value.trim();
+  if (!titre){ toast('Donne un nom à la thématique', true); $('th-titre').focus(); return; }
+  var angles = $('th-angles').value.split('\n').map(function(a){ return a.trim(); }).filter(Boolean);
+  busy(true, 'Enregistrement…');
+  ctApi('theme_save', { mois: ct.mois, titre: titre, intention: $('th-int').value, angles: angles })
+    .then(function(){ busy(false); ctFermer(); toast('Thématique enregistrée'); return chargerCalendrier(true); })
+    .catch(function(e){ busy(false); toast(e.message, true); });
+}
+
+function supprimerTheme(){
+  var mois = ct.mois;
+  ctFermer();
+  confirmDlg('Retirer la thématique ?', 'Les contenus déjà posés restent, seule la thématique du mois est retirée.', 'Retirer', function(){
+    ctApi('theme_delete', { mois: mois }).then(function(){
+      toast('Thématique retirée'); return chargerCalendrier(true);
+    }).catch(function(e){ toast(e.message, true); });
+  });
+}
+
+/* ---------------- menu mobile (la barre latérale disparaît sous 900 px) ---------------- */
+function ctMenuMobile(actif){
+  var n = $('mob-menu');
+  if (!n) return;
+  var items = [['dash','Bord'],['contenu','Calendrier'],['posts','Articles'],['cats','Catégories'],
+               ['seo','Référencement'],['leads','Contacts'],['news','Newsletter'],['mails','Emails'],['set','Réglages']];
+  n.innerHTML = items.map(function(it){
+    return '<button class="' + (it[0] === actif ? 'on' : '') + '" onclick="go(\'' + it[0] + '\')">' + it[1] + '</button>';
+  }).join('');
+}
 
 </script>
 </body>
