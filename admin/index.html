@@ -268,6 +268,33 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
   .theme-bloc .modif{position:static;align-self:flex-start;margin-top:16px;order:9}
 }
 
+/* ---------- GRILLE DE CONTENU (axes × Tofu/Mofu/Bofu) ---------- */
+.gr{border:1px solid var(--cd);border-radius:4px;overflow:hidden;background:var(--wh)}
+.gr-l{display:grid;grid-template-columns:210px repeat(3,1fr);border-bottom:1px solid var(--cd)}
+.gr-l:last-child{border-bottom:none}
+.gr-l.tete{background:var(--cr)}
+.gr-l.tete>div{padding:11px 14px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--tm);font-weight:600;border-right:1px solid var(--cd)}
+.gr-l.tete>div:last-child{border-right:none}
+.gr-l.tete .sous{display:block;text-transform:none;letter-spacing:0;font-weight:400;font-size:11px;opacity:.8;margin-top:2px}
+.gr-axe{padding:13px 14px;border-right:1px solid var(--cd);background:#FCF9F2;display:flex;flex-direction:column;gap:6px;justify-content:center}
+.gr-axe b{font-weight:500;line-height:1.3}
+.gr-axe .cpt{font-size:11px;color:var(--tm)}
+.gr-axe .cpt.plein{color:var(--ol);font-weight:600}
+.gr-c{padding:8px;border-right:1px solid var(--cd);display:flex;flex-direction:column;gap:5px;min-height:92px}
+.gr-c:last-child{border-right:none}
+.gr-c .plus{opacity:0;align-self:flex-start;font-size:12px;color:var(--ca);border:1px dashed var(--cd);border-radius:3px;padding:3px 9px;transition:.15s}
+.gr-c:hover .plus{opacity:1}
+.gr-c .plus:hover{border-color:var(--ca);background:rgba(200,134,90,.08)}
+.gr-tot{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:13px 16px;background:var(--cr);border-top:1px solid var(--cd);font-size:12.5px;color:var(--tm)}
+.gr-tot b{color:var(--td);font-weight:600}
+@media(max-width:900px){
+  .gr-l{grid-template-columns:1fr}
+  .gr-axe{border-right:none;border-bottom:1px solid var(--cd)}
+  .gr-c{border-right:none;border-bottom:1px solid var(--cd);min-height:0}
+  .gr-c:before{content:attr(data-et);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--tm)}
+  .gr-l.tete{display:none}
+}
+
 /* ---------- MENU MOBILE ---------- */
 .mob-menu{display:none;gap:7px;overflow-x:auto;padding:11px 20px;border-bottom:1px solid var(--cd);background:var(--cr);position:sticky;top:0;z-index:21;-webkit-overflow-scrolling:touch}
 .mob-menu button{flex:none;padding:7px 13px;border-radius:20px;border:1px solid var(--cd);background:var(--wh);font-size:12.5px;color:var(--tm);white-space:nowrap}
@@ -321,6 +348,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
     <nav class="menu">
       <button class="on" data-v="dash" onclick="go('dash')"><span class="ico">◈</span> Tableau de bord</button>
       <button data-v="contenu" onclick="go('contenu')"><span class="ico">▦</span> Calendrier de contenu</button>
+      <button data-v="crm" onclick="go('crm')"><span class="ico">⊞</span> CRM de contenu</button>
       <button data-v="posts" onclick="go('posts')"><span class="ico">✎</span> Articles</button>
       <button data-v="cats" onclick="go('cats')"><span class="ico">◆</span> Catégories</button>
       <button data-v="seo" onclick="go('seo')"><span class="ico">◎</span> Référencement</button>
@@ -430,6 +458,24 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
           </div>
         </div>
         <div id="ct-corps"></div>
+      </div>
+    </section>
+
+    <!-- CRM DE CONTENU : la grille axes × Tofu/Mofu/Bofu -->
+    <section class="view" id="v-crm">
+      <div class="cal-wrap">
+        <div id="cr-theme"></div>
+        <div id="cr-objectif"></div>
+        <div class="cal-mois">
+          <div class="cal-nav">
+            <button onclick="crMois(-1)" aria-label="Mois précédent">‹</button>
+            <button onclick="crAujourdhui()">Ce mois-ci</button>
+            <button onclick="crMois(1)" aria-label="Mois suivant">›</button>
+          </div>
+          <div class="nom" id="cr-nom">—</div>
+          <a class="btn ghost sm" style="margin-left:auto" onclick="go('contenu')">Voir le calendrier</a>
+        </div>
+        <div id="cr-corps"></div>
       </div>
     </section>
 
@@ -1516,7 +1562,7 @@ function rebuildCats(){
 }
 
 /* ---------------- navigation ---------------- */
-var TITLES = { contenu:'Calendrier de contenu', dash:'Tableau de bord', posts:'Articles', cats:'Catégories', seo:'Référencement', leads:'Contacts', news:'Newsletter', mails:'Modèles d\'emails', set:'Réglages' };
+var TITLES = { contenu:'Calendrier de contenu', crm:'CRM de contenu', dash:'Tableau de bord', posts:'Articles', cats:'Catégories', seo:'Référencement', leads:'Contacts', news:'Newsletter', mails:'Modèles d\'emails', set:'Réglages' };
 function go(v){
   document.querySelectorAll('.view').forEach(function(s){ s.className = 'view'; });
   $('v-' + v).className = 'view on';
@@ -1525,13 +1571,13 @@ function go(v){
   ctMenuMobile(v);
   // Ce qu'on voit est ce sur quoi on agit : les actions du blog n'ont rien à faire
   // au-dessus du calendrier de contenu.
-  var surContenu = (v === 'contenu');
+  var surContenu = (v === 'contenu' || v === 'crm');
   $('btn-contenu').style.display = surContenu ? '' : 'none';
   ['pub-btn'].forEach(function(id){ $(id).style.display = surContenu ? 'none' : ''; });
   document.querySelectorAll('.topbar .acts > button').forEach(function(b){
     if (b.textContent.trim() === 'Nouvel article') b.style.display = surContenu ? 'none' : '';
   });
-  if (v === 'contenu') chargerCalendrier();
+  if (v === 'contenu' || v === 'crm') chargerCalendrier();
   if (v === 'seo') renderSeo();
   if (v === 'leads') chargerContacts();
   if (v === 'news'){ chargerContacts().then(chargerCampagnes); }
@@ -2736,7 +2782,7 @@ function chargerCalendrier(force){
     ct.contenus = j.contenus || [];
     ct.theme = j.theme || null;
     ct.charge = true;
-    ctRendre();
+    ctRendre(); crRendre();
   }).catch(function(e){
     $('ct-corps').innerHTML = '<div class="panel"><div class="empty"><span class="k">一念</span>' + esc(e.message) + '</div></div>';
   });
@@ -2956,9 +3002,10 @@ function ctDrop(e, jour){
   var avant = c.jour;
   c.jour = jour;                  // on bouge l'écran tout de suite, on corrige si le serveur refuse
   ctRendre();
+  crRendre();
   ctApi('contenu_deplacer', { id: id, jour: jour })
     .then(function(){ toast('Déplacé au ' + ctLibelleJour(jour)); })
-    .catch(function(err){ c.jour = avant; ctRendre(); toast(err.message, true); });
+    .catch(function(err){ c.jour = avant; ctRendre(); crRendre(); toast(err.message, true); });
 }
 
 /* ---------------- fiche d'un contenu ---------------- */
@@ -3154,11 +3201,148 @@ function supprimerTheme(){
 function ctMenuMobile(actif){
   var n = $('mob-menu');
   if (!n) return;
-  var items = [['dash','Bord'],['contenu','Calendrier'],['posts','Articles'],['cats','Catégories'],
+  var items = [['dash','Bord'],['contenu','Calendrier'],['crm','CRM contenu'],['posts','Articles'],['cats','Catégories'],
                ['seo','Référencement'],['leads','Contacts'],['news','Newsletter'],['mails','Emails'],['set','Réglages']];
   n.innerHTML = items.map(function(it){
     return '<button class="' + (it[0] === actif ? 'on' : '') + '" onclick="go(\'' + it[0] + '\')">' + it[1] + '</button>';
   }).join('');
+}
+
+/* ============================================================
+   CRM DE CONTENU — la grille de la page 7 du document de stratégie :
+   les axes du mois en lignes, TOFU / MOFU / BOFU en colonnes.
+   Deux contenus par case = six par axe = le mois. On vise six d'abord,
+   pas vingt-quatre : l'objectif progresse 6 → 12 → 24.
+   Même base que le calendrier : une case remplie EST un contenu daté.
+   ============================================================ */
+
+var CIBLE_PAR_CASE = 2;   // 2 shorts par niveau
+var PALIERS = [6, 12, 24];
+
+function crMois(d){ ctMois(d); }
+function crAujourdhui(){ ctAujourdhui(); }
+
+function crRendre(){
+  $('cr-nom').textContent = ctLibelleMois(ct.mois);
+  crTheme();
+  crObjectif();
+  crGrille();
+}
+
+function crTheme(){
+  var t = ct.theme;
+  if (!t || !(t.angles || []).length){
+    $('cr-theme').innerHTML =
+      '<div class="theme-bloc"><div class="kanji">一念</div>' +
+      '<h3>' + (t ? esc(t.titre) : 'Pas encore de thématique') + '</h3>' +
+      '<p class="sous">La grille se remplit à partir des axes du mois. Pose la thématique de ' +
+      esc(ctLibelleMois(ct.mois)) + ' et ses quatre à cinq axes : chaque axe devient une ligne, ' +
+      'et chaque ligne se décline en TOFU, MOFU et BOFU.</p>' +
+      '<button class="modif" onclick="ouvrirTheme()">' + (t ? 'Ajouter les axes' : 'Définir la thématique') + '</button></div>';
+    return;
+  }
+  $('cr-theme').innerHTML =
+    '<div class="theme-bloc"><div class="kanji">一念</div>' +
+    '<button class="modif" onclick="ouvrirTheme()">Modifier</button>' +
+    '<h3>' + esc(t.titre) + '</h3>' +
+    (t.intention ? '<p class="sous">' + esc(t.intention) + '</p>' : '') +
+    '<div class="theme-angles">' + t.angles.map(function(a){ return '<span>' + esc(a) + '</span>'; }).join('') + '</div>' +
+    '</div>';
+}
+
+function crObjectif(){
+  var n = ctDuMois().length;
+  var palier = PALIERS.filter(function(p){ return n < p; })[0] || PALIERS[PALIERS.length-1];
+  var atteint = Math.min(n, palier);
+  var pct = Math.round(atteint / palier * 100);
+  var phrase = palier === 6
+      ? 'Six contenus, un seul axe, une seule matinée. Pas vingt-quatre.'
+      : (palier === 12 ? 'Deux axes, même découpage. Tu montes quand six est devenu facile.'
+                       : 'Les quatre axes : ton mois complet d’avance.');
+  $('cr-objectif').innerHTML =
+    '<div class="tuile" style="background:var(--wh)">' +
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap">' +
+        '<div><span class="n">' + n + '</span><span style="font-size:15px;color:var(--tm)"> / ' + palier + '</span>' +
+          '<div class="l">Objectif en cours</div></div>' +
+        '<div style="font-size:12.5px;color:var(--tm);max-width:460px;text-align:right">' + esc(phrase) + '</div>' +
+      '</div>' +
+      '<div class="jauge"><i style="width:' + pct + '%;background:var(--ol)"></i></div>' +
+    '</div>';
+}
+
+function crGrille(){
+  var angles = (ct.theme && ct.theme.angles) || [];
+  var liste = ctDuMois();
+
+  if (!angles.length){
+    $('cr-corps').innerHTML = '<div class="panel"><div class="empty"><span class="k">一念</span>' +
+      'Pose d’abord les axes du mois : la grille se construit dessus.</div></div>';
+    return;
+  }
+
+  // Un contenu dont l'angle ne correspond à aucun axe n'est pas perdu : il a sa ligne.
+  var hors = liste.filter(function(c){ return angles.indexOf(c.angle || '') === -1; });
+  var lignes = angles.slice();
+  if (hors.length) lignes.push(null);
+
+  var html = '<div class="gr">' +
+    '<div class="gr-l tete">' +
+      '<div>Axe</div>' +
+      '<div>Tofu<span class="sous">tout le monde</span></div>' +
+      '<div>Mofu<span class="sous">les curieux</span></div>' +
+      '<div>Bofu<span class="sous">ceux qui ont besoin</span></div>' +
+    '</div>';
+
+  lignes.forEach(function(angle){
+    var deLaLigne = angle === null ? hors : liste.filter(function(c){ return (c.angle || '') === angle; });
+    var n = deLaLigne.length;
+    html += '<div class="gr-l">' +
+      '<div class="gr-axe"><b>' + (angle === null ? 'Hors axe' : esc(angle)) + '</b>' +
+        (angle === null
+          ? '<span class="cpt">' + n + ' contenu' + (n>1?'s':'') + ' sans axe du mois</span>'
+          : '<span class="cpt' + (n >= 6 ? ' plein' : '') + '">' + n + ' / 6</span>') +
+      '</div>';
+    ['tofu','mofu','bofu'].forEach(function(et){
+      var dedans = deLaLigne.filter(function(c){ return c.etage === et; });
+      html += '<div class="gr-c" data-et="' + ETAGES[et].nom + '">' +
+        dedans.map(ctCarte).join('') +
+        (angle === null ? '' :
+          '<button class="plus" onclick="crAjouter(\'' + escJs(angle) + '\',\'' + et + '\')">' +
+          (dedans.length ? '＋ encore' : '＋ ' + ETAGES[et].nom) + '</button>') +
+        '</div>';
+    });
+    html += '</div>';
+  });
+
+  var tot = liste.length;
+  var tofu = liste.filter(function(c){ return c.etage === 'tofu'; }).length;
+  var mofu = liste.filter(function(c){ return c.etage === 'mofu'; }).length;
+  var bofu = liste.filter(function(c){ return c.etage === 'bofu'; }).length;
+  var accessible = tot ? Math.round((tofu + mofu) / tot * 100) : 0;
+  html += '<div class="gr-tot">' +
+      '<span><b>' + tot + '</b> contenus sur ' + (angles.length * 6) + ' possibles (' + angles.length + ' axes × 6)</span>' +
+      '<span>Tofu <b>' + tofu + '</b> · Mofu <b>' + mofu + '</b> · Bofu <b>' + bofu + '</b></span>' +
+      '<span>' + (tot ? '<b>' + accessible + ' %</b> accessible — la règle est 70 / 30' : 'Deux contenus par case : c’est la cible.') + '</span>' +
+    '</div></div>';
+
+  html += '<div class="hint" style="margin-top:10px">Chaque case vaut deux contenus. Clique sur ＋ pour en poser un : ' +
+          'l’axe et le niveau sont déjà remplis, il ne reste que la date et le titre.</div>';
+  $('cr-corps').innerHTML = html;
+}
+
+/* Depuis une case : l'axe et l'étage sont posés d'avance. */
+function crAjouter(angle, etage){
+  ct.edit = ctBlanc(ctDefautDuMois());
+  ct.edit.angle = angle;
+  ct.edit.etage = etage;
+  ctFiche();
+}
+
+/* Un contenu créé depuis la grille tombe dans le mois affiché, pas aujourd'hui. */
+function ctDefautDuMois(){
+  var auj = ctAujISO();
+  if (auj.slice(0,7) === ct.mois) return auj;
+  return ct.mois + '-01';
 }
 
 </script>
