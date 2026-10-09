@@ -302,6 +302,242 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 @media(max-width:900px){.mob-menu{display:flex}}
 
 @media(max-width:900px){.layout{grid-template-columns:1fr}aside{display:none}.view,.topbar{padding-left:20px;padding-right:20px}.grid2,.grid3{grid-template-columns:1fr}}
+
+/* ==========================================================================
+   REFONTE — maquette du 09/10/2026. Cette feuille vient APRÈS les règles
+   d'origine et les remplace. Rien n'est supprimé au-dessus : les anciennes
+   classes restent valides, elles sont seulement rhabillées.
+   ========================================================================== */
+:root{
+  --fond:#FBF7EE; --carte:#FFFFFF; --trait:#F0E8DA; --trait2:#E8DFCF;
+  --encre:#2C2A24; --gris:#8A8276; --gris2:#6B6358;
+  --tc:#C4663B; --tc-clair:#FBF2EA;
+  --vert:#4E7A46; --vert-clair:#E9F2E7;
+  --ambre:#B8893C; --ambre-clair:#FBF1E0;
+  --rouge:#C2503A; --rouge-clair:#FAE9E4;
+  --ombre:0 1px 2px rgba(44,42,36,.045), 0 10px 26px rgba(44,42,36,.035);
+  --r:14px; --r2:10px;
+}
+body{background:var(--fond);color:var(--encre)}
+/* les collines, tout en bas, comme sur la maquette */
+#app{position:relative;min-height:100vh}
+#app:before{content:'';position:fixed;left:0;right:0;bottom:0;height:46vh;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(120% 100% at 18% 100%, rgba(226,214,189,.42) 0 42%, transparent 43%),
+    radial-gradient(130% 100% at 62% 100%, rgba(234,224,202,.46) 0 38%, transparent 39%),
+    radial-gradient(110% 100% at 96% 100%, rgba(226,214,189,.34) 0 46%, transparent 47%);
+}
+.layout{position:relative;z-index:1;grid-template-columns:214px 1fr}
+@media(max-width:900px){.layout{grid-template-columns:1fr}}
+
+/* ---------- barre latérale ---------- */
+aside{background:var(--carte);border-right:1px solid var(--trait);padding:20px 0 18px}
+.brand{padding:0 18px 20px;border-bottom:1px solid var(--trait);margin-bottom:16px}
+.brand .marque{height:34px;width:150px;margin-bottom:6px}
+.brand .s{font-size:9.5px;letter-spacing:.22em;color:var(--gris)}
+.menu{padding:0 11px}
+.menu button{gap:10px;padding:9px 11px;border-radius:var(--r2);font-size:13px;color:var(--gris2);margin-bottom:1px;font-weight:400}
+.menu button:hover{background:#FAF6EE;color:var(--encre)}
+.menu button.on{background:var(--tc-clair);color:var(--tc);font-weight:500;box-shadow:none}
+.menu .ico{width:17px;height:17px;display:inline-flex;align-items:center;justify-content:center;opacity:1}
+.menu .ico svg{width:16px;height:16px;display:block;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.menu button.on .ico svg{stroke:var(--tc)}
+.side-foot{padding:16px 18px 0;border-top:1px solid var(--trait);font-size:11px;color:var(--gris)}
+.side-foot button{color:var(--tc);font-size:12px}
+
+/* ---------- barre du haut ---------- */
+.topbar{background:transparent;border-bottom:none;padding:22px 30px 6px;align-items:flex-start}
+.topbar h2{font-size:25px;line-height:1.1}
+.topbar .acts{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+.tb-icone{width:34px;height:34px;border-radius:50%;border:1px solid var(--trait2);background:var(--carte);
+  display:inline-flex;align-items:center;justify-content:center;color:var(--gris)}
+.tb-icone:hover{color:var(--encre);border-color:var(--tc)}
+.tb-icone svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tb-avatar{width:34px;height:34px;border-radius:50%;background:var(--ol);color:#fff;font-size:11px;
+  letter-spacing:.06em;display:inline-flex;align-items:center;justify-content:center;flex:none}
+
+/* ---------- boutons ---------- */
+.btn{border-radius:var(--r2);padding:9px 16px;font-size:13px;font-weight:500;background:var(--tc);box-shadow:none}
+.btn:hover{opacity:1;background:#B35A31}
+.btn.sm{padding:8px 13px;font-size:12.5px}
+.btn.ghost{background:var(--carte);border:1px solid var(--trait2);color:var(--gris2)}
+.btn.ghost:hover{background:var(--carte);border-color:var(--tc);color:var(--tc)}
+.btn.danger{background:var(--carte);border:1px solid var(--trait2);color:var(--rouge)}
+.btn.danger:hover{background:var(--rouge-clair);border-color:var(--rouge)}
+.btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- cartes ---------- */
+.view{padding:14px 30px 44px}
+.panel{background:var(--carte);border:1px solid var(--trait);border-radius:var(--r);box-shadow:var(--ombre);margin-bottom:16px;overflow:hidden}
+.panel-h{padding:16px 20px;border-bottom:1px solid var(--trait)}
+.panel-h h3{font-size:17px}
+.panel-b{padding:18px 20px}
+.stats{gap:13px;margin-bottom:16px}
+
+/* tuile de statistique */
+.stat{background:var(--carte);border:1px solid var(--trait);border-radius:var(--r);padding:15px 17px;
+  box-shadow:var(--ombre);display:flex;align-items:center;gap:13px}
+.stat .ic{width:36px;height:36px;border-radius:10px;flex:none;display:flex;align-items:center;justify-content:center}
+.stat .ic svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.stat .ic.v{background:var(--vert-clair);color:var(--vert)}
+.stat .ic.a{background:var(--ambre-clair);color:var(--ambre)}
+.stat .ic.r{background:var(--rouge-clair);color:var(--rouge)}
+.stat .ic.n{background:#EFEBE2;color:#4A463C}
+.stat .n{font-family:'Jost',sans-serif;font-size:21px;font-weight:600;line-height:1.1}
+.stat .l{font-size:11.5px;letter-spacing:0;text-transform:none;color:var(--gris);margin-top:2px}
+
+/* ---------- tableaux ---------- */
+table{font-size:13.5px}
+th{background:transparent;border-bottom:1px solid var(--trait);padding:12px 20px;font-size:10.5px;color:var(--gris)}
+td{padding:12px 20px;border-bottom:1px solid var(--trait)}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#FDFBF6}
+.thumb{width:46px;height:36px;border-radius:8px}
+.t-title{font-weight:500;font-size:13.5px}
+.t-sub{font-size:11.5px;color:var(--gris);margin-top:2px}
+
+/* ---------- pastilles ---------- */
+.pill{border-radius:7px;padding:4px 9px;font-size:10.5px;letter-spacing:.04em;text-transform:none;border:none}
+.pill.pub,.pill.ok{background:var(--vert-clair);color:var(--vert)}
+.pill.draft,.pill.no{background:var(--ambre-clair);color:var(--ambre)}
+
+/* ---------- onglets ---------- */
+.chips,.onglets{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
+.chip,.onglets button{border:none;background:transparent;border-radius:9px;padding:7px 14px;font-size:12.5px;color:var(--gris2)}
+.chip:hover,.onglets button:hover{background:#F6F1E7}
+.chip.on,.onglets button.on{background:var(--tc-clair);color:var(--tc);font-weight:500}
+
+/* ---------- champs ---------- */
+input,textarea,select{border:1px solid var(--trait2);border-radius:var(--r2);padding:10px 13px;background:var(--carte)}
+input:focus,textarea:focus,select:focus{border-color:var(--tc)}
+label{font-size:11.5px;letter-spacing:.02em;text-transform:none;color:var(--gris2);font-weight:500;margin-bottom:6px}
+.recherche{position:relative;flex:1;min-width:190px}
+.recherche svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;
+  stroke:var(--gris);fill:none;stroke-width:1.7;pointer-events:none}
+.recherche input{padding-left:34px}
+.barre{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.barre select{width:auto;min-width:150px;font-size:12.5px;padding:9px 12px}
+
+/* ---------- divers ---------- */
+.empty{padding:50px 22px;color:var(--gris)}
+.empty .k{color:var(--tc);opacity:.3}
+.log{background:#FAF7F0;border:1px solid var(--trait);border-radius:var(--r2);color:var(--gris2)}
+.dlg-card,#dlg2 .dlg-card{border-radius:var(--r);border-color:var(--trait);box-shadow:0 18px 50px rgba(44,42,36,.18)}
+.mob-menu{background:var(--carte);border-bottom:1px solid var(--trait)}
+.mob-menu button{border-radius:9px;border-color:var(--trait2)}
+.mob-menu button.on{background:var(--tc-clair);border-color:var(--tc-clair);color:var(--tc)}
+
+/* ---------- calendrier & CRM rhabillés ---------- */
+.cal-grille,.gr{border-color:var(--trait);border-radius:var(--r);box-shadow:var(--ombre);background:var(--carte)}
+.cal-jours{background:#FBF8F1;border-color:var(--trait)}
+.cal-case{border-color:var(--trait)}
+.cal-case.hors{background:#FCFAF5}
+.cal-case.auj{background:var(--tc-clair)}
+.cal-case.auj .num b{background:var(--tc)}
+.cal-batch{background:var(--vert-clair);color:var(--vert);border-radius:5px;padding:2px 6px}
+.cc{border-radius:8px;border-color:var(--trait2)}
+.cal-nav{border-radius:var(--r2);border-color:var(--trait2);background:var(--carte);overflow:hidden}
+.cal-nav button{background:var(--carte);font-size:13px}
+.cal-nav button:hover{background:#FAF6EE}
+.cal-nav button+button{border-color:var(--trait)}
+.cal-vues{border:none;background:#F4EEE3;border-radius:var(--r2);padding:3px;gap:2px}
+.cal-vues button{border-radius:8px;padding:6px 15px;color:var(--gris2)}
+.cal-vues button+button{border-left:none}
+.cal-vues button.on{background:var(--carte);color:var(--encre);box-shadow:0 1px 3px rgba(44,42,36,.08)}
+.gr-l,.gr-l.tete>div,.gr-axe,.gr-c{border-color:var(--trait)}
+.gr-l.tete{background:#FBF8F1}
+.gr-axe{background:#FDFBF6}
+.gr-tot{background:#FBF8F1;border-color:var(--trait)}
+.theme-bloc{border-radius:var(--r)}
+.tuile{background:var(--carte);border-color:var(--trait);border-radius:var(--r);box-shadow:var(--ombre)}
+
+@media(max-width:900px){
+  .view{padding-left:18px;padding-right:18px}
+  .topbar{padding:16px 18px 4px}
+  #app:before{height:28vh}
+}
+
+
+/* salutation du tableau de bord */
+.salut{margin:4px 0 18px}
+.salut h3{font-family:'Cormorant Garamond',serif;font-size:27px;font-weight:400}
+.salut p{font-size:13.5px;color:var(--gris);margin-top:3px}
+
+/* liste façon maquette */
+.liste{display:flex;flex-direction:column}
+.li{display:flex;align-items:center;gap:13px;padding:11px 20px;border-bottom:1px solid var(--trait)}
+.li:last-child{border-bottom:none}
+.li:hover{background:#FDFBF6}
+.li-c{flex:1;min-width:0}
+.li-a{display:flex;gap:5px;opacity:0;transition:opacity .15s}
+.li:hover .li-a{opacity:1}
+.ico-btn{width:30px;height:30px;border-radius:8px;border:1px solid var(--trait2);background:var(--carte);
+  display:inline-flex;align-items:center;justify-content:center;color:var(--gris2)}
+.ico-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ico-btn:hover{border-color:var(--tc);color:var(--tc)}
+.ico-btn.danger:hover{border-color:var(--rouge);color:var(--rouge)}
+@media(max-width:900px){.li-a{opacity:1}}
+
+
+.stats.trois{grid-template-columns:repeat(3,1fr)}
+.pastille{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:11px;vertical-align:1px}
+.score{width:38px;height:38px;border-radius:50%;flex:none;display:inline-flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:600;border:2.5px solid;font-variant-numeric:tabular-nums}
+.score.v{color:var(--vert);border-color:#9FC598;background:var(--vert-clair)}
+.score.a{color:var(--ambre);border-color:#E3C38A;background:var(--ambre-clair)}
+.score.r{color:var(--rouge);border-color:#E3A291;background:var(--rouge-clair)}
+.legende{display:flex;gap:18px;flex-wrap:wrap;padding:13px 20px;border-top:1px solid var(--trait);font-size:12px;color:var(--gris)}
+.legende i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px}
+.legende i.v{background:var(--vert)} .legende i.a{background:var(--ambre)} .legende i.r{background:var(--rouge)}
+.li-btn{width:100%;text-align:left;background:none;cursor:pointer;font:inherit;color:inherit}
+.pic{width:40px;height:40px;border-radius:11px;flex:none;display:inline-flex;align-items:center;justify-content:center}
+.pic svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.pic.b{background:#E8F0FB;color:#2F5DA8} .pic.v{background:var(--vert-clair);color:var(--vert)}
+.pic.a{background:var(--ambre-clair);color:var(--ambre)} .pic.r{background:var(--rouge-clair);color:var(--rouge)}
+.pic.p{background:#F1EAF8;color:#7B4FA0} .pic.n{background:#EFEBE2;color:#4A463C}
+.coche{width:16px;height:16px;padding:0;accent-color:var(--tc);cursor:pointer}
+tr.cliquable{cursor:pointer}
+.pagination{display:flex;justify-content:center;align-items:center;gap:5px;padding:14px;border-top:1px solid var(--trait)}
+.pagination button{min-width:32px;height:32px;border-radius:8px;font-size:12.5px;color:var(--gris2)}
+.pagination button:hover{background:#F6F1E7}
+.pagination button.on{background:var(--tc-clair);color:var(--tc);font-weight:600}
+.pagination span{color:var(--gris);padding:0 4px}
+.barre-sel{align-items:center;gap:9px;flex-wrap:wrap;padding:10px 14px;margin-bottom:12px;border-radius:var(--r2);
+  background:var(--tc-clair);border:1px solid #F2D9C7;font-size:13px}
+@media(max-width:900px){.stats.trois{grid-template-columns:1fr}}
+
+
+/* ---------- newsletter en quatre étapes ---------- */
+.pas{display:flex;align-items:center;gap:0;padding:14px 24px;border-bottom:1px solid var(--trait);background:#FDFBF6}
+.pas button{display:flex;align-items:center;gap:8px;font-size:12.5px;color:var(--gris);flex:1;position:relative}
+.pas button:not(:last-child):after{content:'';flex:1;height:1px;background:var(--trait2);margin:0 10px}
+.pas i{font-style:normal;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--trait2);display:inline-flex;
+  align-items:center;justify-content:center;font-size:11.5px;font-weight:600;background:var(--carte);flex:none}
+.pas button.on{color:var(--encre);font-weight:500}
+.pas button.on i{background:var(--tc);border-color:var(--tc);color:#fff}
+.pas button.fait i{background:var(--tc-clair);border-color:#F2D9C7;color:var(--tc)}
+.etape{display:none}
+.etape.on{display:block}
+.outils{display:flex;gap:4px;align-items:center;padding:6px;border:1px solid var(--trait2);border-bottom:none;
+  border-radius:var(--r2) var(--r2) 0 0;background:#FDFBF6;flex-wrap:wrap}
+.outils button{min-width:30px;height:28px;padding:0 8px;border-radius:7px;font-size:12.5px;color:var(--gris2)}
+.outils button:hover{background:var(--carte);color:var(--tc)}
+.outils .sep{width:1px;height:18px;background:var(--trait2);margin:0 4px}
+.outils + textarea{border-radius:0 0 var(--r2) var(--r2)}
+.encart{display:flex;gap:13px;align-items:center;padding:14px 16px;border:1px solid var(--trait);border-radius:12px;background:#FDFBF6}
+.recap{border:1px solid var(--trait);border-radius:12px;overflow:hidden}
+.recap div{display:flex;gap:14px;padding:12px 16px;border-bottom:1px solid var(--trait);font-size:13.5px}
+.recap div:last-child{border-bottom:none}
+.recap span{width:120px;flex:none;color:var(--gris);font-size:12px}
+@media(max-width:900px){.pas span{display:none}}
+
+
+.conn{display:flex;gap:13px;align-items:center;padding:15px 17px;border-radius:12px;border:1px solid}
+.conn.ok{background:var(--vert-clair);border-color:#CFE3CB}
+.conn.ko{background:var(--rouge-clair);border-color:#F0CDC4}
+.logo-ligne{display:flex;gap:16px;align-items:center;padding:12px 14px;border:1px solid var(--trait);border-radius:12px;background:#FDFBF6}
+.logo-apercu{width:120px;height:48px;flex:none}
+
 </style>
 </head>
 <body>
@@ -346,16 +582,16 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
   <aside>
     <div class="brand"><div class="marque logo-ichinen" role="img" aria-label="Ichinen Coaching"></div><div class="s">Console</div></div>
     <nav class="menu">
-      <button class="on" data-v="dash" onclick="go('dash')"><span class="ico">◈</span> Tableau de bord</button>
-      <button data-v="contenu" onclick="go('contenu')"><span class="ico">▦</span> Calendrier de contenu</button>
-      <button data-v="crm" onclick="go('crm')"><span class="ico">⊞</span> CRM de contenu</button>
-      <button data-v="posts" onclick="go('posts')"><span class="ico">✎</span> Articles</button>
-      <button data-v="cats" onclick="go('cats')"><span class="ico">◆</span> Catégories</button>
-      <button data-v="seo" onclick="go('seo')"><span class="ico">◎</span> Référencement</button>
-      <button data-v="leads" onclick="go('leads')"><span class="ico">◕</span> Contacts</button>
-      <button data-v="news" onclick="go('news')"><span class="ico">✦</span> Newsletter</button>
-      <button data-v="mails" onclick="go('mails')"><span class="ico">✉</span> Modèles d'emails</button>
-      <button data-v="set" onclick="go('set')"><span class="ico">⚙</span> Réglages</button>
+      <button class="on" data-v="dash" onclick="go('dash')"><span class="ico"><svg viewBox="0 0 24 24"><path d="M3 9.5 12 3l9 6.5V20a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z"/></svg></span> Tableau de bord</button>
+      <button data-v="contenu" onclick="go('contenu')"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg></span> Calendrier de contenu</button>
+      <button data-v="crm" onclick="go('crm')"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="17" rx="2.5"/><path d="M3 9.5h18M9.5 9.5V21M15.5 9.5V21"/></svg></span> CRM de contenu</button>
+      <button data-v="posts" onclick="go('posts')"><span class="ico"><svg viewBox="0 0 24 24"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg></span> Articles</button>
+      <button data-v="cats" onclick="go('cats')"><span class="ico"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h10"/></svg></span> Catégories</button>
+      <button data-v="seo" onclick="go('seo')"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></span> Référencement</button>
+      <button data-v="leads" onclick="go('leads')"><span class="ico"><svg viewBox="0 0 24 24"><path d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20"/><circle cx="9.5" cy="7.5" r="3.5"/><path d="M19 20v-1.5a4 4 0 0 0-3-3.9M15.5 4.2a4 4 0 0 1 0 6.6"/></svg></span> Contacts</button>
+      <button data-v="news" onclick="go('news')"><span class="ico"><svg viewBox="0 0 24 24"><path d="m3 11 18-7-7 18-2.5-8z"/></svg></span> Newsletter</button>
+      <button data-v="mails" onclick="go('mails')"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></svg></span> Modèles d'emails</button>
+      <button data-v="set" onclick="go('set')"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 14.5a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1a1.6 1.6 0 0 0-2.7-1.1l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H3a2 2 0 1 1 0-4h.1a1.6 1.6 0 0 0 1.1-2.7l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3h.1A1.6 1.6 0 0 0 10 3.1V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 2.7 1.1l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0 1.1 2.7H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/></svg></span> Réglages</button>
     </nav>
     <div class="side-foot">
       <div id="repo-label">—</div>
@@ -369,16 +605,24 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
       <h2 id="vtitle">Tableau de bord</h2>
       <div class="acts">
         <span id="dirty-flag" class="pill draft" style="display:none">Modifications non publiées</span>
-        <a class="btn ghost sm" href="https://ichinencoaching.com/blog/" target="_blank" rel="noopener">Voir le blog</a>
-        <button class="btn ghost sm" onclick="reload()">Recharger</button>
-        <button class="btn sm" id="btn-contenu" onclick="ouvrirContenu()" style="display:none">Nouveau contenu</button>
-        <button class="btn sm" onclick="openEditor()">Nouvel article</button>
+        <a class="tb-icone" href="https://ichinencoaching.com/blog/" target="_blank" rel="noopener" title="Voir le blog" aria-label="Voir le blog">
+          <svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
+        <button class="tb-icone" onclick="reload()" title="Recharger" aria-label="Recharger">
+          <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button>
+        <button class="btn sm" id="btn-contenu" onclick="ouvrirContenu()" style="display:none"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Ajouter un contenu</button>
+        <button class="btn sm" id="btn-cat" style="display:none" onclick="document.getElementById('newcat').focus()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nouvelle catégorie</button>
+        <button class="btn sm" onclick="openEditor()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nouvel article</button>
         <button class="btn sm" id="pub-btn" onclick="askPublish()" style="background:var(--ol)">Publier en ligne</button>
+        <button class="tb-icone" id="tb-cloche" onclick="go('mails')" title="Derniers envois" aria-label="Derniers envois">
+          <svg viewBox="0 0 24 24"><path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/></svg>
+        </button>
+        <span class="tb-avatar" id="tb-avatar" title="Christèle Fibleuil">CF</span>
       </div>
     </div>
 
     <!-- TABLEAU DE BORD -->
     <section class="view on" id="v-dash">
+      <div class="salut"><h3>Bonjour&nbsp;!</h3><p id="dash-salut">Voici l'état de ton blog aujourd'hui.</p></div>
       <div class="stats" id="dash-stats"></div>
       <div class="panel">
         <div class="panel-h"><h3>Derniers articles</h3><button class="btn ghost sm" onclick="go('posts')">Tout voir</button></div>
@@ -392,8 +636,13 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 
     <!-- ARTICLES -->
     <section class="view" id="v-posts">
-      <div class="f"><input id="q" type="search" placeholder="Rechercher un article…" oninput="renderPosts()"></div>
       <div class="chips" id="post-chips"></div>
+      <div class="barre">
+        <div class="recherche"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="q" type="search" placeholder="Rechercher un article…" oninput="renderPosts()"></div>
+        <select id="p-cat" onchange="renderPosts()"><option value="">Toutes les catégories</option></select>
+        <select id="p-tri" onchange="renderPosts()"><option value="date">Trier par date</option><option value="titre">Trier par titre</option></select>
+      </div>
       <div class="panel"><div id="posts-table"></div></div>
     </section>
 
@@ -414,11 +663,14 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 
     <!-- SEO -->
     <section class="view" id="v-seo">
-      <div class="stats" id="seo-stats"></div>
-      <div class="panel">
-        <div class="panel-h"><h3>Contrôle article par article</h3></div>
-        <div id="seo-table"></div>
+      <div class="stats trois" id="seo-stats"></div>
+      <div class="onglets" id="seo-onglets"></div>
+      <div class="barre">
+        <div class="recherche"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="seo-q" type="search" placeholder="Rechercher une page…" oninput="renderSeo()"></div>
+        <select id="seo-tri" onchange="renderSeo()"><option value="score">Trier par score</option><option value="titre">Trier par titre</option></select>
       </div>
+      <div class="panel"><div id="seo-table"></div></div>
       <div class="panel">
         <div class="panel-h"><h3>Fichiers pour les moteurs et les IA</h3></div>
         <div class="panel-b" id="seo-files"></div>
@@ -427,13 +679,15 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 
     <!-- CONTACTS -->
     <section class="view" id="v-leads">
-      <div class="stats" id="ct-stats"></div>
-      <div class="f" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
-        <input id="ct-q" type="search" placeholder="Rechercher un nom, un email…" oninput="renderContacts()" style="flex:1;min-width:220px">
-        <button class="btn ghost sm" onclick="importerContacts()">Importer un CSV</button>
+      <div class="stats trois" id="ct-stats"></div>
+      <div class="barre">
+        <div class="recherche"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+          <input id="ct-q" type="search" placeholder="Rechercher un contact…" oninput="ctPage=1;renderContacts()"></div>
+        <select id="ct-tag" onchange="ctFiltreTag(this.value)"><option value="tous">Toutes les étiquettes</option></select>
+        <button class="btn ghost sm" onclick="importerContacts()">Importer</button>
         <button class="btn ghost sm" onclick="exporterContacts()">Exporter</button>
-        <button class="btn sm" onclick="ouvrirContact()">Nouveau contact</button>
       </div>
+      <div class="barre-sel" id="ct-sel" style="display:none"></div>
       <input type="file" id="ct-fichier" accept=".csv,text/csv" style="display:none" onchange="lireCSV(this)">
       <div class="chips" id="ct-chips"></div>
       <div class="panel"><div id="ct-table"></div></div>
@@ -482,7 +736,7 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
     <!-- NEWSLETTER -->
     <section class="view" id="v-news">
       <div class="panel">
-        <div class="panel-h"><h3>Campagnes</h3><button class="btn sm" onclick="ouvrirCampagne()">Nouvelle newsletter</button></div>
+        <div class="panel-h"><h3>Tes newsletters</h3><button class="btn sm" onclick="ouvrirCampagne()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Créer une newsletter</button></div>
         <div id="nw-table"></div>
       </div>
     </section>
@@ -505,18 +759,44 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 
     <!-- REGLAGES -->
     <section class="view" id="v-set">
-      <div class="panel">
+      <div class="onglets" id="set-onglets">
+        <button data-o="general" onclick="setOnglet('general')">Général</button>
+        <button data-o="blog" onclick="setOnglet('blog')">Blog</button>
+        <button data-o="email" onclick="setOnglet('email')">Email</button>
+        <button data-o="connexion" onclick="setOnglet('connexion')">Connexion</button>
+      </div>
+      <div class="panel set-bloc" data-o="general">
         <div class="panel-h"><h3>Identité du blog</h3></div>
         <div class="panel-b">
-          <div class="f"><label for="s-title">Titre de la page blog (balise title)</label><input id="s-title"><div class="counter" id="c-stitle"></div></div>
-          <div class="f"><label for="s-desc">Description du blog (meta description)</label><textarea id="s-desc" rows="3"></textarea><div class="counter" id="c-sdesc"></div></div>
-          <div class="f"><label for="s-cal">Lien Calendly</label><input id="s-cal"></div>
-          <div class="f"><label for="s-mail">Email de contact</label><input id="s-mail" type="email"></div>
+          <div class="f"><label for="s-title">Nom du blog (balise title)</label><input id="s-title"><div class="counter" id="c-stitle"></div></div>
+          <div class="f"><label for="s-desc">Description courte (meta description)</label><textarea id="s-desc" rows="3"></textarea><div class="counter" id="c-sdesc"></div></div>
+          <div class="f"><label>Logo</label>
+            <div class="logo-ligne"><div class="logo-ichinen logo-apercu" role="img" aria-label="Logo Ichinen Coaching"></div>
+              <div class="hint" style="margin:0">Le logo officiel d'Ichinen Coaching. Il est utilisé sur le blog, dans les emails et dans cette console.</div></div></div>
+          <button class="btn" onclick="saveSettings()">Enregistrer</button>
+        </div>
+      </div>
+      <div class="panel set-bloc" data-o="blog" style="display:none">
+        <div class="panel-h"><h3>Informations de contact</h3></div>
+        <div class="panel-b">
+          <div class="f"><label for="s-cal">Lien de prise de rendez-vous</label><input id="s-cal" placeholder="https://calendly.com/…"></div>
+          <div class="f"><label for="s-mail">Adresse email de contact</label><input id="s-mail" type="email"></div>
           <button class="btn" onclick="saveSettings()">Enregistrer</button>
           <div class="hint">Ces réglages prennent effet sur le site à la prochaine publication.</div>
         </div>
       </div>
-      <div class="panel">
+      <div class="panel set-bloc" data-o="email" style="display:none">
+        <div class="panel-h"><h3>Envoi des emails</h3></div>
+        <div class="panel-b">
+          <div class="recap">
+            <div><span>Expéditeur</span>Ichinen Coaching &lt;contact@ichinencoaching.com&gt;</div>
+            <div><span>Service d'envoi</span>Brevo, sur ton compte</div>
+            <div><span>Codes de connexion</span>Envoyés sur ta boîte habituelle</div>
+          </div>
+          <div style="margin-top:14px"><button class="btn ghost sm" onclick="go('mails')">Voir les modèles d'emails</button></div>
+        </div>
+      </div>
+      <div class="panel set-bloc" data-o="connexion" style="display:none">
         <div class="panel-h"><h3>Connexion</h3></div>
         <div class="panel-b" id="set-conn"></div>
       </div>
@@ -666,35 +946,52 @@ tbody tr:hover{background:rgba(240,234,210,.4)}
 <!-- =============== EDITEUR DE NEWSLETTER =============== -->
 <div id="scrim-n" onclick="fermerCampagne()"></div>
 <div id="editeur-campagne">
-  <div class="ed-h"><h3 id="nw-titre">Newsletter</h3><button class="btn ghost sm" onclick="fermerCampagne()">Fermer</button></div>
+  <div class="ed-h"><h3 id="nw-titre">Créer une newsletter</h3><button class="btn ghost sm" onclick="fermerCampagne()">Fermer</button></div>
+  <div class="pas" id="nw-pas">
+    <button data-e="1" onclick="nwEtape(1)"><i>1</i><span>Contenu</span></button>
+    <button data-e="2" onclick="nwEtape(2)"><i>2</i><span>Cible</span></button>
+    <button data-e="3" onclick="nwEtape(3)"><i>3</i><span>Aperçu</span></button>
+    <button data-e="4" onclick="nwEtape(4)"><i>4</i><span>Envoi</span></button>
+  </div>
   <div class="ed-b">
-    <div class="f"><label for="nw-nom">Nom interne</label><input id="nw-nom" placeholder="ex. Newsletter de septembre">
-      <div class="hint">Pour t'y retrouver. Les destinataires ne le voient pas.</div></div>
-    <div class="f"><label for="nw-sujet">Objet de l'email</label><input id="nw-sujet" oninput="apercuCampagneDiffere()"></div>
-    <div class="grid2">
-      <div class="f"><label for="nw-cible">À qui</label><select id="nw-cible" onchange="compterCible()"></select></div>
-      <div class="f"><label>Destinataires</label><div class="hint" id="nw-compte" style="margin:0;font-size:14px;color:var(--td)">—</div></div>
-    </div>
-    <div class="f"><label for="nw-html">Contenu</label>
-      <div style="display:flex;gap:6px;margin-bottom:8px;flex-wrap:wrap">
-        <button class="btn ghost sm" type="button" onclick="wrapNw('<p class=\'p\'>','</p>')">Paragraphe</button>
-        <button class="btn ghost sm" type="button" onclick="wrapNw('<h3 class=\'titre\'>','</h3>')">Titre</button>
-        <button class="btn ghost sm" type="button" onclick="wrapNw('<strong>','</strong>')">Gras</button>
-        <button class="btn ghost sm" type="button" onclick="wrapNw('<em>','</em>')">Italique</button>
-        <button class="btn ghost sm" type="button" onclick="insererLienNw()">Bouton</button>
-        <button class="btn ghost sm" type="button" onclick="insererVarNw('prenom')">{{prenom}}</button>
+    <div class="etape" data-e="1">
+      <div class="f"><label for="nw-sujet">Objet de la newsletter</label><input id="nw-sujet" oninput="apercuCampagneDiffere()" placeholder="Octobre Rose : 5 clés pour prendre soin de toi"></div>
+      <div class="f"><label for="nw-nom">Nom interne</label><input id="nw-nom" placeholder="ex. Newsletter d'octobre">
+        <div class="hint">Pour t'y retrouver. Les destinataires ne le voient pas.</div></div>
+      <div class="f"><label for="nw-html">Contenu</label>
+        <div class="outils">
+          <button type="button" title="Paragraphe" onclick="wrapNw('<p class=\'p\'>','</p>')">¶</button>
+          <button type="button" title="Titre" onclick="wrapNw('<h3 class=\'titre\'>','</h3>')"><b>T</b></button>
+          <button type="button" title="Gras" onclick="wrapNw('<strong>','</strong>')"><b>B</b></button>
+          <button type="button" title="Italique" onclick="wrapNw('<em>','</em>')"><i style="font-family:Georgia,serif">I</i></button>
+          <span class="sep"></span>
+          <button type="button" title="Bouton" onclick="insererLienNw()">⇲ Bouton</button>
+          <button type="button" title="Insérer le prénom" onclick="insererVarNw('prenom')">{{prenom}}</button>
+        </div>
+        <textarea id="nw-html" rows="15" oninput="apercuCampagneDiffere()" spellcheck="true"></textarea>
       </div>
-      <textarea id="nw-html" rows="13" oninput="apercuCampagneDiffere()" spellcheck="true"></textarea>
     </div>
-    <div class="f"><label>Aperçu</label>
-      <iframe id="nw-apercu" style="width:100%;height:440px;border:1px solid var(--cd);border-radius:4px;background:#fff"></iframe></div>
+    <div class="etape" data-e="2">
+      <div class="f"><label for="nw-cible">À qui l'envoyer</label><select id="nw-cible" onchange="compterCible()"></select></div>
+      <div class="encart"><span class="pic n"><svg viewBox="0 0 24 24"><path d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20"/><circle cx="9.5" cy="7.5" r="3.5"/></svg></span>
+        <div><div class="t-title" id="nw-compte">—</div><div class="t-sub">Les désinscrites sont toujours exclues, quel que soit le choix.</div></div></div>
+    </div>
+    <div class="etape" data-e="3">
+      <iframe id="nw-apercu" style="width:100%;height:520px;border:1px solid var(--trait);border-radius:12px;background:#fff"></iframe>
+      <div style="margin-top:12px"><button class="btn ghost sm" onclick="testerCampagne()">M'envoyer un test</button></div>
+    </div>
+    <div class="etape" data-e="4">
+      <div class="recap" id="nw-recap"></div>
+      <div class="hint" style="margin-top:12px">Une newsletter ne part qu'une seule fois. Une fois envoyée, elle est verrouillée.</div>
+    </div>
   </div>
   <div class="ed-f">
     <button class="btn danger sm" id="nw-suppr" onclick="supprimerCampagne()">Supprimer</button>
-    <div style="display:flex;gap:9px">
-      <button class="btn ghost sm" onclick="testerCampagne()">M'envoyer un test</button>
-      <button class="btn ghost sm" onclick="enregistrerCampagne()">Enregistrer</button>
-      <button class="btn sm" onclick="demanderEnvoi()" style="background:var(--ol)">Envoyer</button>
+    <div style="display:flex;gap:9px;flex-wrap:wrap">
+      <button class="btn ghost sm" id="nw-brouillon" onclick="enregistrerCampagne()">Enregistrer le brouillon</button>
+      <button class="btn ghost sm" id="nw-prec" onclick="nwEtape(nwE-1)">← Retour</button>
+      <button class="btn sm" id="nw-suiv" onclick="nwEtape(nwE+1)">Suivant →</button>
+      <button class="btn sm" id="nw-envoyer" onclick="demanderEnvoi()" style="background:var(--ol)">Envoyer la newsletter</button>
     </div>
   </div>
 </div>
@@ -1571,12 +1868,14 @@ function go(v){
   ctMenuMobile(v);
   // Ce qu'on voit est ce sur quoi on agit : les actions du blog n'ont rien à faire
   // au-dessus du calendrier de contenu.
+  // Une seule action principale par écran, comme sur la maquette.
   var surContenu = (v === 'contenu' || v === 'crm');
   $('btn-contenu').style.display = surContenu ? '' : 'none';
-  ['pub-btn'].forEach(function(id){ $(id).style.display = surContenu ? 'none' : ''; });
+  $('pub-btn').style.display = (v === 'dash' || v === 'posts' || v === 'set') ? '' : 'none';
   document.querySelectorAll('.topbar .acts > button').forEach(function(b){
-    if (b.textContent.trim() === 'Nouvel article') b.style.display = surContenu ? 'none' : '';
+    if (b.textContent.trim() === 'Nouvel article') b.style.display = (v === 'posts') ? '' : 'none';
   });
+  var ajoutCat = $('btn-cat'); if (ajoutCat) ajoutCat.style.display = (v === 'cats') ? '' : 'none';
   if (v === 'contenu' || v === 'crm') chargerCalendrier();
   if (v === 'seo') renderSeo();
   if (v === 'leads') chargerContacts();
@@ -1593,13 +1892,13 @@ function renderDash(){
   var dr  = state.posts.length - pub.length;
   var noMeta = state.posts.filter(function(p){ return !(p.metaDesc || '').trim(); }).length;
   $('dash-stats').innerHTML =
-    stat(pub.length, 'Articles en ligne') +
-    stat(dr, 'Brouillons') +
-    stat(state.cats.length, 'Catégories') +
-    stat(state.contacts.length, 'Contacts');
+    stat(pub.length, 'Articles en ligne', 'enligne', 'v') +
+    stat(dr, 'Brouillons', 'brouillon', 'a') +
+    stat(state.cats.length, 'Catégories', 'dossier', 'r') +
+    stat(state.contacts.length, 'Contacts', 'gens', 'n');
 
   var recent = state.posts.slice(0, 5);
-  $('dash-posts').innerHTML = recent.length ? postTable(recent) : emptyBox('Aucun article pour l\'instant.');
+  $('dash-posts').innerHTML = recent.length ? listeArticles(recent) : emptyBox('Aucun article pour l\'instant.');
 
   var log = [];
   log.push('Dépôt : ' + OWNER + '/' + REPO + ' (branche ' + BRANCH + ')');
@@ -1611,24 +1910,78 @@ function renderDash(){
   log.push('GitHub Pages met environ 1 minute à mettre le site à jour après publication.');
   $('dash-log').innerHTML = log.map(esc).join('<br>');
 }
-function stat(n, l){ return '<div class="stat"><div class="n">' + n + '</div><div class="l">' + esc(l) + '</div></div>'; }
+var ICONES = {
+  enligne:'<path d="M20 6 9 17l-5-5"/>',
+  brouillon:'<path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/>',
+  dossier:'<path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4L11 8.5h8.5A1.5 1.5 0 0 1 21 10v8a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18z"/>',
+  gens:'<path d="M16 20v-1.5a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4V20"/><circle cx="9.5" cy="7.5" r="3.5"/>',
+  loupe:'<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>',
+  etoile:'<path d="m12 3.5 2.6 5.5 6 .8-4.4 4.2 1.1 6L12 17.2 6.7 20l1.1-6L3.4 9.8l6-.8z"/>',
+  alerte:'<path d="M12 3.5 22 20H2z"/><path d="M12 10v4M12 17v.5"/>',
+  cible:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/>'
+};
+function stat(n, l, ic, teinte){
+  var pic = ICONES[ic || 'dossier'] || ICONES.dossier;
+  return '<div class="stat"><div class="ic ' + (teinte || 'n') + '">' +
+    '<svg viewBox="0 0 24 24">' + pic + '</svg></div>' +
+    '<div><div class="n">' + n + '</div><div class="l">' + esc(l) + '</div></div></div>';
+}
 function emptyBox(msg){ return '<div class="empty"><span class="k">一念</span>' + esc(msg) + '</div>'; }
+
+function vignette(p){
+  return p.cover ? '<img class="thumb" src="' + esc(p.cover) + '" alt="">'
+                 : '<div class="thumb">' + esc(p.kanji || '一念') + '</div>';
+}
+/* La liste de la maquette : vignette, titre, catégorie · date, état — et les
+   actions à droite, parce qu'un écran qui montre sans permettre d'agir ne sert à rien. */
+function listeArticles(list, avecActions){
+  return '<div class="liste">' + list.map(function(p){
+    var i = state.posts.indexOf(p);
+    return '<div class="li">' + vignette(p) +
+      '<div class="li-c"><div class="t-title">' + esc(p.title) + '</div>' +
+        '<div class="t-sub">' + esc(p.catLabel || p.cat || '—') + ' · ' + esc(p.date) + '</div></div>' +
+      '<span class="pill ' + (p.status === 'draft' ? 'draft">Brouillon' : 'pub">En ligne') + '</span>' +
+      (avecActions === false ? '' :
+        '<div class="li-a">' +
+          '<button class="ico-btn" title="Modifier" onclick="openEditor(' + i + ')">' +
+            '<svg viewBox="0 0 24 24"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg></button>' +
+          '<button class="ico-btn danger" title="Supprimer" onclick="askDeletePost(' + i + ')">' +
+            '<svg viewBox="0 0 24 24"><path d="M4 7h16M10 7V5h4v2M6 7l1 13h10l1-13"/></svg></button>' +
+        '</div>') +
+    '</div>';
+  }).join('') + '</div>';
+}
 
 /* ---------------- articles ---------------- */
 function renderPosts(){
-  var chips = [['all','Tous'],['published','En ligne'],['draft','Brouillons']];
+  var nPub = state.posts.filter(function(p){ return p.status !== 'draft'; }).length;
+  var chips = [['all','Tous',state.posts.length],['published','En ligne',nPub],['draft','Brouillons',state.posts.length-nPub]];
   $('post-chips').innerHTML = chips.map(function(c){
-    return '<button class="chip' + (state.filter === c[0] ? ' on' : '') + '" onclick="setFilter(\'' + c[0] + '\')">' + c[1] + '</button>';
+    return '<button class="chip' + (state.filter === c[0] ? ' on' : '') + '" onclick="setFilter(\'' + c[0] + '\')">' + c[1] + ' (' + c[2] + ')</button>';
   }).join('');
+
+  var selCat = $('p-cat');
+  if (selCat && selCat.dataset.rempli !== String(state.cats.length)){
+    selCat.dataset.rempli = String(state.cats.length);
+    selCat.innerHTML = '<option value="">Toutes les catégories</option>' +
+      state.cats.map(function(c){ return '<option value="' + esc(c.id) + '">' + esc(c.name) + '</option>'; }).join('');
+  }
+  var cat = selCat ? selCat.value : '';
+  var tri = $('p-tri') ? $('p-tri').value : 'date';
 
   var q = ($('q').value || '').toLowerCase();
   var list = state.posts.filter(function(p){
     if (state.filter === 'published' && p.status === 'draft') return false;
     if (state.filter === 'draft' && p.status !== 'draft') return false;
+    if (cat && p.cat !== cat) return false;
     if (!q) return true;
     return (p.title + ' ' + p.excerpt + ' ' + (p.tags || []).join(' ')).toLowerCase().indexOf(q) >= 0;
   });
-  $('posts-table').innerHTML = list.length ? postTable(list) : emptyBox('Aucun article ne correspond.');
+  list.sort(function(a,b){
+    if (tri === 'titre') return a.title.localeCompare(b.title, 'fr');
+    return String(R.isoDate ? (R.isoDate(b.date) || '') : b.date).localeCompare(String(R.isoDate ? (R.isoDate(a.date) || '') : a.date));
+  });
+  $('posts-table').innerHTML = list.length ? listeArticles(list) : emptyBox('Aucun article ne correspond.');
 }
 function setFilter(f){ state.filter = f; renderPosts(); }
 
@@ -1659,18 +2012,20 @@ function postTable(list){
 /* ---------------- catégories ---------------- */
 function catUsage(id){ return state.posts.filter(function(p){ return p.cat === id; }).length; }
 
+var TEINTES_CAT = ['#2F5DA8','#4E7A46','#C2503A','#7B4FA0','#C4663B','#2C6E8F','#B8893C','#4A5240','#8A4B6B','#3D7A6E'];
 function renderCats(){
   if (!state.cats.length){ $('cats-table').innerHTML = emptyBox('Aucune catégorie.'); return; }
   var rows = state.cats.map(function(c, i){
     var n = catUsage(c.id);
-    return '<tr><td><div class="t-title">' + esc(c.name) + '</div><div class="t-sub"><span>' + esc(c.id) + '</span></div></td>'
-      + '<td style="width:130px">' + n + ' article' + (n > 1 ? 's' : '') + '</td>'
-      + '<td style="width:170px"><div class="rowacts">'
-      + '<button class="btn ghost sm" onclick="renameCat(' + i + ')">Renommer</button>'
-      + '<button class="btn danger sm" onclick="deleteCat(' + i + ')">✕</button>'
+    return '<tr><td><span class="pastille" style="background:' + TEINTES_CAT[i % TEINTES_CAT.length] + '"></span>'
+      + '<span class="t-title">' + esc(c.name) + '</span></td>'
+      + '<td style="width:110px;text-align:right;font-variant-numeric:tabular-nums">' + n + '</td>'
+      + '<td style="width:96px"><div class="rowacts">'
+      + '<button class="ico-btn" title="Renommer" onclick="renameCat(' + i + ')"><svg viewBox="0 0 24 24"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg></button>'
+      + '<button class="ico-btn danger" title="' + (n ? 'Utilisée par ' + n + ' article' + (n>1?'s':'') : 'Supprimer') + '" onclick="deleteCat(' + i + ')"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 7V5h4v2M6 7l1 13h10l1-13"/></svg></button>'
       + '</div></td></tr>';
   }).join('');
-  $('cats-table').innerHTML = '<table><thead><tr><th>Catégorie</th><th>Usage</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+  $('cats-table').innerHTML = '<table><thead><tr><th>Nom</th><th style="text-align:right">Articles</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
 }
 
 function addCat(){
@@ -1967,28 +2322,56 @@ function renderSeo(){
   var pub = state.posts.filter(function(p){ return p.status !== 'draft'; });
   var withMeta = pub.filter(function(p){ return (p.metaDesc || '').trim(); }).length;
   var longEnough = pub.filter(function(p){ return R.txt(p.content).split(/\s+/).length >= 300; }).length;
+  // Un score honnête, sur ce qu'on mesure vraiment : titre, description, longueur, image.
+  function scoreDe(p){
+    var meta = (p.metaDesc || '').trim();
+    var mots = R.txt(p.content).split(/\s+/).filter(Boolean).length;
+    var titre = (p.seoTitle || p.title) + ' | Ichinen Coaching';
+    var sc = 0;
+    if (titre.length <= 60) sc += 25; else if (titre.length <= 70) sc += 12;
+    if (meta.length >= 120 && meta.length <= 160) sc += 30; else if (meta.length >= 70) sc += 15;
+    if (mots >= 600) sc += 30; else if (mots >= 300) sc += 20; else if (mots >= 150) sc += 8;
+    if (p.cover || (p.tags || []).length) sc += 15;
+    return { sc: sc, mots: mots, meta: meta.length, titre: titre.length };
+  }
+  var notes = pub.map(function(p){ return { p: p, n: scoreDe(p) }; });
+  var opti = notes.filter(function(x){ return x.n.sc >= 80; }).length;
   $('seo-stats').innerHTML =
-    stat(pub.length, 'Pages indexables') +
-    stat(withMeta + '/' + pub.length, 'Meta descriptions') +
-    stat(longEnough + '/' + pub.length, 'Articles ≥ 300 mots') +
-    stat(state.cats.length, 'Thématiques');
+    stat(pub.length, 'Pages analysées', 'loupe', 'n') +
+    stat(opti, 'Optimisées', 'enligne', 'v') +
+    stat(pub.length - opti, 'À améliorer', 'alerte', 'r');
 
-  if (!pub.length){ $('seo-table').innerHTML = emptyBox('Publiez un article pour voir les contrôles.'); }
+  var f = state.seoFiltre || 'tous';
+  $('seo-onglets').innerHTML = [['tous','Tous',notes.length],['opti','Optimisées',opti],['ameliorer','À améliorer',notes.length-opti]]
+    .map(function(o){ return '<button class="' + (f===o[0]?'on':'') + '" onclick="state.seoFiltre=\'' + o[0] + '\';renderSeo()">' + o[1] + ' (' + o[2] + ')</button>'; }).join('');
+
+  var q = ($('seo-q') && $('seo-q').value || '').toLowerCase();
+  var tri = $('seo-tri') ? $('seo-tri').value : 'score';
+  var vus = notes.filter(function(x){
+    if (f === 'opti' && x.n.sc < 80) return false;
+    if (f === 'ameliorer' && x.n.sc >= 80) return false;
+    return !q || (x.p.title + ' ' + x.p.slug).toLowerCase().indexOf(q) >= 0;
+  });
+  vus.sort(function(a,b){ return tri === 'titre' ? a.p.title.localeCompare(b.p.title,'fr') : a.n.sc - b.n.sc; });
+
+  if (!pub.length){ $('seo-table').innerHTML = emptyBox('Publie un article pour voir les contrôles.'); }
+  else if (!vus.length){ $('seo-table').innerHTML = emptyBox('Aucun article dans ce filtre.'); }
   else {
-    var rows = pub.map(function(p){
-      var i = state.posts.indexOf(p);
-      var meta = (p.metaDesc || '').trim();
-      var words = R.txt(p.content).split(/\s+/).filter(Boolean).length;
-      var full = (p.seoTitle || p.title) + ' | Ichinen Coaching';
-      function m(ok){ return '<span class="pill ' + (ok ? 'ok">OK' : 'no">À revoir') + '</span>'; }
-      return '<tr><td><div class="t-title">' + esc(p.title) + '</div>'
-        + '<div class="t-sub"><span>/blog/' + esc(p.slug) + '/</span><span>' + words + ' mots</span></div></td>'
-        + '<td style="width:120px">' + m(full.length <= 60) + '</td>'
-        + '<td style="width:120px">' + m(meta.length >= 120 && meta.length <= 160) + '</td>'
-        + '<td style="width:120px">' + m(words >= 300) + '</td>'
-        + '<td style="width:110px"><div class="rowacts"><button class="btn ghost sm" onclick="openEditor(' + i + ')">Corriger</button></div></td></tr>';
-    }).join('');
-    $('seo-table').innerHTML = '<table><thead><tr><th>Article</th><th>Titre</th><th>Description</th><th>Longueur</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+    $('seo-table').innerHTML = '<div class="liste">' + vus.map(function(x){
+      var p = x.p, n = x.n, i = state.posts.indexOf(p);
+      var cls = n.sc >= 80 ? 'v' : (n.sc >= 50 ? 'a' : 'r');
+      var manque = [];
+      if (n.titre > 60) manque.push('titre trop long');
+      if (n.meta < 120 || n.meta > 160) manque.push('description ' + (n.meta ? n.meta + ' car.' : 'absente'));
+      if (n.mots < 300) manque.push(n.mots + ' mots');
+      return '<div class="li">' + vignette(p)
+        + '<div class="li-c"><div class="t-title">' + esc(p.title) + '</div>'
+        + '<div class="t-sub">/' + esc(p.slug) + (manque.length ? ' · ' + esc(manque.join(' · ')) : '') + '</div></div>'
+        + '<span class="score ' + cls + '" title="Score de référencement">' + n.sc + '</span>'
+        + '<button class="ico-btn" title="Corriger" onclick="openEditor(' + i + ')"><svg viewBox="0 0 24 24"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg></button>'
+        + '</div>';
+    }).join('') + '</div>'
+    + '<div class="legende"><span><i class="v"></i>Optimisé</span><span><i class="a"></i>À améliorer</span><span><i class="r"></i>Manquant</span></div>';
   }
 
   $('seo-files').innerHTML =
@@ -2023,21 +2406,25 @@ function tousLesTags(){
   return Object.keys(vus).sort(function(a, b){ return vus[b] - vus[a]; });
 }
 
+var ctPage = 1, ctSel = {}, PAR_PAGE = 25;
 function renderContacts(){
-  var actifs = state.contacts.filter(function(c){ return !c.desabonne; });
+  var tag = function(t){ return function(c){ return (c.tags || []).indexOf(t) >= 0; }; };
   $('ct-stats').innerHTML =
-    stat(state.contacts.length, 'Contacts') +
-    stat(state.contacts.filter(function(c){ return (c.tags || []).indexOf('client') >= 0; }).length, 'Clientes') +
-    stat(state.contacts.filter(function(c){ return (c.tags || []).indexOf('prospect') >= 0; }).length, 'Prospects') +
-    stat(actifs.length, 'Abonnées');
+    stat(state.contacts.length, 'Contacts totaux', 'gens', 'n') +
+    stat(state.contacts.filter(tag('prospect')).length, 'Prospects', 'cible', 'a') +
+    stat(state.contacts.filter(tag('client')).length, 'Clientes', 'etoile', 'v');
 
+  // le filtre par étiquette devient une liste déroulante, comme sur la maquette
   var tags = tousLesTags();
-  $('ct-chips').innerHTML = ['tous'].concat(tags).map(function(t){
-    var n = t === 'tous' ? state.contacts.length
-      : state.contacts.filter(function(c){ return (c.tags || []).indexOf(t) >= 0; }).length;
-    return '<button class="chip' + (filtreTag === t ? ' on' : '') + '" onclick="setFiltreTag(\'' + escJs(t) + '\')">'
-      + esc(t === 'tous' ? 'Tous' : t) + ' · ' + n + '</button>';
-  }).join('');
+  var sel = $('ct-tag');
+  if (sel){
+    sel.innerHTML = '<option value="tous">Toutes les étiquettes</option>' + tags.map(function(t){
+      var n = state.contacts.filter(tag(t)).length;
+      return '<option value="' + esc(t) + '"' + (filtreTag === t ? ' selected' : '') + '>' + esc(t === 'client' ? 'Clientes' : (t === 'prospect' ? 'Prospects' : t)) + ' (' + n + ')</option>';
+    }).join('');
+    sel.value = filtreTag;
+  }
+  if ($('ct-chips')) $('ct-chips').innerHTML = '';
 
   var q = ($('ct-q').value || '').toLowerCase();
   var liste = state.contacts.filter(function(c){
@@ -2046,25 +2433,85 @@ function renderContacts(){
     return ((c.prenom || '') + ' ' + (c.nom || '') + ' ' + c.email).toLowerCase().indexOf(q) >= 0;
   });
 
-  if (state.contactsErr){ $('ct-table').innerHTML = emptyBox(state.contactsErr); return; }
-  if (!liste.length){ $('ct-table').innerHTML = emptyBox('Aucun contact ne correspond.'); return; }
+  if (state.contactsErr){ $('ct-table').innerHTML = emptyBox(state.contactsErr); ctBarreSel(); return; }
+  if (!state.contacts.length){
+    $('ct-table').innerHTML = emptyBox('Aucun contact pour l\'instant. Les inscrites du blog arrivent ici toutes seules, ou importe une liste.');
+    ctBarreSel(); return;
+  }
+  if (!liste.length){ $('ct-table').innerHTML = emptyBox('Aucun contact ne correspond.'); ctBarreSel(); return; }
 
-  var rows = liste.map(function(c){
+  var pages = Math.max(1, Math.ceil(liste.length / PAR_PAGE));
+  if (ctPage > pages) ctPage = pages;
+  var vue = liste.slice((ctPage - 1) * PAR_PAGE, ctPage * PAR_PAGE);
+  // « Tout cocher » ne coche que ce qui est À L'ÉCRAN : jamais plus que ce qu'on voit.
+  var toutCoche = vue.length && vue.every(function(c){ return ctSel[c.email]; });
+
+  var rows = vue.map(function(c){
     var i = state.contacts.indexOf(c);
     var nom = [c.prenom, c.nom].filter(Boolean).join(' ') || '—';
-    var src = c.article_slug ? ('inscrite depuis /blog/' + c.article_slug + '/') : (c.source || '');
     var puces = (c.tags || []).map(function(t){
-      return '<span class="tag-chip ' + esc(t) + '">' + esc(t) + '</span>';
+      var lib = t === 'client' ? 'Cliente' : (t === 'prospect' ? 'Prospect' : t);
+      return '<span class="pill ' + (t === 'client' ? 'pub' : (t === 'prospect' ? 'draft' : '')) + '">' + esc(lib) + '</span>';
     }).join(' ');
-    return '<tr><td><div class="t-title">' + esc(nom) + (c.desabonne ? ' <span class="pill no">désinscrite</span>' : '') + '</div>'
-      + '<div class="t-sub"><span>' + esc(c.email) + '</span><span>' + esc((c.created_at || '').slice(0, 10)) + '</span><span>' + esc(src) + '</span></div></td>'
-      + '<td style="width:210px">' + puces + '</td>'
-      + '<td style="width:150px"><div class="rowacts">'
-      + '<button class="btn ghost sm" onclick="ouvrirContact(' + i + ')">Ouvrir</button>'
-      + '<button class="btn danger sm" onclick="supprimerContactDirect(' + i + ')">✕</button>'
-      + '</div></td></tr>';
+    return '<tr class="cliquable" onclick="ouvrirContact(' + i + ')">'
+      + '<td style="width:44px" onclick="event.stopPropagation()"><input type="checkbox" class="coche" '
+        + (ctSel[c.email] ? 'checked ' : '') + 'onchange="ctCocher(\'' + escJs(c.email) + '\',this.checked)"></td>'
+      + '<td><span class="t-title">' + esc(nom) + '</span>' + (c.desabonne ? ' <span class="pill no">désinscrite</span>' : '') + '</td>'
+      + '<td style="color:var(--gris2)">' + esc(c.email) + '</td>'
+      + '<td style="width:190px">' + (puces || '<span class="t-sub">—</span>') + '</td></tr>';
   }).join('');
-  $('ct-table').innerHTML = '<table><thead><tr><th>Contact</th><th>Étiquettes</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+
+  var pag = '';
+  if (pages > 1){
+    var nums = [];
+    for (var n = 1; n <= pages; n++){
+      if (n === 1 || n === pages || Math.abs(n - ctPage) <= 1) nums.push(n);
+      else if (nums[nums.length-1] !== '…') nums.push('…');
+    }
+    pag = '<div class="pagination">' + nums.map(function(n){
+      return n === '…' ? '<span>…</span>'
+        : '<button class="' + (n === ctPage ? 'on' : '') + '" onclick="ctPage=' + n + ';renderContacts()">' + n + '</button>';
+    }).join('') + (ctPage < pages ? '<button onclick="ctPage++;renderContacts()" aria-label="Page suivante">›</button>' : '') + '</div>';
+  }
+
+  $('ct-table').innerHTML = '<table><thead><tr>'
+    + '<th style="width:44px"><input type="checkbox" class="coche" ' + (toutCoche ? 'checked ' : '') + 'onchange="ctCocherPage(this.checked)" title="Cocher cette page"></th>'
+    + '<th>Nom</th><th>Email</th><th>Étiquette</th></tr></thead><tbody>' + rows + '</tbody></table>' + pag;
+  ctBarreSel();
+}
+function ctFiltreTag(v){ filtreTag = v; ctPage = 1; renderContacts(); }
+function ctCocher(email, oui){ if (oui) ctSel[email] = 1; else delete ctSel[email]; renderContacts(); }
+function ctCocherPage(oui){
+  var q = ($('ct-q').value || '').toLowerCase();
+  var liste = state.contacts.filter(function(c){
+    if (filtreTag !== 'tous' && (c.tags || []).indexOf(filtreTag) < 0) return false;
+    return !q || ((c.prenom || '') + ' ' + (c.nom || '') + ' ' + c.email).toLowerCase().indexOf(q) >= 0;
+  }).slice((ctPage - 1) * PAR_PAGE, ctPage * PAR_PAGE);
+  liste.forEach(function(c){ if (oui) ctSel[c.email] = 1; else delete ctSel[c.email]; });
+  renderContacts();
+}
+function ctSelection(){ return state.contacts.filter(function(c){ return ctSel[c.email]; }); }
+function ctBarreSel(){
+  var n = ctSelection().length, b = $('ct-sel');
+  if (!b) return;
+  b.style.display = n ? 'flex' : 'none';
+  b.innerHTML = '<b>' + n + '</b>&nbsp;sélectionné' + (n > 1 ? 's' : '')
+    + '<span style="flex:1"></span>'
+    + '<button class="btn ghost sm" onclick="exporterContacts(true)">Exporter la sélection</button>'
+    + '<button class="btn danger sm" onclick="supprimerSelection()">Supprimer</button>'
+    + '<button class="btn ghost sm" onclick="ctSel={};renderContacts()">Annuler</button>';
+}
+function supprimerSelection(){
+  var l = ctSelection();
+  if (!l.length) return;
+  confirmDlg('Supprimer ' + l.length + ' contact' + (l.length > 1 ? 's' : '') + ' ?',
+    'Ces personnes ne recevront plus rien et disparaissent de la liste. C\'est définitif.', 'Supprimer', function(){
+      busy(true, 'Suppression…');
+      Promise.all(l.map(function(c){ return api('contact_delete', { id: c.id }); })).then(function(){
+        busy(false); ctSel = {}; toast(l.length + ' contact' + (l.length > 1 ? 's' : '') + ' supprimé' + (l.length > 1 ? 's' : ''));
+        chargerContacts(true);
+      }).catch(function(e){ busy(false); toast(e.message, true); chargerContacts(true); });
+    });
 }
 
 function setFiltreTag(t){ filtreTag = t; renderContacts(); }
@@ -2159,10 +2606,11 @@ function envoyerAContact(){
     .catch(function(e){ toast('Envoi impossible — ' + e.message, true); });
 }
 
-function exporterContacts(){
-  if (!state.contacts.length){ toast('Aucun contact à exporter.', true); return; }
+function exporterContacts(seulementSel){
+  var source = seulementSel ? ctSelection() : state.contacts;
+  if (!source.length){ toast('Aucun contact à exporter.', true); return; }
   var rows = [['Prenom', 'Nom', 'Email', 'Etiquettes', 'Inscrite le', 'Desabonnee', 'Source']]
-    .concat(state.contacts.map(function(c){
+    .concat(source.map(function(c){
       return [c.prenom || '', c.nom || '', c.email, (c.tags || []).join(' '),
               (c.created_at || '').slice(0, 10), c.desabonne ? 'oui' : 'non',
               c.article_slug || c.source || ''];
@@ -2227,25 +2675,20 @@ function chargerCampagnes(){
 
 function renderCampagnes(){
   if (!state.campagnes.length){
-    $('nw-table').innerHTML = emptyBox('Aucune newsletter pour l\'instant.\nCliquez sur « Nouvelle newsletter » pour commencer.');
+    $('nw-table').innerHTML = emptyBox('Aucune newsletter pour l\'instant. Clique sur « Créer une newsletter » pour commencer.');
     return;
   }
-  var rows = state.campagnes.map(function(c, i){
+  $('nw-table').innerHTML = '<div class="liste">' + state.campagnes.map(function(c, i){
     var envoyee = c.statut === 'envoyee';
-    var etat = envoyee
-      ? '<span class="pill pub">Envoyée</span>'
-      : '<span class="pill draft">Brouillon</span>';
     var detail = envoyee
-      ? (c.destinataires + ' destinataire' + (c.destinataires > 1 ? 's' : '') + (c.echecs ? ' · ' + c.echecs + ' échec(s)' : '')
-         + ' · ' + (c.envoyee_le || '').slice(0, 10))
-      : ('cible : ' + c.cible);
-    return '<tr><td><div class="t-title">' + esc(c.nom) + '</div>'
-      + '<div class="t-sub"><span>' + esc(c.sujet || '(pas d\'objet)') + '</span><span>' + esc(detail) + '</span></div></td>'
-      + '<td style="width:120px">' + etat + '</td>'
-      + '<td style="width:120px"><div class="rowacts"><button class="btn ghost sm" onclick="ouvrirCampagne(' + i + ')">'
-      + (envoyee ? 'Voir' : 'Modifier') + '</button></div></td></tr>';
-  }).join('');
-  $('nw-table').innerHTML = '<table><thead><tr><th>Newsletter</th><th>État</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+      ? (c.destinataires + ' destinataire' + (c.destinataires > 1 ? 's' : '') + (c.echecs ? ' · ' + c.echecs + ' échec(s)' : '') + ' · ' + (c.envoyee_le || '').slice(0, 10))
+      : ('cible : ' + (c.cible === 'tous' ? 'tous les abonnés' : c.cible));
+    return '<button class="li li-btn" onclick="ouvrirCampagne(' + i + ')">'
+      + '<span class="pic ' + (envoyee ? 'v' : 'a') + '"><svg viewBox="0 0 24 24"><path d="m3 11 18-7-7 18-2.5-8z"/></svg></span>'
+      + '<span class="li-c"><span class="t-title" style="display:block">' + esc(c.nom) + '</span>'
+      + '<span class="t-sub" style="display:block">' + esc(c.sujet || '(pas d\'objet)') + ' · ' + esc(detail) + '</span></span>'
+      + '<span class="pill ' + (envoyee ? 'pub">Envoyée' : 'draft">Brouillon') + '</span></button>';
+  }).join('') + '</div>';
 }
 
 function ouvrirCampagne(i){
@@ -2265,13 +2708,46 @@ function ouvrirCampagne(i){
 
   ['nw-nom', 'nw-sujet', 'nw-html', 'nw-cible'].forEach(function(id){ $(id).disabled = envoyee; });
   $('nw-suppr').style.display = (c && !envoyee) ? '' : 'none';
-  document.querySelectorAll('#editeur-campagne .ed-f .btn').forEach(function(b){
-    if (b.id !== 'nw-suppr') b.style.display = envoyee ? 'none' : '';
-  });
+  $('nw-titre').textContent = c ? c.nom : 'Créer une newsletter';
 
   compterCible(); apercuCampagne();
+  nwEtape(envoyee ? 3 : 1);
   $('scrim-n').className = 'on';
   $('editeur-campagne').className = 'on';
+}
+
+/* Les quatre étapes de la maquette : Contenu → Cible → Aperçu → Envoi.
+   Ce sont les MÊMES champs qu'avant, simplement présentés l'un après l'autre. */
+var nwE = 1;
+function nwEtape(n){
+  var envoyee = campagneCourante && campagneCourante.statut === 'envoyee';
+  if (n < 1) n = 1; if (n > 4) n = 4;
+  if (envoyee && n === 4) n = 3;
+  // on ne passe pas à la cible sans objet : c'est la seule chose obligatoire
+  if (n > 1 && nwE === 1 && !envoyee && !$('nw-sujet').value.trim()){
+    toast('Donne un objet à ta newsletter', true); $('nw-sujet').focus(); return;
+  }
+  nwE = n;
+  document.querySelectorAll('#editeur-campagne .etape').forEach(function(e){ e.className = 'etape' + (+e.dataset.e === n ? ' on' : ''); });
+  document.querySelectorAll('#nw-pas button').forEach(function(b){
+    var k = +b.dataset.e;
+    b.className = k === n ? 'on' : (k < n ? 'fait' : '');
+  });
+  if (n === 3) apercuCampagne();
+  if (n === 4) nwRecap();
+  $('nw-prec').style.display = n > 1 ? '' : 'none';
+  $('nw-suiv').style.display = (n < 4 && !(envoyee && n >= 3)) ? '' : 'none';
+  $('nw-envoyer').style.display = (n === 4 && !envoyee) ? '' : 'none';
+  $('nw-brouillon').style.display = envoyee ? 'none' : '';
+}
+function nwRecap(){
+  var sel = $('nw-cible');
+  var lib = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : sel.value;
+  $('nw-recap').innerHTML =
+    '<div><span>Objet</span><b>' + esc($('nw-sujet').value || '—') + '</b></div>' +
+    '<div><span>Cible</span>' + esc(lib) + '</div>' +
+    '<div><span>Destinataires</span>' + esc($('nw-compte').textContent) + '</div>' +
+    '<div><span>Expéditeur</span>Ichinen Coaching &lt;contact@ichinencoaching.com&gt;</div>';
 }
 function fermerCampagne(){ $('editeur-campagne').className = ''; $('scrim-n').className = ''; campagneCourante = null; }
 
@@ -2391,16 +2867,27 @@ function chargerEmails(){
   });
 }
 
+var PICTO_MODELE = {
+  connexion:['b','<rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>'],
+  bienvenue:['v','<circle cx="12" cy="12" r="8.5"/><path d="M8.5 12.5 11 15l4.5-5"/>'],
+  annonce_article:['a','<rect x="4" y="4" width="16" height="16" rx="2.5"/><path d="M8 9h8M8 13h8M8 17h5"/>'],
+  notification_inscrite:['r','<path d="M18 8.5a6 6 0 1 0-12 0c0 6-2.5 7.5-2.5 7.5h17S18 14.5 18 8.5"/><path d="M13.7 19.5a2 2 0 0 1-3.4 0"/>'],
+  email_perso:['p','<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/>'],
+  newsletter:['n','<path d="M4 4h16v16H4z"/><path d="M8 8h8v4H8zM8 15h8"/>']
+};
 function renderModeles(){
   renderBrevo();
   if (!state.templates.length){ $('mails-table').innerHTML = emptyBox('Aucun modèle.'); return; }
-  var rows = state.templates.map(function(t, i){
-    return '<tr><td><div class="t-title">' + esc(t.nom) + (t.systeme ? ' <span class="pill">automatique</span>' : '') + '</div>'
-      + '<div class="t-sub"><span>' + esc(t.description || '') + '</span></div></td>'
-      + '<td style="width:210px"><div class="t-sub"><span>Objet : ' + esc(t.sujet) + '</span></div></td>'
-      + '<td style="width:120px"><div class="rowacts"><button class="btn ghost sm" onclick="ouvrirModele(' + i + ')">Modifier</button></div></td></tr>';
-  }).join('');
-  $('mails-table').innerHTML = '<table><thead><tr><th>Modèle</th><th>Objet</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+  $('mails-table').innerHTML = '<div class="liste">' + state.templates.map(function(t, i){
+    var pic = PICTO_MODELE[t.cle] || ['n', PICTO_MODELE.email_perso[1]];
+    return '<button class="li li-btn" onclick="ouvrirModele(' + i + ')">'
+      + '<span class="pic ' + pic[0] + '"><svg viewBox="0 0 24 24">' + pic[1] + '</svg></span>'
+      + '<span class="li-c"><span class="t-title" style="display:block">' + esc(t.nom)
+        + (t.systeme ? ' <span class="pill" style="margin-left:6px">automatique</span>' : '') + '</span>'
+        + '<span class="t-sub" style="display:block">' + esc(t.description || ('Objet : ' + t.sujet)) + '</span></span>'
+      + '<span class="ico-btn" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></svg></span>'
+      + '</button>';
+  }).join('') + '</div>';
 }
 
 function renderBrevo(){
@@ -2532,12 +3019,24 @@ function renderSettings(){
   $('s-mail').value  = state.cfg.email || '';
   countField('s-title', 'c-stitle', 60);
   countField('s-desc', 'c-sdesc', 160);
+  var ok = !!state.token;
   $('set-conn').innerHTML =
-    '<div class="hint" style="margin:0 0 12px">Connectée en tant que <b>' + esc(state.user || '—') + '</b>.</div>'
-    + '<div class="hint" style="margin:0 0 16px">La publication se fait sur <b>' + esc(OWNER + '/' + REPO) + '</b>'
-    + (state.token ? '' : ' — <span style="color:var(--te)">indisponible : aucun accès de publication</span>') + '.</div>'
-    + '<div class="hint" style="margin:0 0 16px">Ta session se ferme d\'elle-même au bout de douze heures.</div>'
-    + '<button class="btn ghost sm" onclick="logout()">Se déconnecter</button>';
+    '<div class="conn ' + (ok ? 'ok' : 'ko') + '"><span class="pic ' + (ok ? 'v' : 'r') + '"><svg viewBox="0 0 24 24">'
+      + (ok ? '<path d="M20 6 9 17l-5-5"/>' : '<path d="M12 8v5M12 16v.5"/><circle cx="12" cy="12" r="9"/>') + '</svg></span>'
+      + '<div><div class="t-title">' + (ok ? 'Connexion active' : 'Publication indisponible') + '</div>'
+      + '<div class="t-sub">' + (ok ? 'Le blog est connecté et fonctionne correctement.' : 'Aucun accès de publication : les articles ne peuvent pas partir en ligne.') + '</div></div></div>'
+    + '<div class="recap" style="margin-top:14px">'
+      + '<div><span>Connectée en tant que</span>' + esc(state.user || '—') + '</div>'
+      + '<div><span>Publication</span>' + esc(OWNER + '/' + REPO) + '</div>'
+      + '<div><span>Session</span>Se ferme d\'elle-même au bout de douze heures</div>'
+    + '</div>'
+    + '<div style="margin-top:14px"><button class="btn ghost sm" onclick="logout()">Se déconnecter</button></div>';
+  setOnglet(state.setOnglet || 'general');
+}
+function setOnglet(o){
+  state.setOnglet = o;
+  document.querySelectorAll('#set-onglets button').forEach(function(b){ b.className = b.dataset.o === o ? 'on' : ''; });
+  document.querySelectorAll('#v-set .set-bloc').forEach(function(b){ b.style.display = b.dataset.o === o ? '' : 'none'; });
 }
 function countField(id, cid, max){
   var el = $(id), c = $(cid);
