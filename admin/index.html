@@ -538,6 +538,200 @@ tr.cliquable{cursor:pointer}
 .logo-ligne{display:flex;gap:16px;align-items:center;padding:12px 14px;border:1px solid var(--trait);border-radius:12px;background:#FDFBF6}
 .logo-apercu{width:120px;height:48px;flex:none}
 
+
+/* ==========================================================================
+   RESPONSIVE — passe du 09/10. Mesuré de 320 à 1440 px : aucun débordement,
+   mais quatre défauts que seule la vue attrape, corrigés ici.
+   ========================================================================== */
+/* 3. la barre du haut est collante : elle doit avoir un fond, sinon la liste défile SOUS ses boutons */
+.topbar{background:var(--fond)}
+.topbar:after{content:'';position:absolute;left:0;right:0;bottom:-14px;height:14px;pointer-events:none;
+  background:linear-gradient(var(--fond),rgba(251,247,238,0))}
+/* 4. le journal de publication passe à la ligne au lieu de se couper */
+.log{white-space:normal;overflow-wrap:anywhere;word-break:break-word}
+
+/* trois paliers : téléphone (≤ 600), tablette sans barre latérale (601-900), écran (≥ 901) */
+.stats{grid-template-columns:repeat(auto-fit,minmax(165px,1fr))}
+.stats.trois{grid-template-columns:repeat(3,1fr)}
+
+@media(max-width:900px){
+  /* le menu mobile reste en haut ; la barre du haut se pose dessous, sans le recouvrir */
+  .mob-menu{position:sticky;top:0;z-index:22}
+  .topbar{position:relative;top:auto;z-index:auto;padding:16px 18px 8px;align-items:center}
+  .topbar:after{display:none}
+  .topbar h2{font-size:24px}
+  .view{padding:10px 18px 36px}
+  .panel-h{padding:14px 16px}
+  .panel-b{padding:16px}
+  .salut h3{font-size:25px}
+  .li-a{opacity:1}
+  .barre select{flex:1 1 140px;min-width:0}
+}
+
+@media(max-width:600px){
+  /* téléphone : titre, puis les actions sur une ligne pleine */
+  .topbar{flex-direction:column;align-items:stretch;gap:12px}
+  .topbar .acts{justify-content:flex-start}
+  .topbar .acts .btn{flex:1 1 auto;justify-content:center}
+  .tb-avatar{margin-left:auto}
+
+  /* tuiles en 2 × 2 au lieu d'une colonne interminable */
+  .stats{grid-template-columns:repeat(2,1fr);gap:10px}
+  .stats.trois{grid-template-columns:repeat(3,1fr);gap:8px}
+  .stat{padding:13px;gap:10px;flex-direction:column;align-items:flex-start}
+  .stat .ic{width:32px;height:32px;border-radius:9px}
+  .stat .n{font-size:20px}
+  .stats.trois .stat{padding:11px}
+  .stats.trois .stat .l{font-size:11px;line-height:1.3}
+
+  /* lignes d'articles : le titre prend toute la largeur, l'état et les actions passent dessous */
+  .li{flex-wrap:wrap;padding:12px 14px;gap:10px 12px;align-items:flex-start}
+  .li > .thumb{margin-top:2px}
+  .li-c{flex:1 1 calc(100% - 60px)}
+  .li > .pill,.li > .score{margin-left:58px}
+  .li > .pill + .li-a,.li > .score + .ico-btn{margin-left:auto}
+  .li-btn{flex-wrap:nowrap;align-items:center}
+  .li-btn .li-c{flex:1 1 auto}
+  .li-btn > .pill{margin-left:0}
+
+  /* le journal ne défile pas dans une boîte de 190 px sur un téléphone */
+  .log{max-height:none}
+  .view{padding:10px 14px 36px}
+}
+@media(max-width:360px){
+  .stats{gap:8px}
+  .stat{padding:12px}
+  .topbar .acts{gap:7px}
+  .tb-icone,.tb-avatar{width:32px;height:32px}
+}
+
+
+/* ---------- agendas connectés ---------- */
+.rdv{display:flex;align-items:center;gap:5px;width:100%;padding:4px 7px;border-radius:7px;font-size:11px;line-height:1.25;
+  background:color-mix(in srgb, var(--ag) 11%, #fff);border:1px solid color-mix(in srgb, var(--ag) 26%, #fff);color:#2C2A24}
+.rdv-l{width:13px;height:13px;flex:none;display:inline-flex}
+.rdv-l svg{width:13px;height:13px;display:block}
+.rdv-h{font-variant-numeric:tabular-nums;color:color-mix(in srgb, var(--ag) 75%, #000);font-weight:600;flex:none}
+.rdv-t{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ag-logo{width:30px;height:30px;flex:none;display:inline-flex;align-items:center;justify-content:center}
+.ag-logo svg{width:100%;height:100%;display:block}
+.ag-logo.grand{width:42px;height:42px}
+.ag-logo.mini{width:15px;height:15px}
+.ag-choix{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.ag-choix>button,.ag-choix>a{display:flex;align-items:center;gap:13px;text-align:left;padding:14px 16px;border:1px solid var(--trait2);
+  border-radius:12px;background:var(--carte);text-decoration:none;color:var(--encre);transition:border-color .15s,box-shadow .15s}
+.ag-choix>button:hover,.ag-choix>a:hover{border-color:var(--tc);box-shadow:var(--ombre)}
+.ag-choix b{display:block;font-weight:500;font-size:13.5px}
+.ag-choix small{display:block;font-size:11.5px;color:var(--gris);margin-top:2px}
+.ag-tete{display:flex;gap:13px;align-items:center;margin-bottom:14px}
+.ag-tete b{font-size:15px;font-weight:500}
+.ag-etapes{margin:0 0 16px 18px;padding:0;font-size:13px;line-height:1.7;color:var(--gris2)}
+.ag-etapes li{margin-bottom:4px}
+.ag-etapes code{background:#F4EEE3;padding:1px 5px;border-radius:4px;font-size:12px}
+.choix .coul{width:26px;height:26px;padding:0;border-radius:50%;background:var(--c);border:2px solid #fff;box-shadow:0 0 0 1px var(--trait2)}
+.choix .coul.on{box-shadow:0 0 0 2px var(--encre)}
+.ag-bouton.on{border-color:var(--tc);color:var(--tc);background:var(--tc-clair)}
+.ag-compte{font-size:11px;opacity:.8}
+.cal-mois{row-gap:10px}
+/* contacts : initiales */
+.ini{width:32px;height:32px;border-radius:50%;flex:none;display:inline-flex;align-items:center;justify-content:center;
+  font-size:11.5px;font-weight:600;color:#fff;margin-right:11px;vertical-align:middle}
+.histo-l{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px solid var(--trait);font-size:12.5px}
+.histo-l:last-child{border-bottom:none}
+.histo-l span{color:var(--gris);font-size:11.5px;white-space:nowrap}
+
+
+/* la barre d'actions ne se casse jamais : rien ne doit tomber seul sur une ligne (l'avatar le faisait) */
+@media(max-width:900px){
+  .topbar .acts{flex-wrap:nowrap;max-width:100%;min-width:0}
+  .topbar .acts .btn{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .tb-icone,.tb-avatar{flex:none}
+}
+@media(max-width:380px){
+  /* très petit écran : l'icône « voir le blog » cède sa place, le bouton principal garde son texte */
+  .topbar .acts a.tb-icone{display:none}
+}
+
+
+/* ==========================================================================
+   RESPONSIVE — 2e passe (contacts en cartes, onglets, tablette en grille).
+   ========================================================================== */
+/* tablette (601-900) : la place suffit pour la vraie grille du mois et du CRM */
+@media(min-width:601px) and (max-width:900px){
+  .cal-jours{display:grid}
+  .cal-cases{grid-template-columns:repeat(7,1fr)}
+  .cal-case{min-height:104px;border-right:1px solid var(--trait)}
+  .cal-case:nth-child(7n){border-right:none}
+  .cal-case.vide{display:flex}
+  .cal-case .num{font-size:11.5px;font-weight:500;color:var(--gris2)}
+  .cal-case .plus{opacity:1}
+  .gr-l{grid-template-columns:140px repeat(3,1fr)}
+  .gr-l.tete{display:grid}
+  .gr-axe{border-right:1px solid var(--trait);border-bottom:none}
+  .gr-c{border-right:1px solid var(--trait);border-bottom:none;min-height:88px}
+  .gr-c:last-child{border-right:none}
+  .gr-c:before{display:none}
+}
+
+@media(max-width:600px){
+  /* calendrier : les jours vides disparaissent, la liste ne garde que ce qui compte */
+  .cal-case.sans{display:none}
+  .cal-tuiles{grid-template-columns:repeat(2,1fr);gap:9px}
+  .cal-tuiles .tuile:last-child{grid-column:1 / -1}
+  .cal-mois .btn[onclick*="agCharger"]{display:none}
+  .cal-mois .nom{min-width:0;font-size:23px}
+
+  /* onglets : une seule ligne qui défile, jamais un onglet orphelin dessous */
+  .onglets,.chips{flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-right:-14px;padding-right:14px}
+  .onglets::-webkit-scrollbar,.chips::-webkit-scrollbar{display:none}
+  .onglets button,.chip{flex:none;white-space:nowrap}
+
+  /* barre de filtres : recherche, puis filtre, puis les actions côte à côte */
+  .barre .recherche{flex:1 1 100%}
+  .barre select{flex:1 1 100%}
+  .barre .btn{flex:1 1 0;justify-content:center}
+
+  /* le bloc logo s'empile */
+  .logo-ligne{flex-direction:column;align-items:flex-start}
+
+  /* contacts : le tableau devient une liste de cartes lisibles */
+  #ct-table thead{display:none}
+  #ct-table table,#ct-table tbody{display:block}
+  #ct-table tr{display:grid;grid-template-columns:26px 1fr;gap:3px 10px;padding:13px 14px;border-bottom:1px solid var(--trait)}
+  #ct-table tbody tr:last-child{border-bottom:none}
+  #ct-table td{display:block;padding:0;border:none;width:auto!important}
+  #ct-table td:first-child{grid-row:1 / span 3;padding-top:7px}
+  #ct-table td:nth-child(3){padding-left:43px;font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #ct-table td:nth-child(4){padding-left:43px;margin-top:4px}
+  #ct-table td .ini{margin-right:11px}
+}
+
+
+@media(max-width:600px){
+  /* tableaux : marges resserrées, colonnes fixes rétrécies — rien ne dépasse de sa carte */
+  th,td{padding:11px 12px}
+  #cats-table td:nth-child(2),#cats-table th:nth-child(2){width:46px!important}
+  #cats-table td:nth-child(3){width:72px!important}
+  #cats-table .t-title{overflow-wrap:anywhere}
+  .rowacts{gap:5px}
+}
+
+
+/* colonnes STRICTEMENT égales : sans minmax(0,…), le contenu d'une case élargit sa colonne
+   et les en-têtes (lun, mar…) ne tombent plus au-dessus de leurs jours */
+.cal-jours,.cal-cases{grid-template-columns:repeat(7,minmax(0,1fr))}
+.cal-case{min-width:0}
+.cal-batch{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.cal-case .num{gap:4px;min-width:0}
+@media(max-width:600px){.cal-cases{grid-template-columns:minmax(0,1fr)}}
+/* une étiquette libre (b2b, atelier…) a sa pastille neutre */
+.pill:not(.pub):not(.draft):not(.no):not(.ok){background:#EFEBE2;color:#4A463C}
+
+
+/* carte de contenu dans une case étroite : l'heure et l'étage passent à la ligne plutôt que de déborder */
+.cc{min-width:0}
+.cc .co{min-width:0}
+.cc .h{flex-wrap:wrap;row-gap:2px}
 </style>
 </head>
 <body>
@@ -610,6 +804,7 @@ tr.cliquable{cursor:pointer}
         <button class="tb-icone" onclick="reload()" title="Recharger" aria-label="Recharger">
           <svg viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/></svg></button>
         <button class="btn sm" id="btn-contenu" onclick="ouvrirContenu()" style="display:none"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Ajouter un contenu</button>
+        <button class="btn sm" id="btn-contact" style="display:none" onclick="ouvrirContact()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Ajouter un contact</button>
         <button class="btn sm" id="btn-cat" style="display:none" onclick="document.getElementById('newcat').focus()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nouvelle catégorie</button>
         <button class="btn sm" onclick="openEditor()"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg> Nouvel article</button>
         <button class="btn sm" id="pub-btn" onclick="askPublish()" style="background:var(--ol)">Publier en ligne</button>
@@ -705,6 +900,10 @@ tr.cliquable{cursor:pointer}
             <button onclick="ctMois(1)" aria-label="Mois suivant">›</button>
           </div>
           <div class="nom" id="ct-nom">—</div>
+          <button class="btn ghost sm ag-bouton on" id="ct-ag-voir" onclick="agBasculerVue()" title="Afficher ou masquer les rendez-vous de tes agendas">
+            <span class="ag-logo mini"><svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.7"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4" stroke="currentColor" stroke-width="1.7" fill="none"/></svg></span>
+            Mes rendez-vous <span id="ct-ag-compte" class="ag-compte"></span></button>
+          <button class="btn ghost sm" onclick="go('set');setOnglet('agendas');agCharger()">Connecter un agenda</button>
           <div class="cal-vues">
             <button id="ct-v-mois" class="on" onclick="ctVue('mois')">Mois</button>
             <button id="ct-v-semaine" onclick="ctVue('semaine')">Semaine</button>
@@ -763,6 +962,7 @@ tr.cliquable{cursor:pointer}
         <button data-o="general" onclick="setOnglet('general')">Général</button>
         <button data-o="blog" onclick="setOnglet('blog')">Blog</button>
         <button data-o="email" onclick="setOnglet('email')">Email</button>
+        <button data-o="agendas" onclick="setOnglet('agendas');agCharger()">Agendas</button>
         <button data-o="connexion" onclick="setOnglet('connexion')">Connexion</button>
       </div>
       <div class="panel set-bloc" data-o="general">
@@ -796,6 +996,7 @@ tr.cliquable{cursor:pointer}
           <div style="margin-top:14px"><button class="btn ghost sm" onclick="go('mails')">Voir les modèles d'emails</button></div>
         </div>
       </div>
+      <div class="set-bloc" data-o="agendas" style="display:none" id="set-agendas"><div class="panel"><div class="empty">Chargement…</div></div></div>
       <div class="panel set-bloc" data-o="connexion" style="display:none">
         <div class="panel-h"><h3>Connexion</h3></div>
         <div class="panel-b" id="set-conn"></div>
@@ -917,7 +1118,14 @@ tr.cliquable{cursor:pointer}
       <div class="f"><label for="ct-prenom">Prénom</label><input id="ct-prenom"></div>
       <div class="f"><label for="ct-nom">Nom</label><input id="ct-nom"></div>
     </div>
-    <div class="f"><label for="ct-email">Email</label><input id="ct-email" type="email"></div>
+    <div class="grid2">
+      <div class="f"><label for="ct-email">Email</label><input id="ct-email" type="email" autocomplete="off" placeholder="prenom@exemple.com"></div>
+      <div class="f"><label for="ct-tel">Téléphone</label><input id="ct-tel" type="tel" autocomplete="off" placeholder="+596 696 …"></div>
+    </div>
+    <div class="grid2">
+      <div class="f"><label for="ct-entreprise">Entreprise</label><input id="ct-entreprise" placeholder="pour le B2B"></div>
+      <div class="f"><label for="ct-poste">Poste</label><input id="ct-poste" placeholder="ex. DRH, manager…"></div>
+    </div>
     <div class="f">
       <label>Étiquettes</label>
       <div class="chips" id="ct-tags" style="margin:0"></div>
@@ -928,6 +1136,10 @@ tr.cliquable{cursor:pointer}
     </div>
     <div class="f"><label for="ct-note">Note</label><textarea id="ct-note" rows="3"></textarea></div>
     <div class="f" id="ct-infos"></div>
+    <div class="ed-sec" id="ct-histo-bloc" style="display:none">
+      <h4><span class="num">◷</span> Historique</h4>
+      <div id="ct-histo"></div>
+    </div>
 
     <div class="ed-sec" id="ct-ecrire">
       <h4><span class="num">✉</span> Lui écrire</h4>
@@ -1583,6 +1795,9 @@ function lsDel(k){ try { localStorage.removeItem(k); } catch(e){ delete _mem[k];
 /* ---------------- utilitaires UI ---------------- */
 function $(id){ return document.getElementById(id); }
 function esc(s){ return R.esc(s); }
+/* Typographie française : l'espace avant ? ! : ; devient insécable, sinon le signe
+   tombe seul en début de ligne sur un téléphone (« mythe ou réalité / ? »). */
+function typo(s){ return esc(s).replace(/ ([?!:;»])/g, '\u00A0$1').replace(/(«) /g, '$1\u00A0'); }
 // esc() protège le HTML mais pas l'apostrophe, qui casse un onclick="f('…')".
 // Toute chaîne insérée DANS du JavaScript passe par ici.
 function escJs(s){ return String(s == null ? '' : s).replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;'); }
@@ -1876,6 +2091,7 @@ function go(v){
     if (b.textContent.trim() === 'Nouvel article') b.style.display = (v === 'posts') ? '' : 'none';
   });
   var ajoutCat = $('btn-cat'); if (ajoutCat) ajoutCat.style.display = (v === 'cats') ? '' : 'none';
+  var ajoutCt = $('btn-contact'); if (ajoutCt) ajoutCt.style.display = (v === 'leads') ? '' : 'none';
   if (v === 'contenu' || v === 'crm') chargerCalendrier();
   if (v === 'seo') renderSeo();
   if (v === 'leads') chargerContacts();
@@ -1938,7 +2154,7 @@ function listeArticles(list, avecActions){
   return '<div class="liste">' + list.map(function(p){
     var i = state.posts.indexOf(p);
     return '<div class="li">' + vignette(p) +
-      '<div class="li-c"><div class="t-title">' + esc(p.title) + '</div>' +
+      '<div class="li-c"><div class="t-title">' + typo(p.title) + '</div>' +
         '<div class="t-sub">' + esc(p.catLabel || p.cat || '—') + ' · ' + esc(p.date) + '</div></div>' +
       '<span class="pill ' + (p.status === 'draft' ? 'draft">Brouillon' : 'pub">En ligne') + '</span>' +
       (avecActions === false ? '' :
@@ -2365,7 +2581,7 @@ function renderSeo(){
       if (n.meta < 120 || n.meta > 160) manque.push('description ' + (n.meta ? n.meta + ' car.' : 'absente'));
       if (n.mots < 300) manque.push(n.mots + ' mots');
       return '<div class="li">' + vignette(p)
-        + '<div class="li-c"><div class="t-title">' + esc(p.title) + '</div>'
+        + '<div class="li-c"><div class="t-title">' + typo(p.title) + '</div>'
         + '<div class="t-sub">/' + esc(p.slug) + (manque.length ? ' · ' + esc(manque.join(' · ')) : '') + '</div></div>'
         + '<span class="score ' + cls + '" title="Score de référencement">' + n.sc + '</span>'
         + '<button class="ico-btn" title="Corriger" onclick="openEditor(' + i + ')"><svg viewBox="0 0 24 24"><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4z"/></svg></button>'
@@ -2435,7 +2651,9 @@ function renderContacts(){
 
   if (state.contactsErr){ $('ct-table').innerHTML = emptyBox(state.contactsErr); ctBarreSel(); return; }
   if (!state.contacts.length){
-    $('ct-table').innerHTML = emptyBox('Aucun contact pour l\'instant. Les inscrites du blog arrivent ici toutes seules, ou importe une liste.');
+    $('ct-table').innerHTML = '<div class="empty"><span class="k">一念</span>Aucun contact pour l\'instant.<br>Les inscrites du blog arrivent ici toutes seules — ou ajoute quelqu\'un toi-même.'
+      + '<div style="margin-top:16px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap"><button class="btn" onclick="ouvrirContact()">+ Ajouter un contact</button>'
+      + '<button class="btn ghost" onclick="importerContacts()">Importer une liste</button></div></div>';
     ctBarreSel(); return;
   }
   if (!liste.length){ $('ct-table').innerHTML = emptyBox('Aucun contact ne correspond.'); ctBarreSel(); return; }
@@ -2456,7 +2674,12 @@ function renderContacts(){
     return '<tr class="cliquable" onclick="ouvrirContact(' + i + ')">'
       + '<td style="width:44px" onclick="event.stopPropagation()"><input type="checkbox" class="coche" '
         + (ctSel[c.email] ? 'checked ' : '') + 'onchange="ctCocher(\'' + escJs(c.email) + '\',this.checked)"></td>'
-      + '<td><span class="t-title">' + esc(nom) + '</span>' + (c.desabonne ? ' <span class="pill no">désinscrite</span>' : '') + '</td>'
+      + '<td><span class="ini" style="background:' + TEINTES_CAT[(c.email.charCodeAt(0) + c.email.length) % TEINTES_CAT.length] + '">'
+        + esc(((c.prenom || c.email)[0] + ((c.nom || '')[0] || '')).toUpperCase()) + '</span>'
+        + '<span style="display:inline-block;vertical-align:middle"><span class="t-title">' + esc(nom) + '</span>'
+        + (c.desabonne ? ' <span class="pill no">désinscrite</span>' : '')
+        + (c.entreprise ? '<span class="t-sub" style="display:block">' + esc(c.entreprise + (c.poste ? ' · ' + c.poste : '')) + '</span>' : '')
+        + '</span></td>'
       + '<td style="color:var(--gris2)">' + esc(c.email) + '</td>'
       + '<td style="width:190px">' + (puces || '<span class="t-sub">—</span>') + '</td></tr>';
   }).join('');
@@ -2525,7 +2748,12 @@ function ouvrirContact(i){
   $('ct-nom').value = c ? (c.nom || '') : '';
   $('ct-email').value = c ? c.email : '';
   $('ct-email').disabled = !!c;
+  $('ct-tel').value = c ? (c.telephone || '') : '';
+  $('ct-entreprise').value = c ? (c.entreprise || '') : '';
+  $('ct-poste').value = c ? (c.poste || '') : '';
   $('ct-note').value = c ? (c.note || '') : '';
+  $('ct-histo-bloc').style.display = c ? '' : 'none';
+  if (c) chargerHistorique(c);
   $('ct-suppr').style.display = c ? '' : 'none';
   $('ct-ecrire').style.display = c ? '' : 'none';
   $('ct-infos').innerHTML = c
@@ -2539,6 +2767,21 @@ function ouvrirContact(i){
   dessinerTags();
   $('scrim-c').className = 'on';
   $('fiche-contact').className = 'on';
+  setTimeout(function(){ (c ? $('ct-prenom') : $('ct-prenom')).focus(); }, 80);
+}
+/* Ce qui s'est passé avec cette personne : son inscription, et chaque email qui lui est parti. */
+function chargerHistorique(c){
+  var debut = '<div class="histo-l"><b style="font-weight:500">' + (c.source === 'console' ? 'Ajoutée depuis la console' : 'Inscrite depuis le blog') + '</b>'
+    + '<span>' + esc((c.created_at || '').slice(0, 10)) + '</span></div>'
+    + (c.article_slug ? '<div class="histo-l"><span style="color:var(--gris2)">Article d\'origine : /blog/' + esc(c.article_slug) + '/</span></div>' : '');
+  $('ct-histo').innerHTML = debut + '<div class="hint">Chargement des emails…</div>';
+  ctApi('contact_historique', { email: c.email }).then(function(j){
+    var l = j.emails || [];
+    $('ct-histo').innerHTML = debut + (l.length ? l.map(function(e){
+      return '<div class="histo-l"><span style="color:var(--encre);white-space:normal">' + esc(e.sujet) + '</span>'
+        + '<span>' + (e.statut === 'echec' ? '<b style="color:var(--rouge)">échec</b> · ' : '') + esc((e.created_at || '').slice(0, 10)) + '</span></div>';
+    }).join('') : '<div class="hint" style="margin-top:8px">Aucun email envoyé pour l\'instant.</div>');
+  }).catch(function(){ $('ct-histo').innerHTML = debut; });
 }
 function fermerContact(){ $('fiche-contact').className = ''; $('scrim-c').className = ''; contactCourant = null; }
 
@@ -2565,18 +2808,22 @@ function ajouterTag(){
 }
 
 function enregistrerContact(){
-  var prenom = $('ct-prenom').value.trim(), nom = $('ct-nom').value.trim();
-  var note = $('ct-note').value.trim();
-  if (contactCourant){
-    api('contact_update', { id: contactCourant.id, prenom: prenom, nom: nom, note: note, tags: tagsCourants })
-      .then(function(){ toast('Contact enregistré.'); fermerContact(); return chargerContacts(); })
-      .catch(function(e){ toast(e.message, true); });
-  } else {
-    var email = $('ct-email').value.trim();
-    api('contact_add', { email: email, prenom: prenom, nom: nom, tags: tagsCourants })
-      .then(function(){ toast('Contact ajouté.'); fermerContact(); return chargerContacts(); })
-      .catch(function(e){ toast(e.message, true); });
-  }
+  var corps = {
+    prenom: $('ct-prenom').value.trim(), nom: $('ct-nom').value.trim(),
+    telephone: $('ct-tel').value.trim(), entreprise: $('ct-entreprise').value.trim(), poste: $('ct-poste').value.trim(),
+    note: $('ct-note').value.trim(), tags: tagsCourants
+  };
+  if (!contactCourant){
+    corps.email = $('ct-email').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(corps.email)){ toast('Adresse email invalide', true); $('ct-email').focus(); return; }
+  } else corps.id = contactCourant.id;
+  busy(true, 'Enregistrement…');
+  ctApi(contactCourant ? 'contact_maj' : 'contact_creer', corps)
+    .then(function(){
+      busy(false); toast(contactCourant ? 'Contact enregistré' : 'Contact ajouté');
+      fermerContact(); return chargerContacts();
+    })
+    .catch(function(e){ busy(false); toast(e.message, true); });
 }
 
 function supprimerContact(){
@@ -3282,6 +3529,7 @@ function chargerCalendrier(force){
     ct.theme = j.theme || null;
     ct.charge = true;
     ctRendre(); crRendre();
+    agChargerEvenements();
   }).catch(function(e){
     $('ct-corps').innerHTML = '<div class="panel"><div class="empty"><span class="k">一念</span>' + esc(e.message) + '</div></div>';
   });
@@ -3404,13 +3652,16 @@ function ctRendreMois(){
     var iso = ctISO(d);
     var hors = (d.getMonth() !== premier.getMonth());
     var liste = parJour[iso] || [];
-    var cls = 'cal-case' + (hors ? ' hors' : '') + (iso === auj ? ' auj' : '') + (hors && !liste.length ? ' vide' : '');
+    var occupe = liste.length || agRdvDuJour(iso);
+    // « sans » : jour du mois sans rien — masqué sur téléphone, où 31 lignes vides ne servent à rien
+    var cls = 'cal-case' + (hors ? ' hors' : '') + (iso === auj ? ' auj' : '') + (hors && !occupe ? ' vide' : '')
+            + (!hors && !occupe && iso !== auj ? ' sans' : '');
     html += '<div class="' + cls + '" data-jour="' + iso + '"' +
       ' ondragover="ctDragOver(event)" ondragleave="ctDragLeave(event)" ondrop="ctDrop(event,\'' + iso + '\')">' +
       '<div class="num"><b>' + d.getDate() + (hors ? '' : '') + '</b>' +
         (d.getDay() === JOUR_BATCH && !hors ? '<span class="cal-batch">Production</span>' : '') +
         '<button class="plus" onclick="ouvrirContenu(null,\'' + iso + '\')" title="Ajouter un contenu">＋</button></div>' +
-      liste.map(ctCarte).join('') +
+      liste.map(ctCarte).join('') + agRdvDuJour(iso) +
       '</div>';
   }
   html += '</div></div>';
@@ -3441,7 +3692,7 @@ function ctRendreSemaine(){
       '<div class="num"><b>' + JOURS_FR[i].slice(0,3) + ' ' + d.getDate() + '</b>' +
         (i === 3 ? '<span class="cal-batch">Production</span>' : '') +
         '<button class="plus" onclick="ouvrirContenu(null,\'' + iso + '\')">＋</button></div>' +
-      (liste.length ? liste.map(ctCarte).join('')
+      ((liste.length || agRdvDuJour(iso)) ? liste.map(ctCarte).join('') + agRdvDuJour(iso)
                     : '<div style="font-size:11.5px;color:var(--tm);opacity:.6;padding:6px 2px">Rien de prévu</div>') +
       '</div>';
   }
@@ -3842,6 +4093,154 @@ function ctDefautDuMois(){
   var auj = ctAujISO();
   if (auj.slice(0,7) === ct.mois) return auj;
   return ct.mois + '-01';
+}
+
+
+/* ============================================================
+   AGENDAS CONNECTÉS — Google et Outlook, par l'adresse iCal secrète.
+   1) ses rendez-vous s'affichent dans le calendrier de contenu ;
+   2) son calendrier de contenu s'ajoute à son agenda (flux iCal).
+   L'adresse secrète est gardée côté serveur : la console ne la revoit jamais.
+   ============================================================ */
+var LOGO_GOOGLE = '<svg viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.7-.4-3.9z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2A11.9 11.9 0 0 1 24 36c-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3a12 12 0 0 1-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.7-.4-3.9z"/></svg>';
+var LOGO_OUTLOOK = '<svg viewBox="0 0 48 48"><rect x="17" y="9" width="27" height="30" rx="4" fill="#28A8EA"/><path d="M17 20h27v15a4 4 0 0 1-4 4H21a4 4 0 0 1-4-4z" fill="#0F78D4"/><path d="m17 20 13.5 9L44 20" fill="none" stroke="#50D9FF" stroke-width="2"/><rect x="4" y="13" width="22" height="22" rx="4" fill="#0F6CBD"/><ellipse cx="15" cy="24" rx="5.3" ry="6.3" fill="none" stroke="#fff" stroke-width="2.6"/></svg>';
+var COULEURS_AGENDA = ['#1A73E8','#0F6CBD','#4E7A46','#C2503A','#7B4FA0','#B8893C','#2C6E8F'];
+
+var ag = { liste: [], flux: null, evs: [], voir: true, cleChargee: null, charge: false };
+
+function agLogo(four){ return four === 'outlook' ? LOGO_OUTLOOK : (four === 'google' ? LOGO_GOOGLE : '<svg viewBox="0 0 24 24"><rect x="3" y="4.5" width="18" height="16" rx="2.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4" stroke="currentColor" stroke-width="1.6" fill="none"/></svg>'); }
+
+function agCharger(){
+  return ctApi('agendas').then(function(j){
+    ag.liste = j.agendas || []; ag.flux = j.flux || null; ag.charge = true;
+    agRendreReglages();
+  }).catch(function(e){ var z = $('set-agendas'); if (z) z.innerHTML = emptyBox(e.message); });
+}
+
+/* ---- les rendez-vous de la période affichée ---- */
+function agChargerEvenements(force){
+  var p = ct.mois.split('-');
+  var de = new Date(+p[0], +p[1]-1, 1); de.setDate(de.getDate() - 10);
+  var a  = new Date(+p[0], +p[1], 1);   a.setDate(a.getDate() + 10);
+  var cle = ct.mois;
+  if (!force && ag.cleChargee === cle) return;
+  ctApi('agenda_evenements', { de: de.toISOString(), a: a.toISOString() }).then(function(j){
+    ag.evs = j.evenements || []; ag.cleChargee = cle;
+    if (ag.evs.length) { ctRendre(); }
+    var b = $('ct-ag-compte'); if (b) b.textContent = ag.evs.length ? ag.evs.length + ' rdv' : '';
+  }).catch(function(){ /* un agenda injoignable ne doit pas casser le calendrier */ });
+}
+
+function agRdvDuJour(iso){
+  if (!ag.voir || !ag.evs.length) return '';
+  var l = ag.evs.filter(function(e){
+    if (e.journee) return e.jour <= iso && iso <= (e.jourFin || e.jour);
+    return ctISO(new Date(e.debut)) === iso;
+  });
+  return l.map(function(e){
+    var h = e.journee ? 'Journée' : new Date(e.debut).toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+    return '<div class="rdv" style="--ag:' + esc(e.couleur) + '" title="' + esc(e.titre + (e.lieu ? ' — ' + e.lieu : '')) + '">' +
+      '<span class="rdv-l">' + agLogo(e.fournisseur) + '</span><span class="rdv-h">' + esc(h) + '</span>' +
+      '<span class="rdv-t">' + esc(e.titre) + '</span></div>';
+  }).join('');
+}
+function agBasculerVue(){ ag.voir = !ag.voir; var b = $('ct-ag-voir'); if (b) b.classList.toggle('on', ag.voir); ctRendre(); }
+
+/* ---- Réglages › Agendas ---- */
+function agRendreReglages(){
+  var z = $('set-agendas'); if (!z) return;
+  var lignes = ag.liste.length ? '<div class="liste">' + ag.liste.map(function(g){
+    var etat = g.erreur ? '<span class="pill no" title="' + esc(g.erreur) + '">Erreur</span>'
+             : (g.actif ? '<span class="pill pub">Synchronisé</span>' : '<span class="pill">En pause</span>');
+    var quand = g.derniere_synchro ? new Date(g.derniere_synchro).toLocaleString('fr-FR', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' }) : '—';
+    return '<div class="li"><span class="ag-logo">' + agLogo(g.fournisseur) + '</span>' +
+      '<div class="li-c"><div class="t-title"><span class="pastille" style="background:' + esc(g.couleur) + '"></span>' + esc(g.nom) + '</div>' +
+      '<div class="t-sub">' + esc(g.url) + ' · ' + (g.nb_evenements == null ? '—' : g.nb_evenements + ' rdv') + ' · vu ' + esc(quand) +
+      (g.erreur ? ' · <span style="color:var(--rouge)">' + esc(g.erreur) + '</span>' : '') + '</div></div>' + etat +
+      '<div class="li-a" style="opacity:1">' +
+        '<button class="ico-btn" title="' + (g.actif ? 'Mettre en pause' : 'Réactiver') + '" onclick="agBasculer(\'' + g.id + '\',' + (!g.actif) + ')">' +
+          (g.actif ? '<svg viewBox="0 0 24 24"><path d="M9 6v12M15 6v12"/></svg>' : '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>') + '</button>' +
+        '<button class="ico-btn danger" title="Déconnecter" onclick="agSupprimer(\'' + g.id + '\',\'' + escJs(g.nom) + '\')"><svg viewBox="0 0 24 24"><path d="M4 7h16M10 7V5h4v2M6 7l1 13h10l1-13"/></svg></button>' +
+      '</div></div>';
+  }).join('') + '</div>'
+  : '<div class="empty" style="padding:30px 20px">Aucun agenda connecté pour l’instant.</div>';
+
+  var flux = ag.flux || '';
+  var webcal = flux.replace(/^https:/, 'webcal:');
+  z.innerHTML =
+    '<div class="panel"><div class="panel-h"><h3>Connecter un agenda</h3></div><div class="panel-b">' +
+      '<p class="hint" style="margin:0 0 14px">Tes rendez-vous apparaissent dans ton calendrier de contenu, à côté de tes publications : tu vois d’un coup d’œil les jours chargés.</p>' +
+      '<div class="ag-choix">' +
+        '<button onclick="agConnecter(\'google\')"><span class="ag-logo">' + LOGO_GOOGLE + '</span><span><b>Google Agenda</b><small>Gmail, Google Workspace</small></span></button>' +
+        '<button onclick="agConnecter(\'outlook\')"><span class="ag-logo">' + LOGO_OUTLOOK + '</span><span><b>Outlook</b><small>Outlook.com, Microsoft 365</small></span></button>' +
+      '</div></div>' + lignes + '</div>' +
+    '<div class="panel"><div class="panel-h"><h3>Ton calendrier de contenu dans ton agenda</h3></div><div class="panel-b">' +
+      '<p class="hint" style="margin:0 0 14px">Chaque publication prévue apparaît dans ton agenda, à l’heure prévue, avec son accroche et tes notes. Il se met à jour tout seul.</p>' +
+      (flux ? '<div class="ag-choix">' +
+        '<a href="https://calendar.google.com/calendar/r?cid=' + encodeURIComponent(webcal) + '" target="_blank" rel="noopener noreferrer"><span class="ag-logo">' + LOGO_GOOGLE + '</span><span><b>Ajouter à Google Agenda</b><small>s’ouvre dans Google, un clic pour confirmer</small></span></a>' +
+        '<a href="https://outlook.live.com/calendar/0/addfromweb?url=' + encodeURIComponent(flux) + '&name=' + encodeURIComponent('Ichinen — contenu') + '" target="_blank" rel="noopener noreferrer"><span class="ag-logo">' + LOGO_OUTLOOK + '</span><span><b>Ajouter à Outlook</b><small>s’ouvre dans Outlook, un clic pour confirmer</small></span></a>' +
+      '</div>' +
+      '<div class="f" style="margin-top:14px"><label>Ou copie l’adresse (iPhone, Apple Calendar, autre agenda)</label>' +
+        '<div style="display:flex;gap:8px"><input id="ag-flux" readonly value="' + esc(flux) + '" onclick="this.select()">' +
+        '<button class="btn ghost sm" onclick="agCopier()">Copier</button></div>' +
+        '<div class="hint">Garde cette adresse pour toi : elle donne la lecture de ton calendrier de contenu.</div></div>'
+      : '<div class="hint">Flux indisponible.</div>') +
+    '</div></div>';
+}
+function agCopier(){
+  var i = $('ag-flux'); if (!i) return;
+  i.select();
+  (navigator.clipboard ? navigator.clipboard.writeText(i.value) : Promise.reject()).then(function(){ toast('Adresse copiée'); })
+    .catch(function(){ try { document.execCommand('copy'); toast('Adresse copiée'); } catch(e){ toast('Sélectionne-la et copie-la', true); } });
+}
+
+var ETAPES_AGENDA = {
+  google: ['Ouvre <b>Google Agenda</b> sur un ordinateur (calendar.google.com).',
+           'À gauche, survole ton agenda → les trois points ⋮ → <b>Paramètres et partage</b>.',
+           'Descends jusqu’à <b>Intégrer l’agenda</b>.',
+           'Copie l’<b>Adresse secrète au format iCal</b> (elle finit par <code>.ics</code>) et colle-la ci-dessous.'],
+  outlook: ['Ouvre <b>Outlook</b> sur le web (outlook.live.com ou outlook.office.com).',
+            'Roue dentée ⚙ → <b>Calendrier</b> → <b>Calendriers partagés</b>.',
+            'Dans <b>Publier un calendrier</b>, choisis ton agenda et « Peut afficher tous les détails », puis <b>Publier</b>.',
+            'Copie le lien <b>ICS</b> et colle-le ci-dessous.']
+};
+function agConnecter(four){
+  var nom = four === 'outlook' ? 'Outlook' : 'Google Agenda';
+  var corps =
+    '<div class="ag-tete"><span class="ag-logo grand">' + (four === 'outlook' ? LOGO_OUTLOOK : LOGO_GOOGLE) + '</span>' +
+    '<div><b>Connecter ' + esc(nom) + '</b><div class="hint" style="margin:2px 0 0">Deux minutes, une seule fois.</div></div></div>' +
+    '<ol class="ag-etapes">' + ETAPES_AGENDA[four].map(function(e){ return '<li>' + e + '</li>'; }).join('') + '</ol>' +
+    '<div class="f"><label for="ag-url">Adresse iCal secrète</label><input id="ag-url" placeholder="https://… .ics" autocomplete="off" spellcheck="false"></div>' +
+    '<div class="ct-grille"><div class="f"><label for="ag-nom">Nom affiché</label><input id="ag-nom" value="' + (four === 'outlook' ? 'Agenda Outlook' : 'Agenda Google') + '"></div>' +
+    '<div class="f"><label>Couleur</label><div class="choix" id="ag-coul">' + COULEURS_AGENDA.map(function(c, i){
+      return '<button type="button" class="coul' + (i === (four === 'outlook' ? 1 : 0) ? ' on' : '') + '" style="--c:' + c + '" data-c="' + c + '" onclick="agCouleur(this)" aria-label="' + c + '"></button>'; }).join('') + '</div></div></div>' +
+    '<div class="hint">L’adresse reste sur le serveur : la console ne te la réaffichera jamais.</div>';
+  var pied = '<button class="btn ghost" onclick="ctFermer()">Annuler</button><button class="btn" id="ag-ok" onclick="agAjouter()">Connecter</button>';
+  ctModale('Connecter un agenda', corps, pied);
+  setTimeout(function(){ var i = $('ag-url'); if (i) i.focus(); }, 60);
+}
+function agCouleur(b){ document.querySelectorAll('#ag-coul .coul').forEach(function(x){ x.classList.remove('on'); }); b.classList.add('on'); }
+function agAjouter(){
+  var url = ($('ag-url').value || '').trim();
+  if (!url){ toast('Colle l’adresse iCal de ton agenda', true); $('ag-url').focus(); return; }
+  var coul = document.querySelector('#ag-coul .coul.on');
+  var b = $('ag-ok'); b.disabled = true; b.textContent = 'Lecture de l’agenda…';
+  ctApi('agenda_ajouter', { url: url, nom: $('ag-nom').value, couleur: coul ? coul.dataset.c : '' }).then(function(j){
+    ctFermer(); toast('Agenda connecté : ' + j.nb + ' rendez-vous trouvés sur trois mois');
+    ag.cleChargee = null; agCharger(); agChargerEvenements(true);
+  }).catch(function(e){ b.disabled = false; b.textContent = 'Connecter'; toast(e.message, true); });
+}
+function agBasculer(id, actif){
+  ctApi('agenda_maj', { id: id, actif: actif }).then(function(){ ag.cleChargee = null; agCharger(); agChargerEvenements(true); })
+    .catch(function(e){ toast(e.message, true); });
+}
+function agSupprimer(id, nom){
+  confirmDlg('Déconnecter « ' + nom + ' » ?', 'Ses rendez-vous ne s’afficheront plus dans la console. Ton agenda, lui, ne change pas.', 'Déconnecter', function(){
+    ctApi('agenda_supprimer', { id: id }).then(function(){
+      toast('Agenda déconnecté'); ag.evs = ag.evs.filter(function(e){ return e.agenda !== id; });
+      ag.cleChargee = null; agCharger(); ctRendre();
+    }).catch(function(e){ toast(e.message, true); });
+  });
 }
 
 </script>
