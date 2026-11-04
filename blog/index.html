@@ -458,7 +458,7 @@ if(f)f.addEventListener("submit",function(e){
     .catch(function(err){
       btn.disabled=false;btn.textContent="S'abonner à la newsletter";
       msg.className="nl-msg err";
-      msg.textContent=(err.message==="adresse email invalide")?"Cette adresse email n'est pas valide.":"L'envoi a échoué. Réessayez dans un instant.";
+      msg.textContent=(err.message==="adresse email invalide")?"Cette adresse email n'est pas valide.":"L'envoi a échoué. Réessaie dans un instant.";
     });
 });
 })();

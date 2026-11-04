@@ -732,6 +732,10 @@ tr.cliquable{cursor:pointer}
 .cc{min-width:0}
 .cc .co{min-width:0}
 .cc .h{flex-wrap:wrap;row-gap:2px}
+.acc-l{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:11px 0;border-top:1px solid var(--trait)}
+.acc-l>div{min-width:0}.acc-l b{display:block;font-weight:600;font-size:14px;overflow-wrap:anywhere}.acc-l span{font-size:12.5px;color:var(--gris2)}
+.acc-aj{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.acc-aj input{flex:1 1 200px;min-width:0}
+@media(max-width:600px){.acc-aj .btn{width:100%}}
 </style>
 </head>
 <body>
@@ -963,7 +967,7 @@ tr.cliquable{cursor:pointer}
         <button data-o="blog" onclick="setOnglet('blog')">Blog</button>
         <button data-o="email" onclick="setOnglet('email')">Email</button>
         <button data-o="agendas" onclick="setOnglet('agendas');agCharger()">Agendas</button>
-        <button data-o="connexion" onclick="setOnglet('connexion')">Connexion</button>
+        <button data-o="connexion" onclick="setOnglet('connexion');accCharger()">Connexion</button>
       </div>
       <div class="panel set-bloc" data-o="general">
         <div class="panel-h"><h3>Identité du blog</h3></div>
@@ -1750,13 +1754,42 @@ var CLIENT_JS=[
 '    .catch(function(err){',
 '      btn.disabled=false;btn.textContent="S\'abonner \u00e0 la newsletter";',
 '      msg.className="nl-msg err";',
-'      msg.textContent=(err.message==="adresse email invalide")?"Cette adresse email n\'est pas valide.":"L\'envoi a \u00e9chou\u00e9. R\u00e9essayez dans un instant.";',
+'      msg.textContent=(err.message==="adresse email invalide")?"Cette adresse email n\'est pas valide.":"L\'envoi a \u00e9chou\u00e9. R\u00e9essaie dans un instant.";',
 '    });',
 '});',
 '})();'
 ].join('\n');
 
+/* ---------- redirections ----------
+   Une adresse d'article qui change ne doit jamais casser un lien déjà partagé :
+   l'ancienne adresse garde une petite page qui renvoie vers la nouvelle.
+   Elles vivent dans cfg.redirections { ancienSlug: nouveauSlug } et sont
+   régénérées à CHAQUE publication — sinon la console les supprimerait comme
+   « pages orphelines » (c'est arrivé, corrigé le 04/11/2026). */
+function redirections(cfg, posts){
+  var r = (cfg && cfg.redirections) || {}, vivants = {}, sortie = {};
+  published(posts || []).forEach(function(p){ vivants[p.slug] = 1; });
+  Object.keys(r).forEach(function(ancien){
+    var cible = r[ancien], garde = 0;
+    while (r[cible] && garde++ < 10) cible = r[cible];          // une chaîne a → b → c renvoie directement vers c
+    if (!vivants[ancien] && vivants[cible] && ancien !== cible) sortie[ancien] = cible;
+  });
+  return sortie;
+}
+function renderRedirect(cible){
+  var url = SITE + '/blog/' + cible + '/';
+  return '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">\n'
+    + '<title>Page déplacée — Ichinen Coaching</title>\n'
+    + '<link rel="canonical" href="' + url + '">\n'
+    + '<meta name="robots" content="noindex, follow">\n'
+    + '<meta http-equiv="refresh" content="0; url=' + url + '">\n'
+    + '<script>location.replace(' + JSON.stringify(url) + ');<\/script>\n</head>\n'
+    + '<body style="font-family:system-ui;background:#FDFAF4;color:#2C2A24;padding:40px">'
+    + '<p>Cet article a une nouvelle adresse : <a href="' + url + '">' + url + '</a></p></body></html>\n';
+}
+
 return {SITE:SITE,CTA:CTA,slugify:slugify,isoDate:isoDate,esc:esc,txt:txt,
+        redirections:redirections,renderRedirect:renderRedirect,
         renderIndex:renderIndex,renderPost:renderPost,renderSitemap:renderSitemap,
         renderRobots:renderRobots,renderLlms:renderLlms,renderLlmsFull:renderLlmsFull,
         htmlToMarkdown:htmlToMarkdown,published:published};
@@ -1861,7 +1894,7 @@ function gh(path, opts){
       if (!r.ok){
         var m = (data && data.message) || ('HTTP ' + r.status);
         if (r.status === 401) m = 'Jeton refusé par GitHub (401). Il a peut-être expiré.';
-        if (r.status === 403) m = 'Accès refusé (403). Vérifiez la permission « Contents : Read and write ».';
+        if (r.status === 403) m = 'Accès refusé (403). Vérifie la permission « Contents : Read and write ».';
         if (r.status === 404) m = 'Introuvable (404) — le jeton ne voit pas le dépôt ' + OWNER + '/' + REPO + '.';
         if (r.status === 409) m = 'Le dépôt a changé entre-temps. Clique sur « Recharger » puis republie.';
         var err = new Error(m); err.status = r.status; throw err;
@@ -2479,6 +2512,7 @@ function handleDoc(input){
 /* --- enregistrement --- */
 function savePost(status){
   var p = state._draft;
+  var ancienSlug = (state.editing !== null && state.posts[state.editing]) ? state.posts[state.editing].slug : null;
   p.title = $('f-title').value.trim();
   if (!p.title){ toast('Le titre est obligatoire.', true); $('f-title').focus(); return; }
 
@@ -2515,6 +2549,12 @@ function savePost(status){
     state.posts[state.editing] = p;
   }
 
+  // l'adresse d'un article déjà en ligne a changé : l'ancienne renverra vers la nouvelle
+  if (ancienSlug && ancienSlug !== p.slug && status !== 'draft'){
+    state.cfg.redirections = state.cfg.redirections || {};
+    state.cfg.redirections[ancienSlug] = p.slug;
+    delete state.cfg.redirections[p.slug];   // la nouvelle adresse n'est plus une redirection
+  }
   markDirty(); renderAll(); closeEditor();
   toast(status === 'draft'
     ? 'Brouillon enregistré. Clique sur « Publier en ligne » quand tu seras prête.'
@@ -2529,7 +2569,7 @@ function askDeletePost(i){
     state.posts.splice(idx, 1);
     markDirty(); renderAll();
     if (state.editing === idx) closeEditor();
-    toast('Article supprimé. Publiez pour appliquer sur le site.');
+    toast('Article supprimé. Publie pour appliquer sur le site.');
   });
 }
 
@@ -2856,9 +2896,10 @@ function envoyerAContact(){
 function exporterContacts(seulementSel){
   var source = seulementSel ? ctSelection() : state.contacts;
   if (!source.length){ toast('Aucun contact à exporter.', true); return; }
-  var rows = [['Prenom', 'Nom', 'Email', 'Etiquettes', 'Inscrite le', 'Desabonnee', 'Source']]
+  var rows = [['Prenom', 'Nom', 'Email', 'Telephone', 'Entreprise', 'Poste', 'Etiquettes', 'Note', 'Inscrite le', 'Desabonnee', 'Source']]
     .concat(source.map(function(c){
-      return [c.prenom || '', c.nom || '', c.email, (c.tags || []).join(' '),
+      return [c.prenom || '', c.nom || '', c.email, c.telephone || '', c.entreprise || '', c.poste || '',
+              (c.tags || []).join(' '), c.note || '',
               (c.created_at || '').slice(0, 10), c.desabonne ? 'oui' : 'non',
               c.article_slug || c.source || ''];
     }));
@@ -2877,37 +2918,68 @@ function lireCSV(input){
   if (!f) return;
   var r = new FileReader();
   r.onload = function(ev){
-    var lignes = String(ev.target.result).replace(/^﻿/, '').split(/\r?\n/).filter(Boolean);
+    var lignes = decouperCSV(String(ev.target.result).replace(/^﻿/, ''));
+    if (!lignes.length){ toast('Ce fichier est vide.', true); return; }
+    // Si la 1re ligne est un en-tête (Prénom, Nom, Email, Téléphone…), on lit chaque colonne
+    // par son nom : un export de la console, de Gmail ou d'Outlook se réimporte tel quel.
+    var COLS = { email: /^e-?mail|courriel|adresse/, prenom: /^pr[eé]nom|first/, nom: /^nom$|^nom de famille|last|surname/,
+                 telephone: /t[eé]l[eé]phone|^t[eé]l|mobile|phone/, entreprise: /entreprise|soci[eé]t[eé]|company|organisation/,
+                 poste: /poste|fonction|job|title/, tags: /[eé]tiquette|tags?$/, note: /^notes?$/ };
+    var tete = lignes[0].map(function(x){ return x.toLowerCase().trim(); }), idx = {};
+    Object.keys(COLS).forEach(function(k){ var n = tete.findIndex(function(t){ return COLS[k].test(t); }); if (n >= 0) idx[k] = n; });
+    var avecEntete = idx.email !== undefined;
     var aFaire = [];
-    lignes.forEach(function(l){
-      var cells = l.split(/[;,\t]/).map(function(x){ return x.trim().replace(/^"|"$/g, ''); });
-      var email = cells.filter(function(x){ return x.indexOf('@') > 0; })[0];
-      if (!email) return;
-      var deja = email.toLowerCase();
-      if (state.contacts.some(function(c){ return c.email.toLowerCase() === deja; })) return;
-      // Un même email peut apparaître deux fois DANS le fichier : sans ce test, on
-      // annonçait un nombre de contacts supérieur à ce qui serait vraiment ajouté.
-      if (aFaire.some(function(c){ return c.email.toLowerCase() === deja; })) return;
-      var autres = cells.filter(function(x){ return x && x !== email && !/^\d{4}-/.test(x); });
-      aFaire.push({ email: email, prenom: autres[0] || '', nom: autres[1] || '', tags: ['prospect'] });
+    lignes.slice(avecEntete ? 1 : 0).forEach(function(cells){
+      var email = avecEntete ? (cells[idx.email] || '') : (cells.filter(function(x){ return x.indexOf('@') > 0; })[0] || '');
+      email = email.trim().toLowerCase();
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
+      if (state.contacts.some(function(c){ return c.email.toLowerCase() === email; })) return;
+      if (aFaire.some(function(c){ return c.email === email; })) return;
+      var c = { email: email };
+      if (avecEntete){
+        ['prenom', 'nom', 'telephone', 'entreprise', 'poste', 'note'].forEach(function(k){ if (idx[k] !== undefined) c[k] = (cells[idx[k]] || '').trim(); });
+        var t = idx.tags !== undefined ? (cells[idx.tags] || '').toLowerCase().split(/[\s,|]+/).filter(Boolean) : [];
+        c.tags = t.length ? t : ['prospect'];
+      } else {
+        var autres = cells.filter(function(x){ return x && x.trim().toLowerCase() !== email && !/^\d{4}-/.test(x); });
+        c.prenom = autres[0] || ''; c.nom = autres[1] || ''; c.tags = ['prospect'];
+      }
+      aFaire.push(c);
     });
     if (!aFaire.length){ toast('Aucun nouveau contact trouvé dans ce fichier.', true); return; }
-    confirmDlg('Importer', aFaire.length + ' nouveau(x) contact(s) seront ajoutés avec l\'étiquette « prospect ».', 'Importer', function(){
+    confirmDlg('Importer', aFaire.length + ' nouveau' + (aFaire.length > 1 ? 'x contacts seront ajoutés' : ' contact sera ajouté') + ' à ta liste.', 'Importer', function(){
       busy(true, 'Import en cours…');
-      var i = 0, ok = 0;
+      var i = 0, ok = 0, ko = 0;
       function suite(){
         if (i >= aFaire.length){
-          busy(false); toast(ok + ' contact(s) importé(s).'); return chargerContacts();
+          busy(false); toast(ok + ' contact' + (ok > 1 ? 's' : '') + ' importé' + (ok > 1 ? 's' : '') + (ko ? ' · ' + ko + ' refusé' + (ko > 1 ? 's' : '') : ''), !!ko && !ok);
+          return chargerContacts();
         }
         var c = aFaire[i++];
         busy(true, 'Import (' + i + ' / ' + aFaire.length + ')…');
-        return api('contact_add', c).then(function(){ ok++; }).catch(function(){}).then(suite);
+        return ctApi('contact_creer', c).then(function(){ ok++; }).catch(function(){ ko++; }).then(suite);
       }
       suite();
     });
   };
   r.readAsText(f);
   input.value = '';
+}
+/* CSV avec guillemets, séparateur ; , ou tabulation (deviné sur la 1re ligne). */
+function decouperCSV(txt){
+  var prem = txt.split(/\r?\n/)[0] || '';
+  var sep = [';', ',', '\t'].sort(function(a, b){ return prem.split(b).length - prem.split(a).length; })[0];
+  var out = [], ligne = [], champ = '', q = false;
+  for (var k = 0; k < txt.length; k++){
+    var ch = txt[k];
+    if (q){ if (ch === '"'){ if (txt[k + 1] === '"'){ champ += '"'; k++; } else q = false; } else champ += ch; continue; }
+    if (ch === '"') q = true;
+    else if (ch === sep){ ligne.push(champ); champ = ''; }
+    else if (ch === '\n' || ch === '\r'){ if (ch === '\r' && txt[k + 1] === '\n') k++; ligne.push(champ); champ = ''; if (ligne.join('').trim()) out.push(ligne); ligne = []; }
+    else champ += ch;
+  }
+  ligne.push(champ); if (ligne.join('').trim()) out.push(ligne);
+  return out;
 }
 
 /* ---------------- newsletter ---------------- */
@@ -3277,8 +3349,52 @@ function renderSettings(){
       + '<div><span>Publication</span>' + esc(OWNER + '/' + REPO) + '</div>'
       + '<div><span>Session</span>Se ferme d\'elle-même au bout de douze heures</div>'
     + '</div>'
-    + '<div style="margin-top:14px"><button class="btn ghost sm" onclick="logout()">Se déconnecter</button></div>';
+    + '<div style="margin-top:14px"><button class="btn ghost sm" onclick="logout()">Se déconnecter</button></div>'
+    + '<div id="set-acces" style="margin-top:22px"></div>';
   setOnglet(state.setOnglet || 'general');
+  if (state.setOnglet === 'connexion') accCharger();
+}
+
+/* ---------------- accès à la console ----------------
+   Christèle donne un accès à une adresse : la personne reçoit son propre code
+   à chaque connexion. Retirer l'accès ferme aussitôt ses sessions ouvertes. */
+function accCharger(){
+  var b = $('set-acces');
+  if (!b) return;
+  b.innerHTML = '<div class="hint">Chargement des accès…</div>';
+  api('acces').then(accRendre).catch(function(e){ b.innerHTML = '<div class="hint" style="color:var(--rouge)">' + esc(e.message) + '</div>'; });
+}
+function accRendre(r){
+  var b = $('set-acces'), l = r.invitees || [];
+  b.innerHTML = '<h4 style="margin:0 0 4px;font-size:15px">Accès à ta console</h4>'
+    + '<div class="hint" style="margin:0 0 12px">' + (r.peutGerer
+        ? 'Chaque personne invitée reçoit son propre code par email. Tu peux lui retirer l\'accès à tout moment.'
+        : 'Seule Christèle peut donner ou retirer un accès.') + '</div>'
+    + '<div class="acc-l"><div><b>' + esc(r.proprietaire || '') + '</b><span>Propriétaire</span></div></div>'
+    + (l.length ? l.map(function(x){
+        return '<div class="acc-l"><div><b>' + esc(x.email) + '</b><span>'
+          + (x.derniere ? 'Session ouverte le ' + esc(dateFr(x.derniere)) : 'Aucune session ouverte') + '</span></div>'
+          + (r.peutGerer ? '<button class="btn ghost sm" onclick="accRetirer(\'' + escJs(x.email) + '\')">Retirer</button>' : '') + '</div>';
+      }).join('') : '<div class="hint" style="margin:8px 0">Personne d\'autre n\'a accès pour l\'instant.</div>')
+    + (r.peutGerer ? '<div class="acc-aj"><input id="acc-email" type="email" placeholder="adresse@exemple.com" autocomplete="off" onkeydown="if(event.key===\'Enter\')accAjouter()">'
+        + '<button class="btn sm" onclick="accAjouter()">Donner l\'accès</button></div>' : '');
+}
+function dateFr(iso){
+  var d = new Date(iso);
+  return isNaN(d) ? '' : d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long' }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
+function accAjouter(){
+  var v = ($('acc-email').value || '').trim().toLowerCase();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)){ toast('Adresse email invalide', true); $('acc-email').focus(); return; }
+  busy(true, 'Ajout de l\'accès…');
+  api('acces_ajouter', { email: v }).then(function(r){ busy(false); toast('Accès donné à ' + v); accRendre(r); })
+    .catch(function(e){ busy(false); toast(e.message, true); });
+}
+function accRetirer(email){
+  confirmDlg('Retirer l\'accès', email + ' ne pourra plus se connecter à ta console, et ses sessions ouvertes sont fermées tout de suite.', 'Retirer', function(){
+    api('acces_retirer', { email: email }).then(function(r){ toast('Accès retiré.'); accRendre(r); })
+      .catch(function(e){ toast(e.message, true); });
+  });
 }
 function setOnglet(o){
   state.setOnglet = o;
@@ -3299,7 +3415,7 @@ function saveSettings(){
   state.cfg.calendly  = $('s-cal').value.trim();
   state.cfg.email     = $('s-mail').value.trim();
   markDirty();
-  toast('Réglages enregistrés. Publiez pour les appliquer au site.');
+  toast('Réglages enregistrés. Publie pour les appliquer au site.');
 }
 
 /* ---------------- publication ---------------- */
@@ -3339,6 +3455,11 @@ function publish(){
   files.push({ path: 'blog/index.html',   content: R.renderIndex(state.posts, state.cfg, assets) });
   R.published(state.posts).forEach(function(p){
     files.push({ path: 'blog/' + p.slug + '/index.html', content: R.renderPost(p, state.posts, state.cfg, assets) });
+  });
+  // les anciennes adresses d'articles gardent leur page de renvoi (sinon : supprimées comme orphelines)
+  var redir = R.redirections(state.cfg, state.posts);
+  Object.keys(redir).forEach(function(ancien){
+    files.push({ path: 'blog/' + ancien + '/index.html', content: R.renderRedirect(redir[ancien]) });
   });
 
   // 3. données + fichiers SEO/IA

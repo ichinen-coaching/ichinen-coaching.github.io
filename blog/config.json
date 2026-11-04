@@ -6,5 +6,10 @@
  "repoOwner": "ichinen-coaching",
  "repoName": "ichinen-coaching.github.io",
  "branch": "main",
- "apiUrl": "https://tcawjvyefzlkvngcklqm.supabase.co/functions/v1/ichinen-api"
+ "apiUrl": "https://tcawjvyefzlkvngcklqm.supabase.co/functions/v1/ichinen-api",
+ "redirections": {
+  "qui-etes-vous-vraiment-en-dehors-de-votre-titre": "qui-es-tu-vraiment-en-dehors-de-ton-titre",
+  "la-methode-gps-construire-votre-boussole-de-vie": "la-methode-gps-construire-ta-boussole-de-vie",
+  "valeurs-profondes-le-socle-de-toutes-vos-decisions": "valeurs-profondes-le-socle-de-toutes-tes-decisions"
+ }
 }
