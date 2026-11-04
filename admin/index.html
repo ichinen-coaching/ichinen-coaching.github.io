@@ -736,6 +736,16 @@ tr.cliquable{cursor:pointer}
 .acc-l>div{min-width:0}.acc-l b{display:block;font-weight:600;font-size:14px;overflow-wrap:anywhere}.acc-l span{font-size:12.5px;color:var(--gris2)}
 .acc-aj{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}.acc-aj input{flex:1 1 200px;min-width:0}
 @media(max-width:600px){.acc-aj .btn{width:100%}}
+/* écrans tactiles : pas de survol, donc les « + » restent visibles et assez grands pour le doigt */
+@media(hover:none){.cal-case .plus,.gr-c .plus{opacity:1}}
+@media(max-width:600px){.cal-case .plus{min-width:36px;min-height:32px;font-size:18px;display:inline-flex;align-items:center;justify-content:center;margin:-6px -6px -6px auto}}
+.recap div{min-width:0}.recap div>span+*, .recap div{overflow-wrap:anywhere}
+@media(max-width:600px){.recap div{flex-direction:column;gap:3px}.recap span{width:auto}}
+@media(max-width:600px){
+  #dirty-flag{font-size:0;width:12px;height:12px;min-width:12px;padding:0;border-radius:50%;background:var(--tc);flex:none}
+  .tag-chip button{min-width:28px;min-height:28px;margin:-7px -10px -7px -4px;display:inline-flex;align-items:center;justify-content:center;font-size:16px}
+  .acts{min-width:0}
+}
 </style>
 </head>
 <body>
@@ -802,7 +812,7 @@ tr.cliquable{cursor:pointer}
     <div class="topbar">
       <h2 id="vtitle">Tableau de bord</h2>
       <div class="acts">
-        <span id="dirty-flag" class="pill draft" style="display:none">Modifications non publiées</span>
+        <span id="dirty-flag" class="pill draft" title="Modifications non publiées" style="display:none">Modifications non publiées</span>
         <a class="tb-icone" href="https://ichinencoaching.com/blog/" target="_blank" rel="noopener" title="Voir le blog" aria-label="Voir le blog">
           <svg viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg></a>
         <button class="tb-icone" onclick="reload()" title="Recharger" aria-label="Recharger">
